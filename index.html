@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Prototypes · August 2026</title>
+<style>
+  :root{--gray100:#D8DDE3;--gray500:#6C727A;--gray600:#545A62;--gray900:#23252A;--blue0:#F6F8FF;--blue100:#CFD9FF;--blue700:#2536A6;--purple0:#FBF6FF;--purple100:#E6D0FF;--purpleDark:#6A3390}
+  body{margin:0;background:#F7F9FB;color:var(--gray900);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:720px;margin:0 auto;padding:64px 28px 100px}
+  h1{font-size:26px;font-weight:650;margin:0 0 6px}
+  .meta{color:var(--gray500);font-size:13.5px;margin-bottom:30px}
+  a.card{display:block;background:#fff;border:1px solid var(--gray100);border-radius:12px;padding:18px 22px;margin:14px 0;color:inherit;text-decoration:none;transition:border-color .12s, box-shadow .12s}
+  a.card:hover{box-shadow:0 2px 12px rgba(20,24,34,.08)}
+  a.card.one:hover{border-color:var(--blue100)}
+  a.card.two:hover{border-color:var(--purple100)}
+  .t{font-size:17px;font-weight:650;margin-bottom:4px}
+  .one .t{color:var(--blue700)}
+  .two .t{color:var(--purpleDark)}
+  .d{font-size:14px;color:var(--gray600)}
+  .note{font-size:13px;color:var(--gray500);margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Onboarding and expansion prototypes</h1>
+  <div class="meta">Natalie Friedman · August 2026 · Interactive reconstructions of current production pages, not screenshots. Use the switcher at the bottom of each page to move between options; every page has a "Why" button with the rationale.</div>
+
+  <a class="card one" href="install-with-ai/">
+    <div class="t">1 · Install with AI: from one opaque prompt to a recommended toolkit</div>
+    <div class="d">The Install SDK page's AI path, rebuilt four ways. Baseline (today) plus a toolkit checklist, a transparent one-command version, an MCP-first flow, and a plan-preview version.</div>
+  </a>
+
+  <a class="card two" href="foundation-expansion/">
+    <div class="t">2 · Foundation expansion: suggest the next product when it solves a problem</div>
+    <div class="d">Five in-context moments that move flags-only customers into Experimentation and Session Replay: rollout configured, rollout saved, error spike, retro insight with an AI case study, and a personalized empty state.</div>
+  </a>
+
+  <div class="note">Numbers in the mocks are illustrative. Prototypes are static HTML; buttons that would mutate real state don't do anything.</div>
+</div>
+</body>
+</html>

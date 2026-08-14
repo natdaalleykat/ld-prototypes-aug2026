@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install with AI · prototype options</title>
+<link rel="stylesheet" href="chrome.css">
+<style>
+  body{min-width:0;display:block;background:var(--gray0)}
+  .wrap{max-width:820px;margin:0 auto;padding:56px 32px 120px}
+  h1{font-size:26px;font-weight:650;margin:0 0 6px}
+  .meta{color:var(--gray500);font-size:13.5px;margin-bottom:20px}
+  .hyp{background:#fff;border:1px solid var(--gray100);border-radius:12px;padding:16px 20px;font-size:14.5px;margin-bottom:28px}
+  .opt{display:block;background:#fff;border:1px solid var(--gray100);border-radius:12px;padding:16px 20px;margin:12px 0;color:inherit;text-decoration:none;transition:border-color .12s, box-shadow .12s}
+  .opt:hover{border-color:var(--blue100);box-shadow:0 2px 10px rgba(20,24,34,.07);text-decoration:none}
+  .opt .t{font-size:16px;font-weight:650;display:flex;align-items:center;gap:10px;margin-bottom:3px}
+  .opt .d{font-size:13.5px;color:var(--gray600)}
+  .tag{font-size:11px;font-weight:700;letter-spacing:.05em;border-radius:5px;padding:2px 8px;background:var(--blue50);color:var(--blue700)}
+  .tag.base{background:var(--gray50);color:var(--gray600)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Install with AI: from one opaque prompt to a recommended toolkit</h1>
+  <div class="meta">Prototype &middot; Natalie Friedman &middot; August 2026 &middot; Reconstructions on the current production Install SDK page, not screenshots</div>
+
+  <div class="hyp">
+    <b>Hypothesis.</b> Users skip the install prompt for two reasons. They can't tell it will install a guide that runs their whole onboarding, so hand-prompting feels safer (it isn't, their agent lacks account access and current API knowledge). And a "skill" is a strange front door; installing an MCP server is the familiar act. The fix in every option below: tell users plainly that this is the recommended path, show what each tool is and does, and make each install one click or one paste.
+  </div>
+
+  <a class="opt" href="today.html">
+    <div class="t">Today <span class="tag base">BASELINE</span></div>
+    <div class="d">What ships now: one prompt that adds the onboarding skill, a short bullet list, two doc links. The control for any test.</div>
+  </a>
+  <a class="opt" href="option-1.html">
+    <div class="t">Option 1: toolkit checklist <span class="tag">3 TOOL CARDS</span></div>
+    <div class="d">Three tool cards (MCP server, onboarding guide, CLI) with what/why, one-paste installs, inspect links, and ticking checkmarks. Kickoff prompt comes after the tools.</div>
+  </a>
+  <a class="opt" href="option-2.html">
+    <div class="t">Option 2: one command, fully transparent <span class="tag">SMALLEST CHANGE</span></div>
+    <div class="d">Keeps today's single paste but the prompt describes outcomes, a callout answers "why not just ask my agent", and a disclosure lets skeptics inspect all three tools.</div>
+  </a>
+  <a class="opt" href="option-3.html">
+    <div class="t">Option 3: MCP-first, three steps <span class="tag">TESTS ENTRY POINT</span></div>
+    <div class="d">Step 1 is the familiar act: add the MCP server, with a per-agent picker and one-click installs. The skill becomes "the playbook" in step 2. CLI optional in step 3.</div>
+  </a>
+  <a class="opt" href="option-4.html">
+    <div class="t">Option 4: show the plan, one CTA <span class="tag">EXPECTATIONS UPFRONT</span></div>
+    <div class="d">The page shows the exact five-step plan the agent will follow (tools are steps 1 and 2), then a single "Copy the kickoff prompt" button. Verify line maps to step 5.</div>
+  </a>
+
+  <div class="meta" style="margin-top:26px">Every page has a "Why this option" button in the bottom switcher with the rationale and the risk. The +23% figure is the real April result for guided vs manual First SDK Connected.</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moment 2 · Just saved a rollout</title>
+<link rel="stylesheet" href="chrome.css">
+<link rel="stylesheet" href="extra.css">
+</head>
+<body>
+<div data-page>
+  <div class="tabs"><div class="tab active">Targeting</div><div class="tab">Variations</div><div class="tab">Monitoring</div><div class="tab">Audience</div><div class="tab">Feedback</div></div>
+  <div class="envtabs"><div class="envtab active"><span class="edot prod"></span>Production</div><div class="envtab"><span class="edot"></span>Test</div><div class="envplus">&#65291;</div></div>
+  <div class="theadrow">
+    <div class="thead">Targeting configuration for <span class="edot prod" style="width:10px;height:10px"></span> Production</div>
+    <div class="viewseg"><span class="vbtn on">&#9638; Visual</span><span class="vbtn">{&hairsp;} JSON</span><span class="vico">&#9707;</span><span class="vico">&#10530;</span><span class="vico">&#9678;</span></div>
+  </div>
+  <div class="canvas">
+    <div class="alltraffic">All traffic</div>
+    <div class="cline"></div>
+    <div class="cnode"><div class="ccard">Flag is <span class="pillon">On <span class="knob"></span></span> &nbsp;serving variations based on rules</div></div>
+    <div class="cline"></div>
+    <div class="cnode"><div class="ccard">
+      <div class="rulehead"><b>&#8964; &nbsp;Default rule</b><span style="display:flex;gap:8px;align-items:center;color:var(--gray400)">&#8942; <span class="editbtn">&#9998; Edit</span></span></div>
+      <div style="font-size:13.5px;color:var(--gray600)">Serve a percentage rollout</div>
+      <div class="rollbar"><span style="width:25%;background:var(--blue500)"></span><span style="width:75%;background:var(--gray200)"></span></div>
+      <div style="font-size:12.5px;color:var(--gray600)"><span class="diamond d-blue"></span> new-checkout &nbsp;25% &nbsp;&nbsp;&nbsp;<span class="diamond d-gray"></span> current-checkout &nbsp;75%</div>
+    </div></div>
+  </div>
+  <div class="canvasfoot">
+    <span class="footnote">If LaunchDarkly is unreachable, SDKs will serve the default defined in your code.</span>
+    <span class="savebtn dim">Review and save</span>
+  </div>
+</div>
+<div data-sidebar>
+  <div class="sactrow"><span>&#8677;</span><span>&#128279;</span><span>&#128276;</span><span>&#9889;</span><span>&#128344;</span><span>&#8942;</span></div>
+  <div class="prop"><div class="pt">Key</div><div class="pv" style="display:flex;justify-content:space-between;align-items:center;color:var(--gray700)">new-checkout-flow <span style="color:var(--gray400)">&#10697;</span></div></div>
+  <div class="prop"><div class="pt">Description</div><div class="pv">Rewritten one-page checkout</div></div>
+  <div class="prop"><div class="pt">Maintainer <span class="pencil">&#9998;</span></div><div class="pv" style="margin-top:4px"><span class="mchip"><span class="avatar">NF</span> Natalie Friedman <span style="color:var(--gray400)">&#9430;</span></span></div></div>
+  <div class="prop"><div class="pt">Variations <span class="pencil">&#9998;</span></div>
+    <div class="pv"><span class="diamond d-blue"></span> new-checkout</div>
+    <div class="pv"><span class="diamond d-gray"></span> current-checkout</div>
+  </div>
+  <div class="prop" style="border-bottom:none"><div class="pt">Experiments <span class="pencil">&#65291;</span></div><div class="pv">None &middot; <span class="sublink">Add experiment</span></div></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span class="check" style="width:26px;height:26px;font-size:13px">&#10003;</span><h2 style="margin:0">Rollout saved</h2></div>
+    <div class="msub"><b>new-checkout-flow</b> is now serving <b>new-checkout</b> to 25% of production traffic.</div>
+    <div class="divider"></div>
+    <div style="font-size:14.5px;font-weight:650;margin-bottom:4px"><span class="vega">&#10022;</span> Find out what that 25% changed</div>
+    <div class="msub" style="margin-bottom:14px">Attach a metric and LaunchDarkly compares the two groups you just created and calls a winner. Uses this exact rollout, no new code if you already track checkout events. <span class="incl">&#10003; Included in Foundation</span></div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="purplebtn" style="padding:9px 18px;font-size:13.5px">Add a metric</button>
+      <button class="ghostbtn" onclick="document.getElementById('overlay').style.display='none'">Not now</button>
+      <span class="helper" style="margin-left:auto">Takes about a minute</span>
+    </div>
+  </div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'flags',
+  crumb: '<span class="dim">Flags /</span> new-checkout-flow',
+  why: '<b>Moment 2: the save confirmation.</b> Same trigger as Moment 1 but placed after commitment instead of before it: the user just took a measurable risk in production, which is peak "I want to know what happens next." A modal converts harder than an inline card and can\'t be scroll-blindness\'d, but it interrupts, so "Not now" must be a real exit and it should show at most once per flag. Compare against Moment 1 for the intrusiveness vs conversion tradeoff; they are the same offer at two aggression levels.'
+};
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

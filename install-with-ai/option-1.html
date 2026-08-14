@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Option 1 · AI toolkit checklist</title>
+<link rel="stylesheet" href="chrome.css">
+</head>
+<body>
+<div data-page>
+  <div class="setupwrap">
+    <p class="pagesub">Pick how you want to set it up. Follow step-by-step instructions for your stack, or let your AI coding agent do it for you.</p>
+    <div class="bigtabs"><div class="bigtab active">Install with AI</div><div class="bigtab">Install manually</div></div>
+
+    <div class="recobar">
+      <b>Set your agent up before you prompt it.</b> Out of the box, your coding agent doesn't know your LaunchDarkly account or our current SDK APIs, so hand-written prompts usually stall before the first flag. These three tools fix that. Teams that use the guided setup connect an SDK 23% more often than manual installs.
+    </div>
+
+    <div class="steph">1. Install the toolkit <span class="helper" style="font-weight:400">&nbsp; about 2 minutes, each is one copy-paste</span></div>
+
+    <div class="tool">
+      <div class="tcheck"></div>
+      <div class="tbody">
+        <div class="tname">LaunchDarkly MCP server <span class="chip rec">Recommended</span></div>
+        <div class="tdesc"><b>Connects your agent to your account.</b> Lets it create flags, read your environments, and confirm events are arriving, instead of guessing at API calls. We pre-filled a scoped API token for this project, nothing to paste.</div>
+        <div class="toolrow">
+          <button class="copybtn" data-copy="claude mcp add launchdarkly -- npx -y @launchdarkly/mcp-server">&#10697; Copy for Claude Code</button>
+          <button class="copybtn" data-copy='{"mcpServers":{"launchdarkly":{"command":"npx","args":["-y","@launchdarkly/mcp-server"],"env":{"LAUNCHDARKLY_API_KEY":"api-4f2…"}}}}'>&#10697; Copy config (Cursor, VS Code)</button>
+          <a class="inspect">Inspect the server &#8599;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool">
+      <div class="tcheck"></div>
+      <div class="tbody">
+        <div class="tname">Onboarding guide <span class="chip rec">Recommended</span></div>
+        <div class="tdesc"><b>The playbook your agent follows.</b> A step-by-step guide that detects your stack, picks the right SDK for it, wires in the flag code, and verifies the connection. Without it, agents improvise the order and skip verification.</div>
+        <div class="toolrow">
+          <div class="minicode">npx skills add launchdarkly/agent-skills --skill onboarding -y</div>
+          <button class="copybtn" data-copy="npx skills add launchdarkly/agent-skills --skill onboarding -y">&#10697; Copy</button>
+          <a class="inspect">Read every step it takes &#8599;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="tool">
+      <div class="tcheck"></div>
+      <div class="tbody">
+        <div class="tname">LaunchDarkly CLI <span class="chip opt">Optional</span></div>
+        <div class="tdesc"><b>Flags from your terminal.</b> Useful to you and your agent after setup: toggle flags, tail events, run <b>ldcli setup</b> any time you add another service.</div>
+        <div class="toolrow">
+          <div class="minicode">brew install launchdarkly/tap/ldcli</div>
+          <button class="copybtn" data-copy="brew install launchdarkly/tap/ldcli">&#10697; Copy</button>
+          <a class="inspect">CLI docs &#8599;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="steph">2. Start guided onboarding</div>
+    <div class="promptbox">
+      <span class="ptext">Onboard this project to LaunchDarkly using the onboarding guide. Connect the best SDK for my stack and verify my first flag works.</span>
+      <button class="copybtn" data-copy="Onboard this project to LaunchDarkly using the onboarding guide. Connect the best SDK for my stack and verify my first flag works.">&#10697; Copy prompt</button>
+    </div>
+    <div class="helper" style="margin-top:8px">Your agent will ask before changing files. Usually 3&ndash;5 minutes end to end.</div>
+
+    <div class="divider"></div>
+    <div class="conn" style="color:var(--gray700)"><span class="spinner"></span> Watching for your first event&hellip;</div>
+    <div class="helper" style="margin-top:-8px">Run your app after your agent finishes. This updates on its own when we receive an event.</div>
+  </div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'installsdk',
+  crumb: 'Install SDK',
+  why: '<b>Option 1: toolkit checklist.</b> Makes the tool stack explicit and tells the user directly that installing it is the recommended move, with evidence (the real +23% SDK-connected result). Each tool card answers "what is this and why do I need it" and has an inspect link for the skeptics. Copy actions tick the checklist, which gives a sense of progress before the agent even starts. The kickoff prompt gets short because the tools carry the weight. Risk: three cards read as more work than one prompt, even though each is a single paste.'
+};
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

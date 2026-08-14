@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Option 4 · Your agent's setup plan</title>
+<link rel="stylesheet" href="chrome.css">
+</head>
+<body>
+<div data-page>
+  <div class="setupwrap">
+    <p class="pagesub">Pick how you want to set it up. Follow step-by-step instructions for your stack, or let your AI coding agent do it for you.</p>
+    <div class="bigtabs"><div class="bigtab active">Install with AI</div><div class="bigtab">Install manually</div></div>
+
+    <div class="steph" style="margin-top:6px">Here's the plan your agent will follow</div>
+    <div class="helper" style="margin-top:-4px">This is the exact sequence the prompt below kicks off. Nothing hidden, and your agent asks before changing files.</div>
+
+    <div class="card" style="margin-top:12px;padding:8px 18px">
+      <div class="planstep"><span class="pnum">1</span><span class="pbody"><b>Connect to your account</b> &middot; installs the LaunchDarkly MCP server with a pre-filled, project-scoped token so it can create flags and check events for real. <a class="inspect">Inspect &#8599;</a></span></div>
+      <div class="planstep"><span class="pnum">2</span><span class="pbody"><b>Load the playbook</b> &middot; adds our onboarding guide so it follows the tested path instead of improvising from training data. <a class="inspect">Read the steps &#8599;</a></span></div>
+      <div class="planstep"><span class="pnum">3</span><span class="pbody"><b>Detect your stack</b> &middot; language, framework, package manager, then picks the matching LaunchDarkly SDK.</span></div>
+      <div class="planstep"><span class="pnum">4</span><span class="pbody"><b>Wire in the SDK</b> &middot; install, initialize, and add your first flag evaluation where your feature code lives.</span></div>
+      <div class="planstep"><span class="pnum">5</span><span class="pbody"><b>Verify end to end</b> &middot; runs your app, confirms LaunchDarkly received an event, and this page flips to Connected.</span></div>
+    </div>
+
+    <div style="display:flex;gap:12px;align-items:center;margin-top:16px">
+      <button class="copybtn" data-copy="Set up LaunchDarkly in this project. Install the LaunchDarkly MCP server and onboarding guide, then follow the guide: detect my stack, connect the right SDK, add my first flag, and verify events arrive." style="background:var(--blue500);color:#fff;border-color:var(--blue500);padding:9px 20px;font-size:14px">&#10697; Copy the kickoff prompt</button>
+      <span class="helper">Paste it into Claude Code, Cursor, Copilot, or Windsurf. Usually 3&ndash;5 minutes.</span>
+    </div>
+
+    <div class="recobar" style="margin-top:16px">
+      <b>Do this instead of prompting from scratch.</b> Agents without steps 1 and 2 can't see your account and guess at SDK APIs, which is where most hand-rolled installs stall. Guided setups connect an SDK 23% more often. Prefer the pieces individually? <a>Install each tool manually</a>.
+    </div>
+
+    <div class="divider"></div>
+    <div class="conn" style="color:var(--gray700)"><span class="spinner"></span> Watching for step 5, your first event&hellip;</div>
+    <div class="helper" style="margin-top:-8px">Run your app after your agent finishes. This updates on its own when we receive an event.</div>
+  </div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'installsdk',
+  crumb: 'Install SDK',
+  why: '<b>Option 4: show the plan, then one CTA.</b> Treats the trust problem as an information problem: users won\'t hand control to an agent when they can\'t picture what it will do, so the page shows the five-step plan first (tools are steps 1 and 2, not a separate ask) and ends with a single copy CTA. The verify line at the bottom ties back to step 5, so the page and the agent finish the same story. Closest to Zac\'s "expectations upfront" rec. Risk: the plan is a promise the agent has to keep; if the skill drifts from these five steps the page lies.'
+};
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

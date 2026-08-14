@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moment 3 · Errors on Monitoring</title>
+<link rel="stylesheet" href="chrome.css">
+<link rel="stylesheet" href="extra.css">
+</head>
+<body>
+<div data-page>
+  <div class="tabs"><div class="tab">Targeting</div><div class="tab">Variations</div><div class="tab active">Monitoring</div><div class="tab">Audience</div><div class="tab">Feedback</div></div>
+  <div class="envtabs"><div class="envtab active"><span class="edot prod"></span>Production</div><div class="envtab"><span class="edot"></span>Test</div><div class="envplus">&#65291;</div></div>
+
+  <div class="chartcard">
+    <div class="chh">Flag evaluations <span class="helper" style="font-weight:400">Last 24 hours</span></div>
+    <div class="bars">
+      <span style="height:34%"></span><span style="height:38%"></span><span style="height:31%"></span><span style="height:41%"></span><span style="height:47%"></span><span style="height:44%"></span><span style="height:52%"></span><span style="height:58%"></span><span style="height:49%"></span><span style="height:63%"></span><span style="height:68%"></span><span style="height:61%"></span><span style="height:72%"></span><span style="height:66%"></span><span style="height:74%"></span><span style="height:79%"></span><span style="height:71%"></span><span style="height:82%"></span><span style="height:76%"></span><span style="height:85%"></span><span style="height:80%"></span><span style="height:88%"></span><span style="height:84%"></span><span style="height:90%"></span>
+    </div>
+    <div class="xlabels"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>now</span></div>
+    <div class="legend"><span><i style="background:var(--blue100)"></i>Evaluations: 41,208</span></div>
+  </div>
+
+  <div class="chartcard">
+    <div class="chh">Errors observed on sessions evaluating this flag <span class="helper" style="font-weight:400">Last 24 hours</span></div>
+    <div class="bars" style="height:70px">
+      <span class="err" style="height:8%"></span><span class="err" style="height:6%"></span><span class="err" style="height:9%"></span><span class="err" style="height:7%"></span><span class="err" style="height:8%"></span><span class="err" style="height:11%"></span><span class="err" style="height:9%"></span><span class="err" style="height:10%"></span><span class="err" style="height:14%"></span><span class="err" style="height:38%"></span><span class="err" style="height:64%"></span><span class="err" style="height:71%"></span><span class="err" style="height:58%"></span><span class="err" style="height:66%"></span><span class="err" style="height:61%"></span><span class="err" style="height:69%"></span><span class="err" style="height:57%"></span><span class="err" style="height:63%"></span><span class="err" style="height:60%"></span><span class="err" style="height:67%"></span><span class="err" style="height:55%"></span><span class="err" style="height:62%"></span><span class="err" style="height:59%"></span><span class="err" style="height:64%"></span>
+    </div>
+    <div class="xlabels"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>now</span></div>
+    <div class="legend"><span><i style="background:#F2A0A0"></i>TypeError: cart.total is undefined &middot; 312 occurrences, first seen 9:14 AM</span></div>
+  </div>
+
+  <div class="suggest" id="suggest" style="max-width:none">
+    <button class="dismiss" onclick="document.getElementById('suggest').style.display='none'">&#10005;</button>
+    <div class="sh"><span class="vega">&#10022;</span> Watch one of these sessions instead of guessing</div>
+    <div class="sb">Your <b>JavaScript SDK already supports Session Replay</b>. Turn it on and every error here links to a replay of what the user did, tagged with the flag variation they saw. One line in your SDK init, works with your existing setup. <span class="incl">&#10003; Included in Foundation</span></div>
+    <div class="codeblock" style="margin-bottom:11px">plugins: [<span class="kw">new</span> <span class="fn">Observability</span>(), <span class="kw">new</span> <span class="fn">SessionReplay</span>()]<button class="copybtn dark" data-copy="plugins: [new Observability(), new SessionReplay()]">Copy</button></div>
+    <div style="display:flex;gap:9px;align-items:center">
+      <button class="purplebtn">Enable Session Replay</button>
+      <button class="purpleghost">Watch a sample replay</button>
+    </div>
+    <div class="fineprint">Privacy defaults: text and inputs masked. You control sampling and retention in Telemetry settings.</div>
+  </div>
+</div>
+<div data-sidebar>
+  <div class="sactrow"><span>&#8677;</span><span>&#128279;</span><span>&#128276;</span><span>&#9889;</span><span>&#128344;</span><span>&#8942;</span></div>
+  <div class="prop"><div class="pt">Key</div><div class="pv" style="display:flex;justify-content:space-between;align-items:center;color:var(--gray700)">new-checkout-flow <span style="color:var(--gray400)">&#10697;</span></div></div>
+  <div class="prop"><div class="pt">Description</div><div class="pv">Rewritten one-page checkout</div></div>
+  <div class="prop"><div class="pt">Maintainer <span class="pencil">&#9998;</span></div><div class="pv" style="margin-top:4px"><span class="mchip"><span class="avatar">NF</span> Natalie Friedman <span style="color:var(--gray400)">&#9430;</span></span></div></div>
+  <div class="prop"><div class="pt">Connected SDKs</div><div class="pv">JavaScript &middot; Node.js server</div></div>
+  <div class="prop" style="border-bottom:none"><div class="pt">Session Replay</div><div class="pv">Not enabled &middot; <span class="sublink">Available for your SDK</span></div></div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'flags',
+  crumb: '<span class="dim">Flags /</span> new-checkout-flow',
+  why: '<b>Moment 3: errors just spiked on a flagged rollout.</b> The user is on Monitoring because something is wrong, and their next move today is leaving LaunchDarkly to dig through logs. Session Replay is offered exactly when it solves the problem in front of them, with proof of low friction: we detected an o11y-compatible SDK, the enable is one line, and the offer says so. The privacy fine print is load-bearing, replay suggestions die without it. Gate: only show when SDK is compatible, replay is off, and the error count is nonzero.'
+};
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

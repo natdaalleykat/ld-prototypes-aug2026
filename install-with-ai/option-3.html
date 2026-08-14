@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Option 3 · MCP-first, three steps</title>
+<link rel="stylesheet" href="chrome.css">
+</head>
+<body>
+<div data-page>
+  <div class="setupwrap">
+    <p class="pagesub">Pick how you want to set it up. Follow step-by-step instructions for your stack, or let your AI coding agent do it for you.</p>
+    <div class="bigtabs"><div class="bigtab active">Install with AI</div><div class="bigtab">Install manually</div></div>
+
+    <div class="steph" style="margin-top:6px">1. Connect your agent to LaunchDarkly</div>
+    <div class="helper" style="margin-top:-4px">Add our MCP server so your agent can create flags and verify events in this account. Your API token is pre-filled and scoped to this project.</div>
+    <div class="agentseg" id="agentseg">
+      <span class="on" data-agent="claude">Claude Code</span>
+      <span data-agent="cursor">Cursor</span>
+      <span data-agent="vscode">VS Code</span>
+      <span data-agent="other">Other</span>
+    </div>
+
+    <div class="agentpane" data-pane="claude">
+      <div class="codeblock">claude mcp add launchdarkly -- npx -y @launchdarkly/mcp-server<button class="copybtn dark" data-copy="claude mcp add launchdarkly -- npx -y @launchdarkly/mcp-server">Copy</button></div>
+    </div>
+    <div class="agentpane" data-pane="cursor" style="display:none">
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="primarybtn">&#8599; Add to Cursor</button>
+        <span class="helper">Opens Cursor and installs the server with your token filled in.</span>
+      </div>
+    </div>
+    <div class="agentpane" data-pane="vscode" style="display:none">
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="primarybtn">&#8599; Add to VS Code</button>
+        <span class="helper">Opens VS Code and installs the server with your token filled in.</span>
+      </div>
+    </div>
+    <div class="agentpane" data-pane="other" style="display:none">
+      <div class="codeblock">{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"launchdarkly"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@launchdarkly/mcp-server"</span>],
+      <span class="str">"env"</span>: { <span class="str">"LAUNCHDARKLY_API_KEY"</span>: <span class="str">"api-4f2&hellip;"</span> }
+    }
+  }
+}<button class="copybtn dark" data-copy='{"mcpServers":{"launchdarkly":{"command":"npx","args":["-y","@launchdarkly/mcp-server"],"env":{"LAUNCHDARKLY_API_KEY":"api-4f2…"}}}}'>Copy</button></div>
+    </div>
+    <div class="helper" style="margin-top:8px"><a class="inspect">Inspect the server &#8599;</a> &nbsp;&middot;&nbsp; read-only except flag creation, revoke the token any time.</div>
+
+    <div class="steph">2. Give your agent the playbook</div>
+    <div class="helper" style="margin-top:-4px">The onboarding guide tells your agent how to pick the right SDK for your stack, wire it in, and verify. Skipping it is the main reason AI installs stall.</div>
+    <div class="promptbox" style="margin-top:8px">
+      <span class="ptext">Run <code>npx skills add launchdarkly/agent-skills --skill onboarding -y</code>, then onboard this project to LaunchDarkly and verify my first flag works.</span>
+      <button class="copybtn" data-copy="Run `npx skills add launchdarkly/agent-skills --skill onboarding -y`, then onboard this project to LaunchDarkly and verify my first flag works.">&#10697; Copy prompt</button>
+    </div>
+    <div class="helper" style="margin-top:6px"><a class="inspect">Read every step the guide takes &#8599;</a></div>
+
+    <div class="steph">3. Optional: add the CLI</div>
+    <div class="helper" style="margin-top:-4px">Toggle flags and tail events from your terminal. Your agent uses it during verification if it's present.</div>
+    <div class="toolrow" style="margin-top:8px">
+      <div class="minicode">brew install launchdarkly/tap/ldcli</div>
+      <button class="copybtn" data-copy="brew install launchdarkly/tap/ldcli">&#10697; Copy</button>
+    </div>
+
+    <div class="divider"></div>
+    <div class="conn" style="color:var(--gray700)"><span class="spinner"></span> Watching for your first event&hellip;</div>
+    <div class="helper" style="margin-top:-8px">Run your app after your agent finishes. This updates on its own when we receive an event.</div>
+  </div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'installsdk',
+  crumb: 'Install SDK',
+  why: '<b>Option 3: MCP-first, three steps.</b> Tests the entry-point half of the hypothesis directly: developers already know what adding an MCP server means, so step 1 is the familiar act (with per-agent one-click installs and a pre-filled token), and the skill is reframed as "the playbook" in step 2 rather than the front door. Numbered steps tell the user exactly what to do instead of leaving it to their gut. Risk: two pastes before the agent does anything visible; the Cursor and VS Code deep links keep step 1 to one click for most users.'
+};
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#agentseg span').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#agentseg span').forEach((t) => t.classList.remove('on'));
+      tab.classList.add('on');
+      const key = tab.getAttribute('data-agent');
+      document.querySelectorAll('.agentpane').forEach((p) => {
+        p.style.display = p.getAttribute('data-pane') === key ? '' : 'none';
+      });
+    });
+  });
+});
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

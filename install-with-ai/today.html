@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Today · Install with AI</title>
+<link rel="stylesheet" href="chrome.css">
+</head>
+<body>
+<div data-page>
+  <div class="setupwrap">
+    <p class="pagesub">Pick how you want to set it up. Follow step-by-step instructions for your stack, or let your AI coding agent do it for you.</p>
+    <div class="bigtabs"><div class="bigtab active">Install with AI</div><div class="bigtab">Install manually</div></div>
+
+    <div class="steph" style="margin-top:6px">Paste this prompt into your AI coding agent's chat</div>
+    <div class="promptbox">
+      <span class="ptext">Run <code>npx skills add launchdarkly/agent-skills --skill onboarding -y</code> and onboard me to LaunchDarkly</span>
+      <button class="copybtn" data-copy="Run `npx skills add launchdarkly/agent-skills --skill onboarding -y` and onboard me to LaunchDarkly">&#10697; Copy</button>
+    </div>
+
+    <div class="whn">
+      <h3>What happens next</h3>
+      <ul>
+        <li>Detects your stack, language, framework, package manager.</li>
+        <li>Installs the right LaunchDarkly SDK and wires it into your code.</li>
+        <li>Creates your first feature flag and verifies it's working.</li>
+      </ul>
+      <div class="helper" style="margin-top:6px">Usually 3&ndash;5 minutes.</div>
+    </div>
+
+    <div class="helper">More on <a>setting up the MCP server</a> and <a>available agent skills</a>.</div>
+
+    <div class="divider"></div>
+    <div class="conn" style="color:var(--gray700)"><span class="spinner"></span> Watching for your first event&hellip;</div>
+    <div class="helper" style="margin-top:-8px">Run your app after your agent finishes. This updates on its own when we receive an event.</div>
+  </div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'installsdk',
+  crumb: 'Install SDK',
+  why: '<b>Baseline: what ships today.</b> One prompt that installs a skill, a short bullet list, and two doc links. The hypothesis this prototype tests: users do not copy this prompt because nothing tells them what it installs, why a skill is the right tool, or why this beats prompting their agent by hand. The skill is also the entry point, which feels off. People are more used to installing an MCP server than "adding a skill."'
+};
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

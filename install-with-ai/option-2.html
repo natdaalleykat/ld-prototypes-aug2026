@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Option 2 · One command, fully transparent</title>
+<link rel="stylesheet" href="chrome.css">
+</head>
+<body>
+<div data-page>
+  <div class="setupwrap">
+    <p class="pagesub">Pick how you want to set it up. Follow step-by-step instructions for your stack, or let your AI coding agent do it for you.</p>
+    <div class="bigtabs"><div class="bigtab active">Install with AI</div><div class="bigtab">Install manually</div></div>
+
+    <div class="steph" style="margin-top:6px">Paste this prompt into your AI coding agent's chat</div>
+    <div class="promptbox" style="border-color:var(--blue100);background:var(--blue0)">
+      <span class="ptext">Set up LaunchDarkly in this project: add the LaunchDarkly MCP server and onboarding guide, then connect the best SDK for my stack and verify my first flag works.</span>
+      <button class="copybtn" data-copy="Set up LaunchDarkly in this project: add the LaunchDarkly MCP server and onboarding guide, then connect the best SDK for my stack and verify my first flag works.">&#10697; Copy</button>
+    </div>
+    <div class="helper" style="margin-top:8px">Works with Claude Code, Cursor, Copilot, Windsurf, and any agent that can run terminal commands. Your agent asks before changing files.</div>
+
+    <div class="recobar" style="margin-top:14px">
+      <b>Why not just ask your agent to "add LaunchDarkly"?</b> Without these tools it guesses at our APIs from stale training data and can't see your account. This prompt gives it real account access and a tested playbook first. Guided setups connect an SDK 23% more often than manual ones.
+    </div>
+
+    <details class="disc">
+      <summary><span class="dchev">&#9654;</span> What this installs, inspect everything</summary>
+      <div class="discbody">
+        <div class="planstep"><span class="pnum">1</span><span class="pbody"><b>LaunchDarkly MCP server</b> &middot; account access for your agent: create flags, read environments, check that events arrive. Scoped API token, pre-filled for this project. <a class="inspect">View source &#8599;</a></span></div>
+        <div class="planstep"><span class="pnum">2</span><span class="pbody"><b>Onboarding guide</b> &middot; the step-by-step playbook the agent follows: detect stack, pick SDK, wire it in, verify. <a class="inspect">Read every step &#8599;</a></span></div>
+        <div class="planstep"><span class="pnum">3</span><span class="pbody"><b>LaunchDarkly CLI</b> &middot; terminal control for flags and events, used during verification. <a class="inspect">CLI docs &#8599;</a></span></div>
+        <div style="margin-top:10px" class="helper">Prefer to install the pieces yourself, or your agent can't run commands? <a>Install each tool manually</a>.</div>
+      </div>
+    </details>
+
+    <div class="whn">
+      <h3>What happens next</h3>
+      <ul>
+        <li>Installs the three tools above and confirms each one with you.</li>
+        <li>Detects your stack, language, framework, package manager.</li>
+        <li>Installs the right LaunchDarkly SDK and wires it into your code.</li>
+        <li>Creates your first feature flag and verifies it's working.</li>
+      </ul>
+      <div class="helper" style="margin-top:6px">Usually 3&ndash;5 minutes.</div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="conn" style="color:var(--gray700)"><span class="spinner"></span> Watching for your first event&hellip;</div>
+    <div class="helper" style="margin-top:-8px">Run your app after your agent finishes. This updates on its own when we receive an event.</div>
+  </div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'installsdk',
+  crumb: 'Install SDK',
+  why: '<b>Option 2: one command, fully transparent.</b> Keeps today\'s one-paste simplicity but attacks the trust gap head on: the prompt says in plain words what it installs, a "Why not just ask your agent" callout names the failure mode of hand-prompting, and a disclosure lets skeptics inspect every piece (plus a manual escape hatch). Lowest change from today, so it\'s the cheapest A/B to run. Risk: the reassurance lives below the fold of the CTA, users who bounce off "npx skills add" in the prompt text may never read it, which is why this prompt describes outcomes instead of a raw command.'
+};
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>
