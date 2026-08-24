@@ -14,7 +14,7 @@
     <div class="navitem"><span class="nico">&#9745;</span>Approvals</div>
     <div class="navitem"><span class="nico">&#10022;</span>Vega</div>
     <div class="seg"><span class="on">&lt;/&gt; Code</span><span>&#8983; Agents</span></div>
-    <div class="navitem"><span class="nico">&#10210;</span>Install SDK</div>
+    <div class="navitem ${active === 'install' ? 'active' : ''}"><span class="nico">&#10210;</span>Install SDK</div>
     <div class="navitem"><span class="nico">&#9889;</span><span class="grow">Shortcuts</span><span class="chev">&#8250;</span></div>
     <div class="navitem"><span class="nico">&#9673;</span><span class="grow">Features</span><span class="chev">&#8964;</span></div>
     <div class="navitem sub ${active === 'flags' ? 'active' : ''}">Flags</div>
@@ -55,6 +55,8 @@
     ['moment-3-replay.html', '3 Replay'],
     ['moment-4-retro.html', '4 Retro'],
     ['moment-5-candidates.html', '5 Empty state'],
+    ['moment-6-guarded.html', '6 Guarded'],
+    ['moment-7-o11y-install.html', '7 Install'],
   ];
   const here = location.pathname.split('/').pop() || 'index.html';
   const sw = document.createElement('div');

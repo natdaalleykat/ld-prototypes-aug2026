@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moment 7 · Observability at install time</title>
+<link rel="stylesheet" href="chrome.css">
+<link rel="stylesheet" href="extra.css">
+<style>
+  .setupwrap{max-width:760px}
+  .setuph{font-size:19px;font-weight:650;margin:4px 0 2px}
+  .setupsub{font-size:13.5px;color:var(--gray600);margin-bottom:16px}
+  .selrow{display:flex;gap:10px;margin-bottom:14px}
+  .selbox{border:1px solid var(--gray200);border-radius:9px;padding:7px 12px;font-size:13px;color:var(--gray800);background:#fff;display:flex;align-items:center;gap:8px}
+  .selbox .chev{color:var(--gray400)}
+  .stepcard{background:#fff;border:1px solid var(--gray100);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+  .steph{font-size:14px;font-weight:650;margin-bottom:9px;display:flex;align-items:center;gap:9px}
+  .stepnum{width:20px;height:20px;border-radius:50%;background:var(--gray900);color:#fff;font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+  .optrow{display:flex;align-items:flex-start;gap:10px;border:1.5px solid var(--purple100);background:var(--purple0);border-radius:10px;padding:11px 13px;margin:12px 0 2px}
+  .optrow input{margin-top:2.5px;accent-color:var(--purple400,#7855FA)}
+  .optrow .ot{font-size:13.5px;font-weight:650}
+  .optrow .od{font-size:12.5px;color:var(--gray600);margin-top:1px}
+  .codeblock{white-space:pre}
+  .addline{background:rgba(120,220,150,.09);display:inline-block;width:100%}
+  .diffmark{color:#6CE090;user-select:none}
+</style>
+</head>
+<body>
+<div data-page>
+  <div class="setupwrap">
+    <div class="setuph">Install the JavaScript SDK</div>
+    <div class="setupsub">Connect your app to LaunchDarkly. You'll create your first flag right after.</div>
+    <div class="selrow">
+      <div class="selbox">Environment: <b>Production</b> <span class="chev">&#9662;</span></div>
+      <div class="selbox">Language: <b>React</b> <span class="chev">&#9662;</span></div>
+      <div class="selbox">Package manager: <b>npm</b> <span class="chev">&#9662;</span></div>
+    </div>
+
+    <div class="stepcard">
+      <div class="steph"><span class="stepnum">1</span> Install the SDK</div>
+      <div class="codeblock">npm install launchdarkly-react-client-sdk <span class="diffmark">@launchdarkly/observability @launchdarkly/session-replay</span><button class="copybtn dark" data-copy="npm install launchdarkly-react-client-sdk @launchdarkly/observability @launchdarkly/session-replay">Copy</button></div>
+      <div class="optrow">
+        <input type="checkbox" checked id="o11ycheck">
+        <div>
+          <div class="ot">Also set up Observability and Session Replay <span class="incl" style="margin-left:6px">&#10003; Included in your plan</span></div>
+          <div class="od">Errors, logs, traces, and session replays, tagged with the flag variations each user saw. Adds two packages and one config block to the same file you're already editing. Replays mask text and inputs by default.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stepcard">
+      <div class="steph"><span class="stepnum">2</span> Initialize the client</div>
+      <div class="codeblock"><span class="kw">import</span> { asyncWithLDProvider } <span class="kw">from</span> <span class="str">'launchdarkly-react-client-sdk'</span>;
+<span class="addline"><span class="diffmark">+</span> <span class="kw">import</span> Observability <span class="kw">from</span> <span class="str">'@launchdarkly/observability'</span>;</span>
+<span class="addline"><span class="diffmark">+</span> <span class="kw">import</span> SessionReplay <span class="kw">from</span> <span class="str">'@launchdarkly/session-replay'</span>;</span>
+
+<span class="kw">const</span> LDProvider = <span class="kw">await</span> <span class="fn">asyncWithLDProvider</span>({
+  clientSideID: <span class="str">'&lt;your-client-side-id&gt;'</span>,
+  context: { kind: <span class="str">'user'</span>, key: <span class="str">'example-user'</span> },
+<span class="addline"><span class="diffmark">+</span> options: { plugins: [<span class="kw">new</span> <span class="fn">Observability</span>(), <span class="kw">new</span> <span class="fn">SessionReplay</span>({ privacySetting: <span class="str">'strict'</span> })] },</span>
+});<button class="copybtn dark" data-copy="init">Copy</button></div>
+    </div>
+
+    <div class="stepcard" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div class="steph" style="margin-bottom:2px"><span class="stepnum">3</span> Run your app</div>
+        <div style="font-size:12.5px;color:var(--gray600)">We'll confirm here the moment we see a connection, and light up Errors, Sessions, and auto-created error-rate metrics.</div>
+      </div>
+      <span class="savebtn dim">Awaiting connection&hellip;</span>
+    </div>
+  </div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'install',
+  crumb: '<span class="dim">Get started /</span> Install SDK',
+  why: '<b>Moment 7: the install page, the single lowest-friction moment in the whole exploration.</b> The user is already in their init file with an editor open; observability is two more packages and one config block in that same file. Every other o11y moment has to win a context switch back to this file; this one does not. Precedent already shipped on this exact page: the "Show code for Experimentation and Guarded releases" checkbox. This mock is the o11y version, default unchecked in the real test (shown checked here to display the diff). <b>What it unlocks downstream (the ladder):</b> once telemetry flows, error-rate and latency metrics are auto-created, guarded rollouts accept them (verified live), and every error links to a replay. So this checkbox is also the setup step for Moments 3 and 6. <b>Engineer catches:</b> honest scope is 6 SDKs (JS, React, React Native, Vue, Node, Python); hide the checkbox elsewhere. Snippets are generated from a shared source of truth, so this is a cross-repo change. Never say one line: it is two installs, two imports, one options block. Copy-tick analytics already exist and an integration event confirms success asynchronously. <b>Smallest test:</b> the checkbox with the live diff, measure opt-in rate and 7-day integration conversion.'
+};
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

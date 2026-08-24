@@ -33,8 +33,8 @@
   <div class="suggest" id="suggest" style="max-width:none">
     <button class="dismiss" onclick="document.getElementById('suggest').style.display='none'">&#10005;</button>
     <div class="sh"><span class="vega">&#10022;</span> Watch one of these sessions instead of guessing</div>
-    <div class="sb">Your <b>JavaScript SDK already supports Session Replay</b>. Turn it on and every error here links to a replay of what the user did, tagged with the flag variation they saw. One line in your SDK init, works with your existing setup. <span class="incl">&#10003; Included in Foundation</span></div>
-    <div class="codeblock" style="margin-bottom:11px">plugins: [<span class="kw">new</span> <span class="fn">Observability</span>(), <span class="kw">new</span> <span class="fn">SessionReplay</span>()]<button class="copybtn dark" data-copy="plugins: [new Observability(), new SessionReplay()]">Copy</button></div>
+    <div class="sb">These errors come from your <b>Observability plugin</b>, but Session Replay is off, so there's no picture of what the user did. Add it and every error here links to a replay, tagged with the flag variation the user saw. One install and one line in the plugins array you already have. <span class="incl">&#10003; Included in Foundation</span></div>
+    <div class="codeblock" style="margin-bottom:11px">plugins: [<span class="kw">new</span> <span class="fn">Observability</span>(), <span class="kw">new</span> <span class="fn">SessionReplay</span>({ privacySetting: <span class="str">'strict'</span> })]<button class="copybtn dark" data-copy="plugins: [new Observability(), new SessionReplay({ privacySetting: 'strict' })]">Copy</button></div>
     <div style="display:flex;gap:9px;align-items:center">
       <button class="purplebtn">Enable Session Replay</button>
       <button class="purpleghost">Watch a sample replay</button>
@@ -54,7 +54,7 @@
 window.PROTO = {
   nav: 'flags',
   crumb: '<span class="dim">Flags /</span> new-checkout-flow',
-  why: '<b>Moment 3: errors just spiked on a flagged rollout.</b> The user is on Monitoring because something is wrong, and their next move today is leaving LaunchDarkly to dig through logs. Session Replay is offered exactly when it solves the problem in front of them, with proof of low friction: we detected an o11y-compatible SDK, the enable is one line, and the offer says so. The privacy fine print is load-bearing, replay suggestions die without it. Gate: only show when SDK is compatible, replay is off, and the error count is nonzero.'
+  why: '<b>Moment 3: errors just spiked on a flagged rollout.</b> The user is on Monitoring because something is wrong, and their next move today is leaving LaunchDarkly to dig through logs. Session Replay is offered exactly when it solves the problem on screen. <b>Corrected gating (the original premise was contradictory):</b> if o11y is not installed we have no error data to spike. The honest gate is Observability plugin present (errors flowing) and SessionReplay plugin absent; that account state is real and detectable per project. For that account the claim genuinely is one install and one line in the existing plugins array. The privacy default (strict masking) is stated in the snippet itself and is load-bearing. Fully uninstrumented accounts get the o11y setup embed already built into this tab, not this card. Engineering note: any replay deep link must respect the regional sessions killswitch.'
 };
 </script>
 <script src="chrome.js"></script>

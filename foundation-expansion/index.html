@@ -21,10 +21,12 @@
 <body>
 <div class="wrap">
   <h1>Foundation expansion: suggest the next product at the moment it solves a problem</h1>
-  <div class="meta">Prototype &middot; Natalie Friedman &middot; August 2026 &middot; Reconstructions on current production pages, not screenshots</div>
+  <div class="meta">Prototype &middot; Natalie Friedman &middot; August 2026 &middot; Reconstructions on current production pages, not screenshots &middot; Mechanics verified against the product codebase</div>
 
   <div class="hyp">
-    <b>Premise.</b> 99% of Foundation customers use flags only, even though Experimentation and Observability (including Session Replay) are in the plan they already pay for. Interruption marketing won't move them; the play is to catch the moment when the adjacent product solves the problem in front of them, the value is self-evident, and the friction is provably low (we detect their SDK and their tracked events before suggesting). Each moment below is one of those catches, ordered roughly from highest intent to lowest.
+    <b>Premise.</b> 99% of Foundation customers use flags only, even though Experimentation, Observability (including Session Replay), and a starter allowance of Guarded Rollouts are in the plan they already pay for. Interruption marketing won't move them; the play is to catch the moment when the adjacent product solves the problem in front of them, the value is self-evident, and the friction is provably low (we detect their SDK, their telemetry, and their tracked events before suggesting).
+    <br><br>
+    <b>The ladder.</b> The three products adopt in an order: telemetry first (one config block at install time), because it auto-creates the error metrics that make a guarded rollout zero-setup, and guarded rollouts teach the metric-plus-rollout mechanics that make a first experiment a small step instead of a leap. Every moment below nudges one rung.
   </div>
 
   <a class="opt" href="moment-1-rollout.html">
@@ -46,6 +48,14 @@
   <a class="opt" href="moment-5-candidates.html">
     <div class="t">Moment 5: personalized empty state <span class="tag">EXPERIMENTATION</span></div>
     <div class="d">The Experimentation page stops marketing and lists their own flags as ready-to-run candidates, each pre-matched to an event they already track. Destination for the deep links in Moments 1, 2, and 4.</div>
+  </a>
+  <a class="opt" href="moment-6-guarded.html">
+    <div class="t">Moment 6: the giveaway, announced <span class="tag">GUARDED ROLLOUTS</span></div>
+    <div class="d">Every account includes 5 guarded rollouts and nothing in the product says so until the allowance is half gone. A Recommended tag and one inclusion line in the rollout mode picker the user already sees, with the auto-created error metric pre-selected when telemetry exists.</div>
+  </a>
+  <a class="opt" href="moment-7-o11y-install.html">
+    <div class="t">Moment 7: observability at install time <span class="tag">OBSERVABILITY</span></div>
+    <div class="d">The single lowest-friction moment: the user is already in their init file. One checkbox extends the install snippet with the o11y plugins, and unlocks Moments 3 and 6 downstream. Precedent: the experimentation snippet checkbox already shipped on this page.</div>
   </a>
 
   <div class="meta" style="margin-top:26px">Every page has a "Why this moment" button in the bottom switcher with the trigger, the gating rules, and the risk to test. Numbers in the mocks (traffic, lift, error counts) are illustrative.</div>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moment 6 · Guarded rollout disclosure</title>
+<link rel="stylesheet" href="chrome.css">
+<link rel="stylesheet" href="extra.css">
+<style>
+  .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+  .modeopt{border:1.5px solid var(--gray150,#E2E5EA);border-radius:10px;padding:11px 13px;cursor:pointer;position:relative;background:#fff}
+  .modeopt .mt{font-size:13.5px;font-weight:650;display:flex;align-items:center;gap:7px}
+  .modeopt .md{font-size:12.5px;color:var(--gray600);margin-top:2px}
+  .modeopt.sel{border-color:var(--purple400,#7855FA);box-shadow:0 0 0 3px var(--purple0,#F3F0FF)}
+  .rectag{font-size:10.5px;font-weight:700;letter-spacing:.04em;border-radius:4px;padding:1.5px 7px;background:var(--purple0);color:var(--purpleDark);border:1px solid var(--purple100)}
+  .inclrow{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--gray700);background:var(--green0,#EFFAF3);border:1px solid var(--green100,#CDEEDA);border-radius:8px;padding:8px 11px;margin-top:10px}
+  .inclrow b{color:var(--gray900)}
+  .metricready{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--gray700);margin-top:8px}
+  .metricchip{font-size:12px;font-weight:600;border:1px solid var(--gray200);border-radius:6px;padding:2px 8px;background:var(--gray0);font-family:ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+<div data-page>
+  <div class="tabs"><div class="tab active">Targeting</div><div class="tab">Variations</div><div class="tab">Monitoring</div><div class="tab">Audience</div><div class="tab">Feedback</div></div>
+  <div class="envtabs"><div class="envtab active"><span class="edot prod"></span>Production</div><div class="envtab"><span class="edot"></span>Test</div><div class="envplus">&#65291;</div></div>
+  <div class="theadrow">
+    <div class="thead">Targeting configuration for <span class="edot prod" style="width:10px;height:10px"></span> Production</div>
+    <div class="viewseg"><span class="vbtn on">&#9638; Visual</span><span class="vbtn">{&hairsp;} JSON</span><span class="vico">&#9707;</span><span class="vico">&#10530;</span><span class="vico">&#9678;</span></div>
+  </div>
+  <div class="canvas">
+    <div class="alltraffic">All traffic</div>
+    <div class="cline"></div>
+    <div class="cnode"><div class="ccard">Flag is <span class="pillon">On <span class="knob"></span></span> &nbsp;serving variations based on rules</div></div>
+    <div class="cline"></div>
+    <div class="cnode"><div class="ccard" style="border-color:var(--purple100)">
+      <div class="rulehead"><b>&#8964; &nbsp;Default rule &middot; editing</b><span style="color:var(--gray400)">&#8942;</span></div>
+      <div style="font-size:13px;color:var(--gray600);margin-top:6px">Serve a rollout &middot; choose how</div>
+      <div class="modegrid">
+        <div class="modeopt"><div class="mt">&#9634; Manual percentage</div><div class="md">Set the split, watch it yourself</div></div>
+        <div class="modeopt"><div class="mt">&#8599; Progressive rollout</div><div class="md">Gradually increase traffic over time</div></div>
+        <div class="modeopt sel"><div class="mt">&#128737; Guarded rollout <span class="rectag">RECOMMENDED</span></div><div class="md">A progressive rollout with regression monitoring and auto-rollback</div></div>
+        <div class="modeopt"><div class="mt">&#9651; Experiment</div><div class="md">Measure which variation wins</div></div>
+      </div>
+      <div class="inclrow">&#10003;&nbsp; <b>5 guarded rollouts are included in your plan.</b>&nbsp;You've used 0.</div>
+      <div class="metricready">Guard it with a metric you already have: <span class="metricchip">Error rate (auto-created from your telemetry)</span> <span class="sublink">Change</span></div>
+    </div></div>
+  </div>
+  <div class="canvasfoot">
+    <span class="footnote">If LaunchDarkly is unreachable, SDKs will serve the default defined in your code.</span>
+    <span class="savebtn">Review and save</span>
+  </div>
+</div>
+<div data-sidebar>
+  <div class="sactrow"><span>&#8677;</span><span>&#128279;</span><span>&#128276;</span><span>&#9889;</span><span>&#128344;</span><span>&#8942;</span></div>
+  <div class="prop"><div class="pt">Key</div><div class="pv" style="display:flex;justify-content:space-between;align-items:center;color:var(--gray700)">new-checkout-flow <span style="color:var(--gray400)">&#10697;</span></div></div>
+  <div class="prop"><div class="pt">Description</div><div class="pv">Rewritten one-page checkout</div></div>
+  <div class="prop"><div class="pt">Maintainer <span class="pencil">&#9998;</span></div><div class="pv" style="margin-top:4px"><span class="mchip"><span class="avatar">NF</span> Natalie Friedman <span style="color:var(--gray400)">&#9430;</span></span></div></div>
+  <div class="prop"><div class="pt">Variations <span class="pencil">&#9998;</span></div>
+    <div class="pv"><span class="diamond d-blue"></span> new-checkout</div>
+    <div class="pv"><span class="diamond d-gray"></span> current-checkout</div>
+  </div>
+  <div class="prop"><div class="pt">Guarded rollouts</div><div class="pv">5 of 5 remaining &middot; <span class="sublink">How it works</span></div></div>
+  <div class="prop" style="border-bottom:none"><div class="pt">Telemetry</div><div class="pv">Observability connected &middot; 4 auto metrics</div></div>
+</div>
+<script>
+window.PROTO = {
+  nav: 'flags',
+  crumb: '<span class="dim">Flags /</span> new-checkout-flow',
+  why: '<b>Moment 6: the rollout mode picker, with the giveaway finally announced.</b> Verified in code and live configuration: every account gets 5 guarded rollouts included (2 grace, hard stop at 7), regardless of plan, and today nothing tells the user until a warning banner deep inside the guarded form when the allowance is half gone. This mock adds two things to the picker the user already sees: a Recommended tag on the guarded option (the tag ships today but only release policies can drive it; extending its input is the cheapest verified win) and the inclusion line with the live count. The metric row shows the o11y synergy state: for accounts with the Observability plugin, error-rate metrics are auto-created and guarded rollouts accept them, so the metric prerequisite is already satisfied. Without o11y, that row becomes the honest fallback: pick or create a metric first. <b>Engineer catches:</b> the counter is lifetime and never resets, so aggressive discovery also drives regret; the open policy question is a reset window or excluding short-lived test rollouts, worth settling before pushing hard. Check the hard limit before rendering the tag, or we recommend a blocked save. <b>Smallest test, zero code:</b> an existing config-driven banner channel already renders on rollout surfaces; test the "5 included" message there and watch guarded starts.'
+};
+</script>
+<script src="chrome.js"></script>
+</body>
+</html>

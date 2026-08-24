@@ -32,12 +32,12 @@
     <div class="cnode"><div class="suggest" id="suggest">
       <button class="dismiss" onclick="document.getElementById('suggest').style.display='none'">&#10005;</button>
       <div class="sh"><span class="vega">&#10022;</span> You're splitting traffic. Want to know which side wins?</div>
-      <div class="sb">Attach a metric and this rollout becomes an A/B test with the exact targeting you just set. No code changes if you already track checkout events. <b>Experimentation is included in your plan.</b> <span class="incl">&#10003; Included in Foundation</span></div>
+      <div class="sb">Run an A/B test on this rule's audience. Same targeting, and the experiment manages the traffic split so results are clean from day one. No code changes if you already track checkout events. <b>Experimentation is included in your plan.</b> <span class="incl">&#10003; Included in Foundation</span></div>
       <div style="display:flex;gap:9px;align-items:center">
-        <button class="purplebtn">Add a metric</button>
+        <button class="purplebtn">Create experiment from this rule</button>
         <button class="purpleghost">See a 2-min example</button>
       </div>
-      <div class="fineprint">You can add this later from the flag's Experiments panel, but results only count from when the metric attaches.</div>
+      <div class="fineprint">The experiment takes over this rule's traffic split; you pick the allocation before it starts. Your 25/75 stays in place until then.</div>
     </div></div>
   </div>
   <div class="canvasfoot">
@@ -63,7 +63,7 @@
 window.PROTO = {
   nav: 'flags',
   crumb: '<span class="dim">Flags /</span> new-checkout-flow',
-  why: '<b>Moment 1: a percentage rollout just got configured.</b> This is the highest-intent moment for experimentation: the user has literally built an A/B split and is one metric short of learning from it. Value is apparent (know which side wins), friction is near zero (same targeting, no new code if events exist), and it names the plan fact 99% of Foundation customers miss: experimentation is already included. Inline in the canvas, below their rule, dismissible. Risk to test: does anything in the save path tolerate an extra card, or does it read as clutter for power users (frequency cap: only when the flag has no experiment and the account has run none).'
+  why: '<b>Moment 1: a percentage rollout just got configured.</b> Highest-intent moment for experimentation: the user has literally built an A/B split. Value is apparent (know which side wins), and it names the plan fact Foundation customers miss: experimentation is already included. <b>Feasibility (verified in the product code):</b> the machinery ships today. "Create experiment from rule" is live for single-variation rules and "Optimize &rarr; Experiment" is live for rollout rules; the create modal already accepts the flag and source rule. This card is a discovery layer, not a new capability. <b>Engineer catch that rewrote the copy:</b> starting an experiment REPLACES the rule&rsquo;s rollout with the experiment&rsquo;s allocation; the audience is preserved, the 25/75 is not. So the card sells "same audience, managed split", never "keep your split and measure it". Gate: entitled account, no experiment on the flag, no active guarded/progressive rollout on the rule. Smallest test: this exact dumb card behind a flag, measure CTR + modal completion before building any prefilled builder.'
 };
 </script>
 <script src="chrome.js"></script>
