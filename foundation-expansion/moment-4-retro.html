@@ -11,8 +11,8 @@
 <div data-page>
   <div class="insight">
     <span class="vega" style="font-size:16px">&#10022;</span>
-    <span class="ib"><b>3 of your last 14 rollouts looked like experiments.</b> They split traffic between variations, but no metric was attached, so nobody learned anything. Vega drafted what each one could have told you.</span>
-    <button class="purplebtn" onclick="document.getElementById('drawer').style.display='block'">See what you could have learned</button>
+    <span class="ib"><b>3 of your last 14 rollouts split traffic with no metric attached</b>, so the outcome was never measured. Want Vega to look at one and show what it could have told you?</span>
+    <button class="purplebtn" onclick="document.getElementById('drawer').style.display='block'">Ask Vega to draft the case study</button>
     <button class="dismiss" style="position:static" onclick="this.closest('.insight').style.display='none'">&#10005;</button>
   </div>
 
@@ -74,7 +74,7 @@
     <h2><span class="vega">&#10022;</span> The experiment you didn't run</h2>
     <button class="dismiss" style="position:static" onclick="document.getElementById('drawer').style.display='none'">&#10005;</button>
   </div>
-  <div class="dsub">simplified-onboarding-email &middot; drafted by Vega from this flag's history</div>
+  <div class="dsub">simplified-onboarding-email &middot; drafted by Vega just now, at your request, from this flag's change history</div>
 
   <div style="font-size:13.5px;color:var(--gray700)">You rolled this flag from 0 to 100% over 12 days. For 8 of those days, both variations had enough traffic to power a test on your existing <b>onboarding_completed</b> event.</div>
 
@@ -104,7 +104,7 @@
 window.PROTO = {
   nav: 'flags',
   crumb: 'Flags',
-  why: '<b>Moment 4: the retrospective, on the flags list.</b> For customers who never open Experimentation, the motivation has to come from their own history. Vega scans past flags for experiment-shaped rollouts (traffic splits, gradual ramps, kill events) and writes the case study: here is the answer you almost had, for free. The drawer ends by pivoting from regret to action on a live rollout. This is the strongest version of "recommendations from past flags" and the best test of whether AI-generated case studies persuade. Gate: needs 2+ candidates and a usable conversion event; never shame a user with only kill-switch flags.'
+  why: '<b>Moment 4: the retrospective, on the flags list, consent-first.</b> For customers who never open Experimentation, the motivation has to come from their own history. <b>Constraint that reshaped this moment: Vega cannot scan anything without the user asking.</b> So the banner states only a deterministic, config-derived fact (rollout rules that split traffic with no metric attached is a targeting-config query, not AI), and the AI case study is drafted only when the user clicks. The drawer labels itself as generated at your request, and ends by pivoting from regret to action on a live rollout. Gates: gen-AI enabled for the account, 2+ candidates, a usable conversion event, and never shame a user whose only flags are kill switches. Risk to test first: does the deterministic banner alone earn enough clicks to justify building the case-study generation behind it.'
 };
 </script>
 <script src="chrome.js"></script>

@@ -3,9 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Moment 3 · Errors on Monitoring</title>
+<title>Moment 3 · Flying blind on a rollout</title>
 <link rel="stylesheet" href="chrome.css">
 <link rel="stylesheet" href="extra.css">
+<style>
+  .o11ytabs{display:flex;gap:18px;font-size:13.5px;color:var(--gray400);border-bottom:1px solid var(--gray100);padding-bottom:9px;margin-bottom:12px}
+  .o11ytabs span{display:flex;align-items:center;gap:6px}
+  .blindwrap{display:flex;align-items:center;justify-content:center;min-height:120px;border:1.5px dashed var(--gray150,#E2E5EA);border-radius:10px;background:var(--gray0);color:var(--gray500);font-size:13px;text-align:center;padding:18px}
+</style>
 </head>
 <body>
 <div data-page>
@@ -13,33 +18,30 @@
   <div class="envtabs"><div class="envtab active"><span class="edot prod"></span>Production</div><div class="envtab"><span class="edot"></span>Test</div><div class="envplus">&#65291;</div></div>
 
   <div class="chartcard">
-    <div class="chh">Flag evaluations <span class="helper" style="font-weight:400">Last 24 hours</span></div>
+    <div class="chh">Flag evaluations <span class="helper" style="font-weight:400">Rollout started 2 hours ago &middot; serving new-checkout to 25%</span></div>
     <div class="bars">
-      <span style="height:34%"></span><span style="height:38%"></span><span style="height:31%"></span><span style="height:41%"></span><span style="height:47%"></span><span style="height:44%"></span><span style="height:52%"></span><span style="height:58%"></span><span style="height:49%"></span><span style="height:63%"></span><span style="height:68%"></span><span style="height:61%"></span><span style="height:72%"></span><span style="height:66%"></span><span style="height:74%"></span><span style="height:79%"></span><span style="height:71%"></span><span style="height:82%"></span><span style="height:76%"></span><span style="height:85%"></span><span style="height:80%"></span><span style="height:88%"></span><span style="height:84%"></span><span style="height:90%"></span>
+      <span style="height:12%"></span><span style="height:11%"></span><span style="height:13%"></span><span style="height:12%"></span><span style="height:14%"></span><span style="height:12%"></span><span style="height:13%"></span><span style="height:15%"></span><span style="height:14%"></span><span style="height:16%"></span><span style="height:38%"></span><span style="height:47%"></span><span style="height:52%"></span><span style="height:58%"></span><span style="height:55%"></span><span style="height:61%"></span><span style="height:64%"></span><span style="height:60%"></span><span style="height:67%"></span><span style="height:70%"></span><span style="height:66%"></span><span style="height:73%"></span><span style="height:76%"></span><span style="height:79%"></span>
     </div>
-    <div class="xlabels"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>now</span></div>
-    <div class="legend"><span><i style="background:var(--blue100)"></i>Evaluations: 41,208</span></div>
+    <div class="xlabels"><span>-24h</span><span>-18h</span><span>-12h</span><span>-6h</span><span>now</span></div>
+    <div class="legend"><span><i style="background:var(--blue100)"></i>Evaluations: 41,208 &middot; 10,302 users on the new experience</span></div>
   </div>
 
   <div class="chartcard">
-    <div class="chh">Errors observed on sessions evaluating this flag <span class="helper" style="font-weight:400">Last 24 hours</span></div>
-    <div class="bars" style="height:70px">
-      <span class="err" style="height:8%"></span><span class="err" style="height:6%"></span><span class="err" style="height:9%"></span><span class="err" style="height:7%"></span><span class="err" style="height:8%"></span><span class="err" style="height:11%"></span><span class="err" style="height:9%"></span><span class="err" style="height:10%"></span><span class="err" style="height:14%"></span><span class="err" style="height:38%"></span><span class="err" style="height:64%"></span><span class="err" style="height:71%"></span><span class="err" style="height:58%"></span><span class="err" style="height:66%"></span><span class="err" style="height:61%"></span><span class="err" style="height:69%"></span><span class="err" style="height:57%"></span><span class="err" style="height:63%"></span><span class="err" style="height:60%"></span><span class="err" style="height:67%"></span><span class="err" style="height:55%"></span><span class="err" style="height:62%"></span><span class="err" style="height:59%"></span><span class="err" style="height:64%"></span>
-    </div>
-    <div class="xlabels"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>now</span></div>
-    <div class="legend"><span><i style="background:#F2A0A0"></i>TypeError: cart.total is undefined &middot; 312 occurrences, first seen 9:14 AM</span></div>
+    <div class="chh">What those users are experiencing</div>
+    <div class="o11ytabs"><span>&#9888; Errors</span><span>&#9655; Sessions</span><span>&#8801; Logs</span><span>&#8767; Traces</span></div>
+    <div class="blindwrap">No telemetry connected for this environment.<br>If new-checkout breaks for someone, nothing on this page will show it.</div>
   </div>
 
   <div class="suggest" id="suggest" style="max-width:none">
     <button class="dismiss" onclick="document.getElementById('suggest').style.display='none'">&#10005;</button>
-    <div class="sh"><span class="vega">&#10022;</span> Watch one of these sessions instead of guessing</div>
-    <div class="sb">These errors come from your <b>Observability plugin</b>, but Session Replay is off, so there's no picture of what the user did. Add it and every error here links to a replay, tagged with the flag variation the user saw. One install and one line in the plugins array you already have. <span class="incl">&#10003; Included in Foundation</span></div>
+    <div class="sh"><span class="vega">&#10022;</span> 10,302 people are on your new checkout. See what they see.</div>
+    <div class="sb">Set up observability once and this page fills in: <b>errors, session replays, logs, and traces, each tagged with the flag variation the user saw</b>. Error-rate and latency metrics are created automatically, so your next rollout can guard and roll itself back. Two packages and one config block in the file where you initialize the SDK. <span class="incl">&#10003; Included in Foundation</span></div>
     <div class="codeblock" style="margin-bottom:11px">plugins: [<span class="kw">new</span> <span class="fn">Observability</span>(), <span class="kw">new</span> <span class="fn">SessionReplay</span>({ privacySetting: <span class="str">'strict'</span> })]<button class="copybtn dark" data-copy="plugins: [new Observability(), new SessionReplay({ privacySetting: 'strict' })]">Copy</button></div>
     <div style="display:flex;gap:9px;align-items:center">
-      <button class="purplebtn">Enable Session Replay</button>
+      <button class="purplebtn">Set up observability</button>
       <button class="purpleghost">Watch a sample replay</button>
     </div>
-    <div class="fineprint">Privacy defaults: text and inputs masked. You control sampling and retention in Telemetry settings.</div>
+    <div class="fineprint">Privacy defaults: text and inputs masked, you control sampling and retention. Takes effect on your next deploy; this rollout keeps running either way.</div>
   </div>
 </div>
 <div data-sidebar>
@@ -48,13 +50,13 @@
   <div class="prop"><div class="pt">Description</div><div class="pv">Rewritten one-page checkout</div></div>
   <div class="prop"><div class="pt">Maintainer <span class="pencil">&#9998;</span></div><div class="pv" style="margin-top:4px"><span class="mchip"><span class="avatar">NF</span> Natalie Friedman <span style="color:var(--gray400)">&#9430;</span></span></div></div>
   <div class="prop"><div class="pt">Connected SDKs</div><div class="pv">JavaScript &middot; Node.js server</div></div>
-  <div class="prop" style="border-bottom:none"><div class="pt">Session Replay</div><div class="pv">Not enabled &middot; <span class="sublink">Available for your SDK</span></div></div>
+  <div class="prop" style="border-bottom:none"><div class="pt">Telemetry</div><div class="pv">Not connected &middot; <span class="sublink">Supported by your SDK</span></div></div>
 </div>
 <script>
 window.PROTO = {
   nav: 'flags',
   crumb: '<span class="dim">Flags /</span> new-checkout-flow',
-  why: '<b>Moment 3: errors just spiked on a flagged rollout.</b> The user is on Monitoring because something is wrong, and their next move today is leaving LaunchDarkly to dig through logs. Session Replay is offered exactly when it solves the problem on screen. <b>Corrected gating (the original premise was contradictory):</b> if o11y is not installed we have no error data to spike. The honest gate is Observability plugin present (errors flowing) and SessionReplay plugin absent; that account state is real and detectable per project. For that account the claim genuinely is one install and one line in the existing plugins array. The privacy default (strict masking) is stated in the snippet itself and is load-bearing. Fully uninstrumented accounts get the o11y setup embed already built into this tab, not this card. Engineering note: any replay deep link must respect the regional sessions killswitch.'
+  why: '<b>Moment 3: a rollout is live and the account has zero telemetry.</b> Reframed from the earlier error-spike version after a false premise surfaced twice: without o11y installed we have no error data to spike, and accounts that set up errors almost always set up replay in the same sitting (the plugins install together). So the honest cohort is <b>no o11y at all</b>, and the honest trigger is the state we can always detect: an active rollout serving real traffic (evaluations flowing) plus no telemetry connected in this environment. The pitch leads with the blind spot in front of them (real users on the new experience, nothing showing what they see) and sells the full setup once: errors, replays, logs, traces, plus auto-created error-rate metrics that make the NEXT rollout guardable (the ladder into Moment 6). Honest friction: two packages and one config block, six SDKs supported, gate on detected SDK. Placement: the flag Monitoring page the user visits right after ramping, where the empty panels do the arguing. Smallest test: this card on Monitoring for zero-o11y accounts with an active rollout, measure setup starts and integration within 7 days, against the install-time checkbox in Moment 7 (same destination, different moment).'
 };
 </script>
 <script src="chrome.js"></script>
