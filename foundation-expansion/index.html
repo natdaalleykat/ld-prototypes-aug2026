@@ -30,32 +30,28 @@
   </div>
 
   <a class="opt" href="moment-1-rollout.html">
-    <div class="t">Moment 1: rollout configured, inline <span class="tag">EXPERIMENTATION</span></div>
-    <div class="d">The user builds a 25/75 percentage rollout. An inline card in the targeting canvas points out they are one metric from an A/B test with this exact targeting, included in their plan.</div>
+    <div class="t">Moment 1: experiment card on a fresh rollout <span class="tag">EXPERIMENTATION</span></div>
+    <div class="d">The user builds a 25/75 percentage rollout. Before it serves anyone, an inline card in the targeting canvas offers to start it as an A/B test on the same audience, included in their plan. Fresh rollout means clean results; this is the moment to measure, not later.</div>
   </a>
   <a class="opt" href="moment-2-save.html">
-    <div class="t">Moment 2: rollout saved, modal <span class="tag">EXPERIMENTATION</span></div>
-    <div class="d">Same offer as Moment 1, but as a save-confirmation modal after they commit. They just took a measurable risk in production; peak motivation, higher intrusion. A/B these two.</div>
+    <div class="t">Moment 2: experiment offer in the save confirmation <span class="tag">EXPERIMENTATION</span></div>
+    <div class="d">Same offer as Moment 1, but as a save-confirmation modal after they commit. They just took a measurable risk in production; peak motivation, higher intrusion. A/B these two placements.</div>
   </a>
   <a class="opt" href="moment-3-replay.html">
-    <div class="t">Moment 3: flying blind on a live rollout <span class="tag">OBSERVABILITY</span></div>
+    <div class="t">Moment 3: observability setup when a rollout goes live <span class="tag">OBSERVABILITY</span></div>
     <div class="d">The account has zero telemetry (like 99% of Foundation customers), and a rollout just went live. The Monitoring page shows evaluations climbing next to empty error and session panels: real users are on the new experience and nothing shows what they see. One setup fills the page in.</div>
   </a>
-  <a class="opt" href="moment-4-retro.html">
-    <div class="t">Moment 4: the retro insight, consent-first <span class="tag">AI CASE STUDY</span></div>
-    <div class="d">The banner states a config-derived fact (3 rollouts split traffic with no metric attached) and asks permission; Vega drafts the case study only when the user clicks. Drawer pivots to drafting an experiment on the live rollout.</div>
+  <a class="opt" href="moment-4-metrics.html">
+    <div class="t">Moment 4: add-metrics nudge on the flags list <span class="tag">METRICS</span></div>
+    <div class="d">A config-derived banner says the quiet part: 3 recent rollouts split traffic and nobody measured the outcome. The fix is forward-looking: create a metric from an event they already send (two clicks, no code), so the NEXT release starts as an A/B test or guarded rollout. Deliberately not retroactive: users on running flags are already exposed, so converting those mid-flight would give muddy results.</div>
   </a>
-  <a class="opt" href="moment-5-candidates.html">
-    <div class="t">Moment 5: personalized empty state <span class="tag">EXPERIMENTATION</span></div>
-    <div class="d">A destination, not a discovery surface: flags-only customers stay on flag paths and never wander here. Its job is converting the clicks Moments 1, 2, and 4 send, landing on their own flags as ready-to-run candidates pre-matched to events they already track.</div>
-  </a>
-  <a class="opt" href="moment-6-guarded.html">
-    <div class="t">Moment 6: the giveaway, announced <span class="tag">GUARDED ROLLOUTS</span></div>
+  <a class="opt" href="moment-5-guarded.html">
+    <div class="t">Moment 5: guarded rollout allowance in the mode picker <span class="tag">GUARDED ROLLOUTS</span></div>
     <div class="d">Every account includes 5 guarded rollouts and nothing in the product says so until the allowance is half gone. A Recommended tag and one inclusion line in the rollout mode picker the user already sees, with the auto-created error metric pre-selected when telemetry exists.</div>
   </a>
-  <a class="opt" href="moment-7-o11y-install.html">
-    <div class="t">Moment 7: observability at install time <span class="tag">OBSERVABILITY</span></div>
-    <div class="d">The single lowest-friction moment: the user is already in their init file. One checkbox extends the install snippet with the o11y plugins, and unlocks Moments 3 and 6 downstream. Precedent: the experimentation snippet checkbox already shipped on this page.</div>
+  <a class="opt" href="moment-6-o11y-install.html">
+    <div class="t">Moment 6: observability checkbox at SDK install <span class="tag">OBSERVABILITY</span></div>
+    <div class="d">The single lowest-friction moment: the user is already in their init file. One checkbox extends the install snippet with the o11y plugins, and unlocks Moments 3 and 5 downstream. Precedent: the experimentation snippet checkbox already shipped on this page.</div>
   </a>
 
   <div class="meta" style="margin-top:26px">Every page has a "Why this moment" button in the bottom switcher with the trigger, the gating rules, and the risk to test. Numbers in the mocks (traffic, lift, error counts) are illustrative.</div>

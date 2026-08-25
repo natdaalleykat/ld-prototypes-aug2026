@@ -50,13 +50,12 @@
 
   const LINKS = [
     ['index.html', 'Index'],
-    ['moment-1-rollout.html', '1 Rollout'],
-    ['moment-2-save.html', '2 Save'],
-    ['moment-3-replay.html', '3 Replay'],
-    ['moment-4-retro.html', '4 Retro'],
-    ['moment-5-candidates.html', '5 Empty state'],
-    ['moment-6-guarded.html', '6 Guarded'],
-    ['moment-7-o11y-install.html', '7 Install'],
+    ['moment-1-rollout.html', '1 Experiment card'],
+    ['moment-2-save.html', '2 Save modal'],
+    ['moment-3-replay.html', '3 O11y on Monitoring'],
+    ['moment-4-metrics.html', '4 Metrics nudge'],
+    ['moment-5-guarded.html', '5 Guarded allowance'],
+    ['moment-6-o11y-install.html', '6 O11y at install'],
   ];
   const here = location.pathname.split('/').pop() || 'index.html';
   const sw = document.createElement('div');

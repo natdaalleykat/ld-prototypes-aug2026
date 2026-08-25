@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Moment 6 · Guarded rollout disclosure</title>
+<title>Moment 5 · Guarded rollout allowance</title>
 <link rel="stylesheet" href="chrome.css">
 <link rel="stylesheet" href="extra.css">
 <style>
@@ -66,7 +66,7 @@
 window.PROTO = {
   nav: 'flags',
   crumb: '<span class="dim">Flags /</span> new-checkout-flow',
-  why: '<b>Moment 6: the rollout mode picker, with the giveaway finally announced.</b> Verified in code and live configuration: every account gets 5 guarded rollouts included (2 grace, hard stop at 7), regardless of plan, and today nothing tells the user until a warning banner deep inside the guarded form when the allowance is half gone. This mock adds two things to the picker the user already sees: a Recommended tag on the guarded option (the tag ships today but only release policies can drive it; extending its input is the cheapest verified win) and the inclusion line with the live count. The metric row shows the o11y synergy state: for accounts with the Observability plugin, error-rate metrics are auto-created and guarded rollouts accept them, so the metric prerequisite is already satisfied. Without o11y, that row becomes the honest fallback: pick or create a metric first. <b>Engineer catches:</b> the counter is lifetime and never resets, so aggressive discovery also drives regret; the open policy question is a reset window or excluding short-lived test rollouts, worth settling before pushing hard. Check the hard limit before rendering the tag, or we recommend a blocked save. <b>Smallest test, zero code:</b> an existing config-driven banner channel already renders on rollout surfaces; test the "5 included" message there and watch guarded starts.'
+  why: '<b>Moment 5: the rollout mode picker, with the included allowance finally stated.</b> Verified in code and live configuration: every account gets 5 guarded rollouts included (2 grace, hard stop at 7), regardless of plan, and today nothing tells the user until a warning banner deep inside the guarded form when the allowance is half gone. This mock adds two things to the picker the user already sees: a Recommended tag on the guarded option (the tag ships today but only release policies can drive it; extending its input is the cheapest verified win) and the inclusion line with the live count. The metric row shows the o11y synergy state: for accounts with the Observability plugin, error-rate metrics are auto-created and guarded rollouts accept them, so the metric prerequisite is already satisfied. Without o11y, that row becomes the honest fallback: pick or create a metric first. <b>Engineer catches:</b> the counter is lifetime and never resets, so aggressive discovery also drives regret; the open policy question is a reset window or excluding short-lived test rollouts, worth settling before pushing hard. Check the hard limit before rendering the tag, or we recommend a blocked save. <b>Smallest test, zero code:</b> an existing config-driven banner channel already renders on rollout surfaces; test the "5 included" message there and watch guarded starts.'
 };
 </script>
 <script src="chrome.js"></script>

@@ -3,16 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Moment 4 · Flags list retro insight</title>
+<title>Moment 4 · Add-metrics nudge on the flags list</title>
 <link rel="stylesheet" href="chrome.css">
 <link rel="stylesheet" href="extra.css">
+<style>
+  .eventrow{display:flex;align-items:center;gap:12px;border:1px solid var(--gray100);border-radius:10px;padding:11px 14px;margin-bottom:9px;background:#fff}
+  .eventrow .ekey{font:600 13px ui-monospace,Menlo,monospace}
+  .eventrow .emeta{font-size:12px;color:var(--gray500)}
+  .eventrow .grow{flex:1}
+  .mkbtn{border:1px solid var(--purple100);background:var(--purple0);color:var(--purpleDark);border-radius:8px;padding:6px 13px;font-size:12.5px;font-weight:650;cursor:pointer;font-family:inherit}
+</style>
 </head>
 <body>
 <div data-page>
   <div class="insight">
-    <span class="vega" style="font-size:16px">&#10022;</span>
-    <span class="ib"><b>3 of your last 14 rollouts split traffic with no metric attached</b>, so the outcome was never measured. Want Vega to look at one and show what it could have told you?</span>
-    <button class="purplebtn" onclick="document.getElementById('drawer').style.display='block'">Ask Vega to draft the case study</button>
+    <span class="vega" style="font-size:16px">&#9651;</span>
+    <span class="ib"><b>3 of your last 14 rollouts split traffic with no metric attached</b>, so nobody measured the outcome. Add a metric now and your next release can start as an A/B test. It's included in your plan.</span>
+    <button class="purplebtn" onclick="document.getElementById('drawer').style.display='block'">Add a metric</button>
     <button class="dismiss" style="position:static" onclick="this.closest('.insight').style.display='none'">&#10005;</button>
   </div>
 
@@ -29,7 +36,7 @@
       <div class="fmeta"><span class="fkey">new-checkout-flow</span> &middot; 25% rollout &middot; updated 2 hours ago</div>
     </div>
     <div class="evalspark"><span style="height:30%"></span><span style="height:45%"></span><span style="height:40%"></span><span style="height:60%"></span><span style="height:75%"></span><span style="height:90%"></span></div>
-    <span class="chip" style="border-color:var(--purple100);color:var(--purpleDark);background:var(--purple0)">&#10022; Experiment candidate</span>
+    <span class="chip" style="border-color:var(--gray200);color:var(--gray600)">Unmeasured rollout</span>
   </div>
   <div class="flagrow">
     <span class="minitoggle on"></span>
@@ -38,7 +45,7 @@
       <div class="fmeta"><span class="fkey">simplified-onboarding-email</span> &middot; rolled 0&rarr;100% over 12 days &middot; completed Jul 28</div>
     </div>
     <div class="evalspark"><span style="height:80%"></span><span style="height:70%"></span><span style="height:75%"></span><span style="height:65%"></span><span style="height:60%"></span><span style="height:66%"></span></div>
-    <span class="chip" style="border-color:var(--purple100);color:var(--purpleDark);background:var(--purple0)">&#10022; Experiment candidate</span>
+    <span class="chip" style="border-color:var(--gray200);color:var(--gray600)">Unmeasured rollout</span>
   </div>
   <div class="flagrow">
     <span class="minitoggle on"></span>
@@ -47,7 +54,7 @@
       <div class="fmeta"><span class="fkey">pricing-page-faq</span> &middot; 50/50 split for 9 days, then killed &middot; Jul 19</div>
     </div>
     <div class="evalspark"><span style="height:55%"></span><span style="height:58%"></span><span style="height:52%"></span><span style="height:50%"></span><span style="height:10%"></span><span style="height:5%"></span></div>
-    <span class="chip" style="border-color:var(--purple100);color:var(--purpleDark);background:var(--purple0)">&#10022; Experiment candidate</span>
+    <span class="chip" style="border-color:var(--gray200);color:var(--gray600)">Unmeasured rollout</span>
   </div>
   <div class="flagrow">
     <span class="minitoggle on"></span>
@@ -71,40 +78,32 @@
 
 <div class="drawer" id="drawer" style="display:none">
   <div style="display:flex;justify-content:space-between;align-items:flex-start">
-    <h2><span class="vega">&#10022;</span> The experiment you didn't run</h2>
+    <h2>Make a metric from an event you already send</h2>
     <button class="dismiss" style="position:static" onclick="document.getElementById('drawer').style.display='none'">&#10005;</button>
   </div>
-  <div class="dsub">simplified-onboarding-email &middot; drafted by Vega just now, at your request, from this flag's change history</div>
+  <div class="dsub">These arrived from your app in the last 7 days. A metric is a name and a direction on top of one; no new code.</div>
 
-  <div style="font-size:13.5px;color:var(--gray700)">You rolled this flag from 0 to 100% over 12 days. For 8 of those days, both variations had enough traffic to power a test on your existing <b>onboarding_completed</b> event.</div>
-
-  <div class="timeline">
-    <div class="tl"><b>Jul 16</b> &middot; rollout started at 10%</div>
-    <div class="tl hl"><b>Jul 18&ndash;26</b> &middot; 25&ndash;75% range: 41k users per side saw different onboarding emails. This window could have detected a 3% lift.</div>
-    <div class="tl"><b>Jul 28</b> &middot; 100%, rollout complete. No metric attached, so the outcome is unknown.</div>
+  <div class="eventrow">
+    <div class="grow"><div class="ekey">order_completed</div><div class="emeta">12,480 events this week &middot; last seen 2 minutes ago</div></div>
+    <button class="mkbtn">Create metric</button>
   </div>
-
-  <div class="statrow">
-    <div class="stat"><div class="sv">82k</div><div class="sk">users split across variations</div></div>
-    <div class="stat"><div class="sv">&plusmn;3%</div><div class="sk">lift this test could have detected</div></div>
-    <div class="stat"><div class="sv">$0</div><div class="sk">added cost, included in Foundation</div></div>
+  <div class="eventrow">
+    <div class="grow"><div class="ekey">onboarding_completed</div><div class="emeta">3,911 events this week &middot; last seen 14 minutes ago</div></div>
+    <button class="mkbtn">Create metric</button>
   </div>
-
-  <div style="font-size:13.5px;color:var(--gray700);margin-top:4px">Next time, this is one step: attach <b>onboarding_completed</b> when you start the rollout, and LaunchDarkly reports the lift as the rollout proceeds.</div>
+  <div class="eventrow">
+    <div class="grow"><div class="ekey">search_used</div><div class="emeta">48,022 events this week &middot; last seen 1 minute ago</div></div>
+    <button class="mkbtn">Create metric</button>
+  </div>
 
   <div class="divider"></div>
-  <div style="font-size:14px;font-weight:650;margin-bottom:8px">Do it on your live rollout</div>
-  <div style="font-size:13.5px;color:var(--gray700);margin-bottom:12px"><b>new-checkout-flow</b> is at 25% right now with 4 days of split traffic ahead. Vega can draft the experiment with <b>order_completed</b> as the primary metric.</div>
-  <div style="display:flex;gap:9px">
-    <button class="purplebtn">Draft experiment on new-checkout-flow</button>
-    <button class="purpleghost">Show the other 2 candidates</button>
-  </div>
+  <div style="font-size:13.5px;color:var(--gray700)">Once you have a metric, your next release can start as an <b>A/B test</b> (included in your plan) or a <b>guarded rollout with auto-rollback</b> (5 included). We won't touch the rollouts already running: their users have already seen a variation, so measuring them now would give you muddy results. This is about the next one.</div>
 </div>
 <script>
 window.PROTO = {
   nav: 'flags',
   crumb: 'Flags',
-  why: '<b>Moment 4: the retrospective, on the flags list, consent-first.</b> For customers who never open Experimentation, the motivation has to come from their own history. <b>Constraint that reshaped this moment: Vega cannot scan anything without the user asking.</b> So the banner states only a deterministic, config-derived fact (rollout rules that split traffic with no metric attached is a targeting-config query, not AI), and the AI case study is drafted only when the user clicks. The drawer labels itself as generated at your request, and ends by pivoting from regret to action on a live rollout. Gates: gen-AI enabled for the account, 2+ candidates, a usable conversion event, and never shame a user whose only flags are kill switches. Risk to test first: does the deterministic banner alone earn enough clicks to justify building the case-study generation behind it.'
+  why: '<b>Moment 4: the flags list says the quiet part: you ship, but you never measure.</b> Two corrections built this version. First, the earlier concept had Vega drafting retro case studies from flag history; verified in the code, the Vega panel on the flags page routes exactly two skills today (flag creation and flag cleanup), so case-study generation is a net-new AI capability, and Vega cannot scan history without the user asking anyway. Second, and more fundamental: pointing at PAST rollouts as experiment candidates is statistically dishonest, because those users are already exposed; converting a live flag mid-flight yields contaminated results. So the moment flips from backward-looking regret to forward-looking preparation: a config-derived banner (rollout rules with no metric attached is a targeting query, no AI), a drawer of events the account already sends (the event store returns these with last-seen and existing-metric linkage, and prefilled metric creation from an event already ships), and the promise that the NEXT release can start measured: A/B test included in the plan, or guarded rollout from the included 5. Gates: 2+ unmeasured rollouts, at least one active event key, no metrics in the project. Smallest test: the banner alone, measuring metric-created within 7 days.'
 };
 </script>
 <script src="chrome.js"></script>
