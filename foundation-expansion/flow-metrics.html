@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flow D · Metric from an event, end to end</title>
+<link rel="stylesheet" href="chrome.css">
+<link rel="stylesheet" href="extra.css">
+<style>
+  .drawerpane{position:fixed;right:0;top:0;bottom:0;width:440px;background:#fff;border-left:1px solid var(--gray150,#E2E5EA);box-shadow:-16px 0 40px rgba(15,18,28,.12);padding:20px 22px;overflow:auto;z-index:60}
+  .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px;max-width:640px}
+  .modeopt{border:1.5px solid var(--gray150,#E2E5EA);border-radius:10px;padding:11px 13px;position:relative;background:#fff}
+  .modeopt .mt{font-size:13.5px;font-weight:650;display:flex;align-items:center;gap:7px}
+  .modeopt .md{font-size:12.5px;color:var(--gray600);margin-top:2px}
+  .readychip{font-size:11px;font-weight:700;border-radius:5px;padding:2px 7px;background:var(--green0);color:var(--greenText,#1F7A46);border:1px solid var(--green100)}
+</style>
+</head>
+<body>
+<div data-page>
+
+  <!-- STEP 1: banner -->
+  <section data-step data-title="The banner states a fact from their own config" data-note="Moment 4. No AI, no scanning: rollout rules with no metric attached is a targeting-config query. Forward-looking by design.">
+    <div class="insight">
+      <span class="vega" style="font-size:16px">&#9651;</span>
+      <span class="ib"><b>3 of your last 14 rollouts split traffic with no metric attached</b>, so nobody measured the outcome. Add a metric now and your next release can start as an A/B test. It's included in your plan.</span>
+      <button class="purplebtn" data-goto="1">Add a metric</button>
+      <button class="dismiss" style="position:static">&#10005;</button>
+    </div>
+    <div class="flagrow">
+      <span class="minitoggle on"></span>
+      <div class="grow"><div class="fname">new-checkout-flow <span class="ftag" style="margin-left:6px">checkout</span></div>
+      <div class="fmeta"><span class="fkey">new-checkout-flow</span> &middot; 25% rollout &middot; updated 2 hours ago</div></div>
+      <span class="chip" style="border-color:var(--gray200);color:var(--gray600)">Unmeasured rollout</span>
+    </div>
+    <div class="flagrow">
+      <span class="minitoggle on"></span>
+      <div class="grow"><div class="fname">simplified-onboarding-email <span class="ftag" style="margin-left:6px">growth</span></div>
+      <div class="fmeta"><span class="fkey">simplified-onboarding-email</span> &middot; rolled 0&rarr;100% over 12 days &middot; completed Jul 28</div></div>
+      <span class="chip" style="border-color:var(--gray200);color:var(--gray600)">Unmeasured rollout</span>
+    </div>
+  </section>
+
+  <!-- STEP 2: drawer -->
+  <section data-step data-title="Their events, ranked and one click away" data-note="The event store already knows key, volume, last seen, and whether a metric exists. This drawer is a view, not new data.">
+    <div style="max-width:560px;opacity:.45">
+      <div class="insight"><span class="vega" style="font-size:16px">&#9651;</span><span class="ib"><b>3 of your last 14 rollouts split traffic with no metric attached</b>&hellip;</span></div>
+    </div>
+    <div class="drawerpane">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="font-size:15px">Make a metric from an event you already send</b><span style="color:var(--gray400)">&#10005;</span></div>
+      <div style="font-size:12.5px;color:var(--gray600);margin-bottom:14px">These arrived from your app in the last 7 days. A metric is a name and a direction on top of one; no new code.</div>
+      <div class="eventrow"><div class="grow"><div class="ekey">order_completed</div><div class="emeta">12,480 events this week &middot; last seen 2 minutes ago</div></div><button class="mkbtn" data-goto="2">Create metric</button></div>
+      <div class="eventrow"><div class="grow"><div class="ekey">onboarding_completed</div><div class="emeta">3,911 events this week &middot; last seen 14 minutes ago</div></div><button class="mkbtn">Create metric</button></div>
+      <div class="eventrow"><div class="grow"><div class="ekey">search_used</div><div class="emeta">48,022 events this week &middot; last seen 1 minute ago</div></div><button class="mkbtn">Create metric</button></div>
+      <div class="fineprint" style="margin-top:10px">We won't touch rollouts already running: their users have already seen a variation, so measuring them now would give you muddy results. This is about the next one.</div>
+    </div>
+  </section>
+
+  <!-- STEP 3: prefilled modal -->
+  <section data-step data-title="Two fields were already decided; they name it" data-note="The production create-metric modal via the existing ?eventKey= prefill path. Event key locked, success criteria defaulted.">
+    <div class="modalcard">
+      <div style="font-size:16px;font-weight:650;margin-bottom:14px">Create metric</div>
+      <div class="formsec" style="margin-top:0">
+        <div class="flabel">Event key</div>
+        <div class="fselect" style="background:var(--gray0)"><span style="font-family:ui-monospace,Menlo,monospace">order_completed</span><span class="incl">&#10003; receiving events</span></div>
+      </div>
+      <div class="formsec">
+        <div class="flabel">Metric name</div>
+        <div class="finput">Order completed conversion</div>
+        <div class="fhelp">Suggested from the event key. Rename it if your team says it differently.</div>
+      </div>
+      <div class="formsec">
+        <div class="flabel">Success criteria <span style="color:#B22B2B">*</span></div>
+        <div class="fselect" style="border-color:var(--purple400)"><span style="color:var(--gray400)">Choose: is more of this event good or bad?</span><span class="chev">&#9662;</span></div>
+        <div class="fhelp">Required, never assumed. A metric on <span style="font-family:ui-monospace,Menlo,monospace">payment_failed</span> with the wrong direction would call failures improvement.</div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:16px">
+        <button class="purpleghost">Cancel</button>
+        <button class="purplebtn" data-goto="3">Create metric</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: success + forward pointer -->
+  <section data-step data-title="Success answers 'now what' with the next release" data-note="The payoff is concrete: here is exactly where this metric shows up next time, in the picker they already use.">
+    <div class="toastcard">&#10003;&nbsp; <b>Order completed conversion</b> is ready</div>
+    <div class="sumcard" style="margin-top:16px">
+      <div class="sumhead"><span>Next time you roll out a flag, two options light up:</span></div>
+      <div class="modegrid">
+        <div class="modeopt"><div class="mt">&#9651; Experiment <span class="readychip">METRIC READY</span></div><div class="md">Know which variation wins, measured on Order completed conversion. Included in your plan.</div></div>
+        <div class="modeopt"><div class="mt">&#128737; Guarded rollout <span class="readychip">METRIC READY</span></div><div class="md">Auto-pause a bad release if Order completed conversion drops. 5 included in your plan.</div></div>
+      </div>
+      <div style="font-size:12.5px;color:var(--gray600);margin-top:10px">Nothing changes on your running rollouts. This kicks in on the next one you start.</div>
+    </div>
+  </section>
+
+</div>
+<script>
+window.PROTO = {
+  nav: 'flags',
+  crumb: 'Flags <span class="dim">&middot; Flow D: metric from an event</span>',
+  why: '<b>Flow D: metric from an event, end to end.</b> The shortest flow, deliberately: banner (config-derived fact), drawer (their events, from the store that already tracks key, volume, last-seen, and existing-metric linkage), prefilled modal (the ?eventKey= path ships today; event key locked, name suggested, success criteria an explicit required choice, never defaulted), success state that points at exactly where the metric appears next (the rollout mode picker, with METRIC READY chips). Decisions: forward-looking only, and the drawer says why in one sentence (already-exposed users make retrofit measurement dishonest). The success state is the connective tissue: it previews Flows A and B rather than dead-ending on a metrics list. Gates: 2 or more unmeasured rollout rules in 90 days, at least one active event key, zero non-autogen metrics in the project, server-persisted show-once dismissal. Instrumentation: banner shown/clicked/dismissed, event chosen, metric created within 7 days, then the number that matters: share of converts whose NEXT rollout starts as an experiment or guarded rollout versus control.'
+};
+</script>
+<script src="chrome.js"></script>
+<script src="flow.js"></script>
+</body>
+</html>

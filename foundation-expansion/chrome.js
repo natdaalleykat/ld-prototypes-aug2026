@@ -50,12 +50,16 @@
 
   const LINKS = [
     ['index.html', 'Index'],
-    ['moment-1-rollout.html', '1 Experiment card'],
-    ['moment-2-save.html', '2 Save modal'],
-    ['moment-3-replay.html', '3 O11y on Monitoring'],
-    ['moment-4-metrics.html', '4 Metrics nudge'],
-    ['moment-5-guarded.html', '5 Guarded allowance'],
-    ['moment-6-o11y-install.html', '6 O11y at install'],
+    ['flow-experiment.html', 'Flow A Experiment'],
+    ['flow-guarded.html', 'Flow B Guarded'],
+    ['flow-o11y.html', 'Flow C O11y'],
+    ['flow-metrics.html', 'Flow D Metric'],
+    ['moment-1-rollout.html', 'M1'],
+    ['moment-2-save.html', 'M2'],
+    ['moment-3-replay.html', 'M3'],
+    ['moment-4-metrics.html', 'M4'],
+    ['moment-5-guarded.html', 'M5'],
+    ['moment-6-o11y-install.html', 'M6'],
   ];
   const here = location.pathname.split('/').pop() || 'index.html';
   const sw = document.createElement('div');

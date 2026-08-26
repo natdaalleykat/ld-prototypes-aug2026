@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flow C · Observability setup, end to end</title>
+<link rel="stylesheet" href="chrome.css">
+<link rel="stylesheet" href="extra.css">
+<style>
+  .setupwrap{max-width:760px}
+  .steph{font-size:14px;font-weight:650;margin-bottom:9px;display:flex;align-items:center;gap:9px}
+  .stepnum{width:20px;height:20px;border-radius:50%;background:var(--gray900);color:#fff;font-size:11.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+  .stepcard{background:#fff;border:1px solid var(--gray100);border-radius:12px;padding:16px 18px;margin-bottom:12px}
+  .optrow{display:flex;align-items:flex-start;gap:10px;border:1.5px solid var(--purple100);background:var(--purple0);border-radius:10px;padding:11px 13px;margin:12px 0 2px}
+  .optrow input{margin-top:2.5px;accent-color:var(--purple400,#7855FA)}
+  .optrow .ot{font-size:13.5px;font-weight:650}
+  .optrow .od{font-size:12.5px;color:var(--gray600);margin-top:1px}
+  .codeblock{white-space:pre}
+  .addline{background:rgba(120,220,150,.09);display:inline-block;width:100%}
+  .diffmark{color:#6CE090;user-select:none}
+  .o11ytabs{display:flex;gap:18px;font-size:13.5px;color:var(--gray400);border-bottom:1px solid var(--gray100);padding-bottom:9px;margin-bottom:12px}
+  .blindwrap{display:flex;align-items:center;justify-content:center;min-height:100px;border:1.5px dashed var(--gray150,#E2E5EA);border-radius:10px;background:var(--gray0);color:var(--gray500);font-size:13px;text-align:center;padding:16px}
+  .drawerpane{position:fixed;right:0;top:0;bottom:0;width:440px;background:#fff;border-left:1px solid var(--gray150,#E2E5EA);box-shadow:-16px 0 40px rgba(15,18,28,.12);padding:20px 22px;overflow:auto;z-index:60}
+  .litrow{display:flex;align-items:center;gap:10px;font-size:13px;padding:8px 0;border-bottom:1px solid var(--gray50,#F3F4F7)}
+  .litrow:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+<div data-page>
+
+  <!-- STEP 1: install-time entry -->
+  <section data-step data-title="Entry 1: the install page checkbox" data-note="Moment 6. Same pattern as the shipped 'Show guidance for Guarded Releases and Experimentation' checkbox, but this one extends the snippet itself.">
+    <div class="setupwrap">
+      <div style="font-size:19px;font-weight:650;margin:4px 0 2px">Install the JavaScript SDK</div>
+      <div style="font-size:13.5px;color:var(--gray600);margin-bottom:16px">Environment: <b>Production</b> &middot; Language: <b>React</b> &middot; Package manager: <b>npm</b></div>
+      <div class="stepcard">
+        <div class="steph"><span class="stepnum">1</span> Install the package</div>
+        <div class="codeblock">npm install launchdarkly-react-client-sdk <span class="diffmark">@launchdarkly/observability @launchdarkly/session-replay</span><button class="copybtn dark" data-copy="npm install launchdarkly-react-client-sdk @launchdarkly/observability @launchdarkly/session-replay">Copy</button></div>
+        <div class="optrow">
+          <input type="checkbox" checked>
+          <div>
+            <div class="ot">Also set up Observability and Session Replay <span class="incl" style="margin-left:6px">&#10003; Included in your plan</span></div>
+            <div class="od">Errors, logs, traces, and session replays, tagged with the flag variations each user saw. Two packages and one config block in this same file. Replays mask text and inputs by default.</div>
+          </div>
+        </div>
+      </div>
+      <div class="stepcard">
+        <div class="steph"><span class="stepnum">2</span> Initialize the SDK</div>
+        <div class="codeblock"><span class="kw">import</span> { asyncWithLDProvider } <span class="kw">from</span> <span class="str">'launchdarkly-react-client-sdk'</span>;
+<span class="addline"><span class="diffmark">+</span> <span class="kw">import</span> Observability <span class="kw">from</span> <span class="str">'@launchdarkly/observability'</span>;</span>
+<span class="addline"><span class="diffmark">+</span> <span class="kw">import</span> SessionReplay <span class="kw">from</span> <span class="str">'@launchdarkly/session-replay'</span>;</span>
+
+<span class="kw">const</span> LDProvider = <span class="kw">await</span> <span class="fn">asyncWithLDProvider</span>({
+  clientSideID: <span class="str">'&lt;your-client-side-id&gt;'</span>,
+  context: { kind: <span class="str">'user'</span>, key: <span class="str">'example-user'</span> },
+<span class="addline"><span class="diffmark">+</span> options: { plugins: [<span class="kw">new</span> <span class="fn">Observability</span>(), <span class="kw">new</span> <span class="fn">SessionReplay</span>({ privacySetting: <span class="str">'strict'</span> })] },</span>
+});<button class="copybtn dark" data-copy="init">Copy</button></div>
+      </div>
+      <div class="stepcard" style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div class="steph" style="margin-bottom:2px"><span class="stepnum">3</span> Verify the connection</div>
+          <div style="font-size:12.5px;color:var(--gray600)">Install the SDK and run your app. Can take up to a minute to detect.</div>
+        </div>
+        <span class="savebtn dim" data-goto="2" style="cursor:pointer">Watching for your first event&hellip;</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2: in-flow entry -->
+  <section data-step data-title="Entry 2: the Monitoring blind spot opens the same setup" data-note="Moment 3. The card opens the existing setup drawer with the environment preselected and the language from the detected SDK. One destination, two doors.">
+    <div class="tabs"><div class="tab">Targeting</div><div class="tab">Variations</div><div class="tab active">Monitoring</div><div class="tab">Audience</div><div class="tab">Feedback</div></div>
+    <div class="chartcard" style="margin-top:12px;max-width:680px">
+      <div class="chh">What those users are experiencing</div>
+      <div class="o11ytabs"><span>&#9888; Errors</span><span>&#9655; Sessions</span><span>&#8801; Logs</span><span>&#8767; Traces</span></div>
+      <div class="blindwrap">No telemetry connected for this environment.</div>
+    </div>
+    <div class="drawerpane">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:15px">Set up observability</b><span style="color:var(--gray400)">&#10005;</span></div>
+      <div style="font-size:12.5px;color:var(--gray600);margin-bottom:12px">Environment: <b>Production</b> (detected) &middot; Language: <b>React</b> (detected from your SDK)</div>
+      <div class="flabel">1. Install the package</div>
+      <div class="codeblock" style="font-size:11.5px;margin-bottom:10px">npm install @launchdarkly/observability @launchdarkly/session-replay<button class="copybtn dark" data-copy="npm install @launchdarkly/observability @launchdarkly/session-replay">Copy</button></div>
+      <div class="flabel">2. Add the plugins where you initialize</div>
+      <div class="codeblock" style="font-size:11.5px;margin-bottom:10px">plugins: [<span class="kw">new</span> <span class="fn">Observability</span>(), <span class="kw">new</span> <span class="fn">SessionReplay</span>({ privacySetting: <span class="str">'strict'</span> })]<button class="copybtn dark" data-copy="plugins">Copy</button></div>
+      <div class="flabel">3. Deploy and verify</div>
+      <div style="font-size:12.5px;color:var(--gray600)">Watching for your first event&hellip; Can take up to a minute after your app runs.</div>
+      <div style="margin-top:14px"><button class="purplebtn" data-goto="2">I've deployed it</button></div>
+      <div class="fineprint" style="margin-top:10px">You can close this; we'll keep watching and the Monitoring page updates on its own.</div>
+    </div>
+  </section>
+
+  <!-- STEP 3: awaiting, calmly -->
+  <section data-step data-title="Waiting is a designed state, not a spinner" data-note="Deploys happen hours later. The state lives where they'll return (Monitoring), says what we're waiting for, and doesn't nag.">
+    <div class="tabs"><div class="tab">Targeting</div><div class="tab">Variations</div><div class="tab active">Monitoring</div><div class="tab">Audience</div><div class="tab">Feedback</div></div>
+    <div class="chartcard" style="margin-top:12px;max-width:680px">
+      <div class="chh">What those users are experiencing</div>
+      <div class="o11ytabs"><span>&#9888; Errors</span><span>&#9655; Sessions</span><span>&#8801; Logs</span><span>&#8767; Traces</span></div>
+      <div class="blindwrap" style="border-color:var(--purple100);color:var(--gray600)">&#128344; Still watching for your first event&hellip;<br>Setup copied 25 minutes ago. This fills in on its own once your app runs with the plugins.</div>
+    </div>
+    <div class="fineprint" style="max-width:640px">If nothing arrives within 24 hours of a snippet copy, one email: "Still flying blind on new-checkout-flow? Here's the 2-line diff again, and the three things it turns on." No further sends.</div>
+  </section>
+
+  <!-- STEP 4: connected -->
+  <section data-step data-title="Connected: show what just lit up" data-note="The Integrated transition is the celebration moment. Name the three things they gained, and hand them the guarded tie-in.">
+    <div class="toastcard">&#10003;&nbsp; <b>Telemetry connected</b> &middot; Production is sending events from your React app</div>
+    <div class="sumcard" style="margin-top:16px">
+      <div class="sumhead"><span>Observability is live. Three things just lit up:</span></div>
+      <div class="litrow">&#9888; <b>Errors, logs, traces, and sessions</b>&nbsp;on every flag's Monitoring tab, tagged with the variation each user saw</div>
+      <div class="litrow">&#9651; <b>6 metrics created automatically</b>&nbsp;&middot; User HTTP error rate, HTTP 5XX rate, exception rate, average / P95 / P99 latency <span class="sublink">View metrics</span></div>
+      <div class="litrow">&#128737; <b>Your next rollout can guard itself</b>&nbsp;&middot; use the error-rate metric to auto-pause a bad release. 5 guarded rollouts are included in your plan. <span class="sublink" style="margin-left:4px">See how</span></div>
+      <div style="margin-top:12px"><button class="purplebtn" data-goto="4">Open Monitoring for new-checkout-flow</button></div>
+    </div>
+  </section>
+
+  <!-- STEP 5: the filled page -->
+  <section data-step data-title="The page that argued for setup now pays it off" data-note="Same Monitoring tab as step 2, filled. The blind spot is gone; the guarded entry point in the sidebar is now warm.">
+    <div class="tabs"><div class="tab">Targeting</div><div class="tab">Variations</div><div class="tab active">Monitoring</div><div class="tab">Audience</div><div class="tab">Feedback</div></div>
+    <div class="chartcard" style="margin-top:12px;max-width:680px">
+      <div class="chh">What those users are experiencing <span class="helper" style="font-weight:400">Last hour</span></div>
+      <div class="o11ytabs"><span style="color:var(--gray900);font-weight:650;border-bottom:2px solid var(--purple400);padding-bottom:7px">&#9888; Errors</span><span>&#9655; Sessions</span><span>&#8801; Logs</span><span>&#8767; Traces</span></div>
+      <div style="font-size:13px;display:grid;gap:8px">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--blue600);font-weight:600">TypeError: cart.total is undefined</span><span style="color:var(--gray500)">12 users &middot; all on <span class="diamond d-blue"></span> new-checkout &middot; <span class="sublink">&#9655; Watch session</span></span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--blue600);font-weight:600">Failed to fetch /api/v2/checkout/quote</span><span style="color:var(--gray500)">3 users &middot; mixed variations &middot; <span class="sublink">&#9655; Watch session</span></span></div>
+      </div>
+    </div>
+    <div class="fineprint" style="max-width:640px">Downstream, with zero extra work: the guarded rollout form's metric picker now leads with the auto-created error-rate metric (Flow B, step 2), and error rows link to replays of the users who hit them.</div>
+  </section>
+
+</div>
+<script>
+window.PROTO = {
+  nav: 'install',
+  crumb: '<span class="dim">Get started /</span> Observability <span class="dim">&middot; Flow C: setup, end to end</span>',
+  why: '<b>Flow C: observability setup, both entries, one destination.</b> Design decisions: (1) Two doors, one room: the install-page checkbox (lowest friction, precedent already shipped on that page) and the Monitoring blind-spot card (highest motivation) both land in the same setup with environment and language preselected from what we detect. (2) Waiting is designed, not spun: deploys happen hours after snippet copy, so the pending state lives on the page they will revisit, and exactly one recovery email goes out at 24 hours after a copy with no integration. (3) The connected moment names the gains concretely: tabs filled, six auto-created metrics by their real names, and the guarded tie-in with the allowance. This is the ladder made visible at the exact moment trust is highest. (4) Honest scope everywhere: two packages and a config block, six SDK languages, privacy defaults stated in the snippet. Gates (v2): observability access enabled AND self-serve o11y entitlement for the plan, supported SDK detected (checkbox and card hidden otherwise), sessions claims suppressed where replay is regionally unavailable. The connected moment states the included quotas. Claims stay project-level (per-environment integration detection does not exist yet), and the connected moment also goes out by email so a Friday deploy still gets its payoff. Engineering notes: snippet variants come from the shared snippet source (cross-repo), the setup drawer needs an environment-preselect prop, and the min-version compatibility table is the one blocking dependency for the detection claims.'
+};
+</script>
+<script src="chrome.js"></script>
+<script src="flow.js"></script>
+</body>
+</html>

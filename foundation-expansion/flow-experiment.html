@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flow A · Experiment from a flag rollout, end to end</title>
+<link rel="stylesheet" href="chrome.css">
+<link rel="stylesheet" href="extra.css">
+</head>
+<body>
+<div data-page>
+
+  <!-- STEP 1: the card -->
+  <section data-step data-title="The card, on a fresh rollout" data-note="Moment 1. Fresh rule, nothing served yet, honest offer: same audience, managed split.">
+    <div class="tabs"><div class="tab active">Targeting</div><div class="tab">Variations</div><div class="tab">Monitoring</div><div class="tab">Audience</div><div class="tab">Feedback</div></div>
+    <div class="canvas" style="margin-top:12px">
+      <div class="alltraffic">All traffic</div>
+      <div class="cline"></div>
+      <div class="cnode"><div class="ccard">Flag is <span class="pillon">On <span class="knob"></span></span> &nbsp;serving variations based on rules</div></div>
+      <div class="cline"></div>
+      <div class="cnode"><div class="ccard">
+        <div class="rulehead"><b>&#8964; &nbsp;Default rule</b><span class="editbtn">&#9998; Edit</span></div>
+        <div style="font-size:13.5px;color:var(--gray600)">Serve a percentage rollout</div>
+        <div class="rollbar"><span style="width:25%;background:var(--blue500)"></span><span style="width:75%;background:var(--gray200)"></span></div>
+        <div style="font-size:12.5px;color:var(--gray600)"><span class="diamond d-blue"></span> new-checkout &nbsp;25% &nbsp;&nbsp;&nbsp;<span class="diamond d-gray"></span> current-checkout &nbsp;75%</div>
+      </div></div>
+      <div class="cline"></div>
+      <div class="cnode"><div class="suggest">
+        <button class="dismiss">&#10005;</button>
+        <div class="sh"><span class="vega">&#10022;</span> You're splitting traffic. Want to know which side wins?</div>
+        <div class="sb">Run an A/B test on this rule's audience. Same targeting, and the experiment manages the traffic split so results are clean from day one. <b>Experimentation is included in your plan.</b> <span class="incl">&#10003; Included in Foundation</span></div>
+        <div style="display:flex;gap:9px"><button class="purplebtn" data-goto="1">Create experiment from this rule</button><button class="purpleghost">See a 2-min example</button></div>
+        <div class="fineprint">The experiment takes over this rule's traffic split; you pick the allocation before it starts.</div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- STEP 2: create modal -->
+  <section data-step data-title="One decision: the name" data-note="No silent auto-create. The production modal, name prefilled from the flag. Everything else is derived or deferred.">
+    <div class="modalcard">
+      <div style="font-size:16px;font-weight:650;margin-bottom:14px">Create experiment in Production</div>
+      <div class="formsec" style="margin-top:0">
+        <div class="flabel">Experiment name</div>
+        <div class="finput">New checkout flow experiment</div>
+        <div class="fhelp">Ensure your name describes a key aspect of your experiment. Ex: Homepage CTA color</div>
+      </div>
+      <div class="formsec">
+        <div class="flabel">Hypothesis <span style="color:var(--gray400);font-weight:400">(you can add this later)</span></div>
+        <div class="finput ghost" style="min-height:52px">If [I do something], then [something will happen] because [a reason].</div>
+      </div>
+      <div class="inclrow" style="margin-top:4px">&#10003;&nbsp; We'll attach <b>new-checkout-flow &middot; Default rule</b> as the audience and split treatments evenly. You can change both before starting.</div>
+      <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:16px">
+        <button class="purpleghost">Cancel</button>
+        <button class="purplebtn" data-goto="2">Create experiment</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3: design page with checklist -->
+  <section data-step data-title="The design page carries them the rest of the way" data-note="A draft exists; nothing is lost if they leave. The checklist replaces today's flat missing-fields list, and the metric step leads with their own events.">
+    <div style="max-width:780px">
+      <div style="font-size:17px;font-weight:650;margin-bottom:2px">New checkout flow experiment <span class="ftag">Draft</span></div>
+      <div style="font-size:12.5px;color:var(--gray600);margin-bottom:14px">Production &middot; attached to new-checkout-flow &middot; Default rule</div>
+      <div class="checklist">
+        <div class="clitem"><span class="clmark done">&#10003;</span><div><div class="clt">Flag and audience</div><div class="cld">new-checkout-flow &middot; Default rule &middot; Randomize by <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">user</span></div></div></div>
+        <div class="clitem"><span class="clmark done">&#10003;</span><div><div class="clt">Treatments</div><div class="cld"><span class="diamond d-blue"></span> new-checkout 50% &nbsp;&middot;&nbsp; <span class="diamond d-gray"></span> current-checkout 50% (control) &nbsp;&middot;&nbsp; <span class="sublink">Edit split</span></div></div></div>
+        <div class="clitem"><span class="clmark todo">1</span><div style="flex:1"><div class="clt">Add a primary metric</div>
+          <div class="srcsec"><div class="sst">FROM EVENTS YOU ALREADY SEND</div>
+            <div class="eventrow" style="margin-bottom:6px"><div class="grow"><div class="ekey">order_completed</div><div class="emeta">12,480 events this week &middot; last seen 2 minutes ago</div></div><button class="mkbtn" data-goto="3">Create metric</button></div>
+            <div class="eventrow" style="margin-bottom:2px"><div class="grow"><div class="ekey">search_used</div><div class="emeta">48,022 events this week &middot; last seen 1 minute ago</div></div><button class="mkbtn">Create metric</button></div>
+          </div>
+          <div class="cld" style="margin-top:6px"><span class="sublink">Choose an existing metric</span> &middot; <span class="sublink">Create from scratch</span></div>
+        </div></div>
+        <div class="clitem"><span class="clmark todo">2</span><div style="flex:1"><div class="clt">Hypothesis</div><div class="finput ghost" style="margin-top:6px;max-width:560px">If we show the one-page checkout, then order completion will rise, because fewer steps means fewer drop-offs.</div></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="purplebtn" style="opacity:.45;cursor:default">Start</button>
+        <span style="font-size:12.5px;color:var(--gray600)">Complete the required fields below: <b>Hypothesis, Primary metric or funnel group</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: metric modal prefilled -->
+  <section data-step data-title="The metric, prefilled from their event" data-note="The production create-metric modal with the event key locked in. Two fields were already decided for them; they confirm and name it.">
+    <div class="modalcard">
+      <div style="font-size:16px;font-weight:650;margin-bottom:14px">Create metric</div>
+      <div class="formsec" style="margin-top:0">
+        <div class="flabel">Event key</div>
+        <div class="fselect" style="background:var(--gray0)"><span style="font-family:ui-monospace,Menlo,monospace">order_completed</span><span class="incl">&#10003; receiving events</span></div>
+      </div>
+      <div class="formsec">
+        <div class="flabel">Metric name</div>
+        <div class="finput">Order completed conversion</div>
+      </div>
+      <div class="formsec">
+        <div class="flabel">Success criteria</div>
+        <div class="fselect"><span>Higher is better</span><span class="chev">&#9662;</span></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:16px">
+        <button class="purpleghost">Cancel</button>
+        <button class="purplebtn" data-goto="4">Create and attach</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 5: ready + start confirm -->
+  <section data-step data-title="Ready: start states the targeting change plainly" data-note="The checklist is green, Start is live, and the confirm says exactly what happens to the rule. No surprises after the fact.">
+    <div style="max-width:780px">
+      <div class="checklist" style="margin-bottom:16px">
+        <div class="clitem"><span class="clmark done">&#10003;</span><div><div class="clt">Flag and audience</div></div></div>
+        <div class="clitem"><span class="clmark done">&#10003;</span><div><div class="clt">Treatments &middot; 50/50</div></div></div>
+        <div class="clitem"><span class="clmark done">&#10003;</span><div><div class="clt">Primary metric &middot; Order completed conversion</div></div></div>
+        <div class="clitem"><span class="clmark done">&#10003;</span><div><div class="clt">Hypothesis</div></div></div>
+      </div>
+      <div class="modalcard" style="margin:0">
+        <div style="font-size:16px;font-weight:650;margin-bottom:8px">Start experiment?</div>
+        <div style="font-size:13px;color:var(--gray700);margin-bottom:10px">Starting updates <b>Default rule</b> on <b>new-checkout-flow</b>: the experiment serves its own traffic split (50/50) to this audience until it stops. Your flag stays on. This rule was saved 3 minutes ago and has served ~120 evaluations; starting now keeps pre-exposure bias negligible.</div>
+        <div class="inclrow" style="margin-top:0">&#10003;&nbsp; Health check: flag receiving evaluations &middot; <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">order_completed</span> events seen 2 minutes ago</div>
+        <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:14px">
+          <button class="purpleghost">Cancel</button>
+          <button class="purplebtn" data-goto="5">Start</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 6: running -->
+  <section data-step data-title="Running, with patience built in" data-note="The first hours show 'collecting' as a normal state, not an alarm. The user knows when to come back.">
+    <div class="sumcard">
+      <div class="sumhead"><span>New checkout flow experiment <span class="ftag" style="background:var(--green0);border-color:var(--green100);color:var(--greenText)">Running</span></span><span class="sublink">View results</span></div>
+      <div class="sumsub" style="margin-top:6px">Iteration 1 started just now &middot; 50/50 on Default rule &middot; primary metric Order completed conversion</div>
+      <div style="font-size:13px;color:var(--gray700);margin-top:10px">&#128344; Collecting data. First results typically appear within a few hours; a decision-grade readout needs about two weeks of traffic at your volume. We'll email you when results are ready to read.</div>
+    </div>
+    <div class="fineprint" style="max-width:700px">The flag sidebar now shows Experiments: 1 running, and the targeting page shows the rule under experiment control.</div>
+  </section>
+
+  <!-- STEP 7: the no-events branch -->
+  <section data-step data-title="Branch: the account sends no events" data-note="The only path that needs code, and we say so instead of hiding it. The checklist waits; the moment an event arrives, the list lights up.">
+    <div style="max-width:780px">
+      <div class="checklist">
+        <div class="clitem"><span class="clmark todo">1</span><div style="flex:1"><div class="clt">Add a primary metric</div>
+          <div class="cld" style="margin:6px 0">We haven't seen events from your app yet. Metrics are built on events you send with one line of code:</div>
+          <div class="codeblock" style="max-width:560px">client.<span class="fn">track</span>(<span class="str">'order_completed'</span>);<button class="copybtn dark" data-copy="client.track('order_completed');">Copy</button></div>
+          <div class="cld" style="margin-top:6px">Ship that alongside your flag code, and this list updates the moment the first event arrives. <span class="sublink">Docs: choosing a metric event</span></div>
+        </div></div>
+      </div>
+      <div style="font-size:12.5px;color:var(--gray600)">The draft keeps everything else ready. We email when the first event lands: "order_completed is flowing, your experiment is one click from starting."</div>
+    </div>
+  </section>
+
+</div>
+<script>
+window.PROTO = {
+  nav: 'flags',
+  crumb: '<span class="dim">Flags /</span> new-checkout-flow <span class="dim">&middot; Flow A: experiment from a rollout</span>',
+  why: '<b>Flow A: experiment from a flag rollout, end to end.</b> The four questions, answered: (1) Auto-create? No. The card opens the production create modal with the name prefilled; creation stays a deliberate act but costs one field. (2) Attach the flag? Fully automatic: flag, rule, even treatments, randomization unit, analysis config all derived; if the rule is unsaved, the existing deferred-creation machinery creates the experiment after flag save. (3) No metric? The design page checklist leads with events the account already sends, one click to a prefilled metric; existing metrics and scratch are fallbacks; the true zero-events branch is honest about needing one line of code and turns the wait into an email trigger. (4) How do they know what is next? The checklist is the interface: N of M, each todo actionable in place, and the Start tooltip lists exactly what is missing using the production strings. Start confirmation states the targeting consequence in one sentence. Gates (v2, post-adversary): entitled with all required member permissions, no experiment on the flag, no guarded/progressive rollout anywhere on the FLAG (the real start blocker is flag-level), 2-variation flags only for the card, environment not approval-required, first-experiment accounts only (excluding sample/templated experiments). The save-modal variant carries a staleness gate: once the rule has served real traffic, the offer suppresses and any later start disclosed prior exposure. Sequencing note: ship the card pointing at the EXISTING design page first and measure clicks; the checklist upgrade and event-sourced metric picker are the second PR, justified by the click data.'
+};
+</script>
+<script src="chrome.js"></script>
+<script src="flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flow B · First guarded rollout, end to end</title>
+<link rel="stylesheet" href="chrome.css">
+<link rel="stylesheet" href="extra.css">
+<style>
+  .modegrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+  .modeopt{border:1.5px solid var(--gray150,#E2E5EA);border-radius:10px;padding:11px 13px;cursor:pointer;position:relative;background:#fff}
+  .modeopt .mt{font-size:13.5px;font-weight:650;display:flex;align-items:center;gap:7px}
+  .modeopt .md{font-size:12.5px;color:var(--gray600);margin-top:2px}
+  .modeopt.sel{border-color:var(--purple400,#7855FA);box-shadow:0 0 0 3px var(--purple0,#F3F0FF)}
+  .rectag{font-size:10.5px;font-weight:700;letter-spacing:.04em;border-radius:4px;padding:1.5px 7px;background:var(--purple0);color:var(--purpleDark);border:1px solid var(--purple100)}
+  .inclrow{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--gray700);background:var(--green0,#EFFAF3);border:1px solid var(--green100,#CDEEDA);border-radius:8px;padding:8px 11px;margin-top:10px}
+  .formsec{margin:14px 0}
+  .flabel{font-size:13px;font-weight:650;margin-bottom:6px}
+  .fselect{border:1px solid var(--gray200);border-radius:8px;padding:8px 12px;font-size:13px;background:#fff;display:flex;justify-content:space-between;align-items:center;max-width:420px}
+  .fselect .chev{color:var(--gray400)}
+  .mtable{border:1px solid var(--gray100);border-radius:10px;overflow:hidden;max-width:640px}
+  .mtable .mrow{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--gray50,#F3F4F7);font-size:13px;background:#fff}
+  .mtable .mrow:last-child{border-bottom:none}
+  .mtable .mhead{background:var(--gray0);font-size:11.5px;font-weight:700;letter-spacing:.03em;color:var(--gray500)}
+  .stagetab{border:1px solid var(--gray100);border-radius:10px;max-width:420px;font-size:12.5px;background:#fff}
+  .stagetab .srow{display:grid;grid-template-columns:60px 1fr 1fr 90px;padding:7px 13px;border-bottom:1px solid var(--gray50,#F3F4F7)}
+  .stagetab .srow:last-child{border-bottom:none}
+  .stagetab .shead{font-weight:700;font-size:11px;letter-spacing:.04em;color:var(--gray500)}
+  .statusdot{display:inline-flex;align-items:center;gap:6px}
+  .segbar{display:flex;gap:3px;max-width:520px;margin:8px 0 4px}
+  .segbar span{height:8px;border-radius:4px;flex:1;background:var(--gray150,#E5E7EC)}
+  .segbar span.done{background:var(--green400,#2FB344)}
+  .segbar span.cur{background:var(--blue400,#3D6DEB)}
+  .segbar span.reg{background:#D64545}
+  .sumcard{background:#fff;border:1px solid var(--gray100);border-radius:12px;padding:15px 18px;margin-bottom:14px;max-width:760px}
+  .sumhead{font-size:14.5px;font-weight:650;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .sumsub{font-size:12.5px;color:var(--gray600)}
+  .errit{border-left:3px solid #D64545;padding:6px 12px;margin:7px 0;background:var(--gray0);border-radius:0 8px 8px 0;font-size:12.5px}
+  .errit .el{color:var(--blue600,#2456C8);font-weight:600}
+  .errit .ep{color:var(--gray500);font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+  .modalcard{background:#fff;border:1px solid var(--gray150);border-radius:14px;box-shadow:0 18px 50px rgba(15,18,28,.18);max-width:560px;padding:20px 22px;margin:24px auto}
+  .estag{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700}
+  .estag.bad{background:#FBEAEA;color:#B22B2B;border:1px solid #F2C6C6}
+  .estag.ok{background:var(--green0);color:var(--greenText,#1F7A46);border:1px solid var(--green100)}
+</style>
+</head>
+<body>
+<div data-page>
+
+  <!-- STEP 1: mode picker -->
+  <section data-step data-title="Choose guarded in the rollout picker" data-note="The moment-5 entry: Recommended tag + the included allowance, stated before anything is spent.">
+    <div class="tabs"><div class="tab active">Targeting</div><div class="tab">Variations</div><div class="tab">Monitoring</div><div class="tab">Audience</div><div class="tab">Feedback</div></div>
+    <div class="canvas" style="margin-top:12px">
+      <div class="alltraffic">All traffic</div>
+      <div class="cline"></div>
+      <div class="cnode"><div class="ccard">Flag is <span class="pillon">On <span class="knob"></span></span> &nbsp;serving variations based on rules</div></div>
+      <div class="cline"></div>
+      <div class="cnode"><div class="ccard" style="border-color:var(--purple100)">
+        <div class="rulehead"><b>&#8964; &nbsp;Default rule &middot; editing</b><span style="color:var(--gray400)">&#8942;</span></div>
+        <div style="font-size:13px;color:var(--gray600);margin-top:6px">Rollout</div>
+        <div class="modegrid">
+          <div class="modeopt"><div class="mt">&#9634; Manual percentage</div><div class="md">Set the split, watch it yourself</div></div>
+          <div class="modeopt"><div class="mt">&#8599; Progressive rollout</div><div class="md">Gradually increase traffic over a period of time</div></div>
+          <div class="modeopt sel"><div class="mt">&#128737; Guarded rollout <span class="rectag">RECOMMENDED</span></div><div class="md">A progressive rollout with regression monitoring</div></div>
+          <div class="modeopt"><div class="mt">&#9651; Experiment</div><div class="md">Run A/B tests to learn the impact of releases</div></div>
+        </div>
+        <div class="inclrow">&#10003;&nbsp; <b>5 guarded rollouts are included in your plan.</b>&nbsp;You've used 0. One is used when a rollout starts; it isn't refunded if it rolls back.</div>
+        <div style="margin-top:10px"><button class="purplebtn" data-goto="1">Configure guarded rollout</button></div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- STEP 2: the form -->
+  <section data-step data-title="Configure: the metric is already waiting" data-note="Production form, one upgrade: the metrics picker leads with sources, not a blank search. Auto rollback stays off for a first rollout.">
+    <div class="suggest" style="max-width:760px;margin-bottom:14px">
+      <div class="sh">&#128737; Guarded rollout <span class="incl" style="margin-left:4px">&#10003; Healthy</span></div>
+      <div class="formsec">
+        <div class="flabel">Target variation</div>
+        <div class="fselect"><span><span class="diamond d-blue"></span> new-checkout</span><span class="chev">&#9662;</span></div>
+      </div>
+      <div class="formsec">
+        <div class="flabel">Metrics to monitor</div>
+        <div class="srcsec" style="max-width:640px">
+          <div class="sst">FROM YOUR TELEMETRY &middot; created automatically</div>
+          <div style="display:flex;align-items:center;gap:9px;font-size:13px"><input type="checkbox" checked> <b>User HTTP error rate (OpenTelemetry)</b> <span style="color:var(--gray500)">receiving events</span></div>
+          <div style="display:flex;align-items:center;gap:9px;font-size:13px;margin-top:6px"><input type="checkbox"> <b>Average request latency (OpenTelemetry)</b> <span style="color:var(--gray500)">receiving events</span></div>
+        </div>
+        <div class="srcsec" style="max-width:640px">
+          <div class="sst">FROM EVENTS YOU SEND</div>
+          <div style="display:flex;align-items:center;gap:9px;font-size:13px"><span style="font-family:ui-monospace,Menlo,monospace">order_completed</span> <span style="color:var(--gray500)">12,480 events this week</span> <span class="sublink" style="margin-left:auto">Create metric</span></div>
+        </div>
+        <div class="mtable" style="margin-top:10px">
+          <div class="mrow mhead"><span style="flex:1">Metric</span><span style="width:110px">Auto rollback</span><span style="width:30px"></span></div>
+          <div class="mrow"><span style="flex:1"><b>User HTTP error rate (OpenTelemetry)</b> <span style="color:var(--gray500);font-size:12px">&middot; regression = error rate rises for users on new-checkout</span></span><span style="width:110px"><input type="checkbox"> <span style="font-size:12px;color:var(--gray600)">Notify me</span></span><span style="width:30px;color:var(--gray400)">&#10005;</span></div>
+        </div>
+        <div class="fineprint" style="margin-top:6px">Leave Auto rollback off and we alert you on regression; you decide. Turn it on and the flag reverts itself. Off is the default for your first guarded rollout.</div>
+      </div>
+      <div class="formsec">
+        <div class="flabel">Target by</div>
+        <div class="fselect"><span>user &nbsp;<span style="color:var(--gray400);font-family:ui-monospace,Menlo,monospace;font-size:12px">user</span></span><span class="chev">&#9662;</span></div>
+      </div>
+      <div class="formsec">
+        <div class="flabel">Rollout duration</div>
+        <div class="fselect" style="max-width:220px"><span>24 hours</span><span class="chev">&#9662;</span></div>
+        <div class="stagetab" style="margin-top:8px">
+          <div class="srow shead"><span>Step</span><span>Rollout</span><span>Duration</span><span></span></div>
+          <div class="srow"><span>1</span><span>5%</span><span>6h</span><span></span></div>
+          <div class="srow"><span>2</span><span>10%</span><span>6h</span><span></span></div>
+          <div class="srow"><span>3</span><span>25%</span><span>6h</span><span></span></div>
+          <div class="srow"><span>4</span><span>50%</span><span>6h</span><span></span></div>
+          <div class="srow"><span>5</span><span>100%</span><span></span><span></span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:9px;margin-top:6px"><button class="purplebtn" data-goto="2">Review and save</button></div>
+    </div>
+  </section>
+
+  <!-- STEP 3: review modal -->
+  <section data-step data-title="Review: the change and the allowance, in plain terms" data-note="Production review modal + one added line: which allowance this uses and when it counts.">
+    <div class="modalcard">
+      <div style="font-size:16px;font-weight:650;margin-bottom:4px">Review and save</div>
+      <div style="font-size:12.5px;color:var(--gray600);margin-bottom:14px">Production &middot; new-checkout-flow</div>
+      <div style="border:1px solid var(--gray100);border-radius:10px;padding:12px 15px;font-size:13px">
+        <b>Set default rule with guarded rollout</b>
+        <div style="margin-top:8px;color:var(--gray700);display:grid;gap:5px">
+          <div><span style="color:var(--gray500)">Rollout:</span> new-checkout by <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">user</span></div>
+          <div><span style="color:var(--gray500)">Original variation:</span> current-checkout</div>
+          <div><span style="color:var(--gray500)">Rollout duration:</span> 24 hours <span class="ftag">4 steps</span> <span class="sublink">Show details</span></div>
+          <div><span style="color:var(--gray500)">Metrics:</span> 1 metric <span class="sublink">Show details</span></div>
+          <div><span style="color:var(--gray500)">Cleanup phase:</span> Rules remain in place</div>
+        </div>
+      </div>
+      <div class="inclrow" style="margin-top:12px">&#10003;&nbsp; Uses <b>1 of your 5 included guarded rollouts</b> when it starts. Not refunded if it rolls back.</div>
+      <div style="display:flex;justify-content:flex-end;gap:9px;margin-top:16px">
+        <button class="purpleghost">Cancel</button>
+        <button class="purplebtn" data-goto="3">Save changes</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: monitoring -->
+  <section data-step data-title="Running: monitoring, stage by stage" data-note="The summary card the user watches. Health stays green, exposure counts grow, next step counts down.">
+    <div class="sumcard">
+      <div class="sumhead"><span>Monitoring <b>Default rule</b> for regressions&hellip;</span><span style="display:flex;gap:8px"><button class="purpleghost" data-goto="4">Stop rollout</button></span></div>
+      <div class="segbar"><span class="done"></span><span class="cur"></span><span></span><span></span></div>
+      <div class="sumsub">7h passed &middot; 17h remaining (next step in 5h 12m) &middot; Step 2 of 4 &middot; serving <b>10%</b></div>
+      <div style="display:flex;gap:26px;margin:12px 0;font-size:13px">
+        <span><b>4,182</b> unique <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px">user</span> evaluations at <b>10%</b> traffic</span>
+        <span style="color:var(--gray600)"><b>37,660</b> on current-checkout <span class="ftag">Original variation</span></span>
+      </div>
+      <div class="statusdot" style="font-size:13px;color:var(--greenText,#1F7A46)">&#10003; No regressions detected so far</div>
+      <div class="mtable" style="margin-top:12px">
+        <div class="mrow"><span style="flex:1"><b>User HTTP error rate</b> <span style="color:var(--gray500);font-size:12px">(pp)</span></span><span class="estag ok">&minus; 0.02</span><span style="width:170px;color:var(--gray500);font-size:12px">within threshold</span></div>
+      </div>
+    </div>
+    <div class="fineprint" style="max-width:700px">Also visible on the rule card: "Guarded rollout &middot; Monitoring &middot; Step 2 of 4" with per-metric health, so the state is legible without opening anything.</div>
+  </section>
+
+  <!-- STEP 5: regression, notify mode -->
+  <section data-step data-title="Regression: evidence first, then a decision" data-note="Notify mode: the ramp pauses, the evidence is on screen (metric, top errors, a session), and the user chooses. Nothing reverted silently.">
+    <div class="sumcard" style="border-color:#F2C6C6">
+      <div class="sumhead"><span style="color:#B22B2B">&#9888; <b>Default rule</b> paused at <b>10%</b>: regressions detected for <b>User HTTP error rate</b></span></div>
+      <div class="segbar"><span class="done"></span><span class="reg"></span><span></span><span></span></div>
+      <div class="sumsub">Ramp paused automatically. Current traffic keeps serving until you decide.</div>
+      <div class="mtable" style="margin-top:12px">
+        <div class="mrow"><span style="flex:1"><b>User HTTP error rate</b> <span style="color:var(--gray500);font-size:12px">(pp)</span></span><span class="estag bad">&#65291; 1.9</span><span style="width:190px;color:var(--gray500);font-size:12px">interval fully above threshold</span></div>
+      </div>
+      <div style="font-size:13px;font-weight:650;margin:12px 0 2px">User HTTP error rate regressed &middot; Mon Aug 25 at 9:14 AM <span class="sublink">Hide errors</span></div>
+      <div class="errit"><div class="el">TypeError: cart.total is undefined</div><div class="ep">src/checkout/CartSummary.tsx</div></div>
+      <div class="errit"><div class="el">Failed to fetch /api/v2/checkout/quote</div><div class="ep">src/checkout/useQuote.ts</div></div>
+      <div style="font-size:12.5px;margin:4px 0 12px"><span class="sublink">View all errors</span> &middot; <span class="sublink">&#9655; Watch a session that hit this</span></div>
+      <div style="display:flex;gap:9px">
+        <button class="purplebtn" data-goto="5">Roll back now</button>
+        <button class="purpleghost">Keep serving 10%</button>
+        <button class="purpleghost">Dismiss this metric</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 6: rolled back + ladder -->
+  <section data-step data-title="Rolled back: the story, and the next rung" data-note="The safety net paid off visibly. The completion state names what happened and points one rung up the ladder.">
+    <div class="sumcard">
+      <div class="sumhead"><span>&#128737; <b>Default rule</b> rolled back &middot; now serving <b>current-checkout</b></span><span class="sublink">View details</span></div>
+      <div class="sumsub" style="margin-top:6px">Guarded against a regression on <b>User HTTP error rate</b> Mon Aug 25 at 9:31 AM. 4,182 users saw new-checkout; everyone is back on current-checkout. The errors above are your fix list.</div>
+    </div>
+    <div class="suggest" style="max-width:760px">
+      <div class="sh"><span class="vega">&#10022;</span> The guard worked. Next release, measure the upside too.</div>
+      <div class="sb">A guarded rollout catches what breaks. An <b>A/B test</b> also tells you what improves, using the same metric you just configured. It's included in your plan, and you have <b>4 of 5 guarded rollouts</b> left for the fix.</div>
+      <div style="display:flex;gap:9px"><button class="purplebtn">See how experiments work</button><button class="purpleghost">Not now</button></div>
+    </div>
+  </section>
+
+</div>
+<script>
+window.PROTO = {
+  nav: 'flags',
+  crumb: '<span class="dim">Flags /</span> new-checkout-flow <span class="dim">&middot; Flow B: first guarded rollout</span>',
+  why: '<b>Flow B: first guarded rollout, end to end.</b> Design decisions, verified against the production form: (1) The metrics picker leads with sources instead of a blank search: auto-created telemetry metrics first (zero setup, receiving events), then events you already send (one-click metric), then scratch. Today the picker is a bare search box; this is the main new UI. (2) Auto rollback defaults OFF, and that is already the product default; we add one sentence of copy that makes notify-vs-rollback a understood choice instead of a hidden checkbox. First-run trust beats automation. (3) The allowance is disclosed twice: in the picker (before configuring) and in the review modal (before it counts). It consumes on start, and we say so. (4) Regression in notify mode pauses the ramp and shows evidence: the metric estimate against its threshold, the top error groups, and a session link when telemetry exists; three explicit actions. (5) The rolled-back state narrates what happened and hands the user their fix list, then the ladder nudge offers experiments with the same metric. Gates: entitled, hard limit not reached (at the cap this entry degrades to the upgrade banner and Save can never be reached blocked), metric prerequisites satisfiable by any of three paths so there is no dead end.'
+};
+</script>
+<script src="chrome.js"></script>
+<script src="flow.js"></script>
+</body>
+</html>
