@@ -50,19 +50,19 @@
 
   <a class="opt" href="flow-experiment.html">
     <div class="t">Flow A: experiment from a flag rollout <span class="tag">EXPERIMENTATION</span></div>
-    <div class="d">Card &rarr; one-field create modal (flag and rule attach automatically) &rarr; design page checklist that leads with events they already send &rarr; prefilled metric &rarr; honest start confirmation &rarr; running. Includes the no-events branch, the only path that needs code.</div>
+    <div class="d">Moments 1 and 2 as the entries &rarr; one-field create modal (flag and rule attach automatically) &rarr; design page checklist that leads with events they already send &rarr; prefilled metric &rarr; honest start confirmation &rarr; running. Includes the no-events branch, the only path that needs code.</div>
   </a>
   <a class="opt" href="flow-guarded.html">
     <div class="t">Flow B: first guarded rollout <span class="tag">GUARDED ROLLOUTS</span></div>
-    <div class="d">Mode picker with the 5-included disclosure &rarr; form where the auto-created error metric is already waiting &rarr; review with the allowance stated &rarr; monitoring &rarr; regression with evidence and three explicit choices &rarr; rollback story plus the ladder nudge.</div>
+    <div class="d">Moment 5 as the entry: mode picker with the 5-included disclosure &rarr; form where the auto-created error metric is already waiting &rarr; review with the allowance stated &rarr; monitoring &rarr; regression with evidence and three explicit choices &rarr; rollback story plus the ladder nudge.</div>
   </a>
   <a class="opt" href="flow-o11y.html">
     <div class="t">Flow C: observability setup <span class="tag">OBSERVABILITY</span></div>
-    <div class="d">Both entries (install checkbox, Monitoring blind spot) into one setup with environment and language preselected &rarr; a designed waiting state &rarr; the connected moment that names what lit up &rarr; the filled page that pays off the pitch.</div>
+    <div class="d">Both entries walked in one flow: Moment 6 (install checkbox) and Moment 3 (the Monitoring blind spot on a live rollout) land in the same setup with environment and language preselected &rarr; a designed waiting state &rarr; the connected moment that names what lit up &rarr; the filled page that pays off the pitch.</div>
   </a>
   <a class="opt" href="flow-metrics.html">
     <div class="t">Flow D: metric from an event <span class="tag">METRICS</span></div>
-    <div class="d">Config-derived banner &rarr; their events ranked &rarr; prefilled create-metric modal &rarr; a success state that previews exactly where the metric appears next (Experiment and Guarded options with METRIC READY chips).</div>
+    <div class="d">Moment 4 as the entry: config-derived banner &rarr; their events ranked &rarr; prefilled create-metric modal &rarr; a success state that previews exactly where the metric appears next (Experiment and Guarded options with METRIC READY chips).</div>
   </a>
 
   <h2 style="font-size:17px;font-weight:650;margin:26px 0 2px">The moments (single-screen concepts)</h2>
@@ -70,27 +70,27 @@
 
   <a class="opt" href="moment-1-rollout.html">
     <div class="t">Moment 1: experiment card on a fresh rollout <span class="tag">EXPERIMENTATION</span></div>
-    <div class="d">The user builds a 25/75 percentage rollout. Before it serves anyone, an inline card in the targeting canvas offers to start it as an A/B test on the same audience, included in their plan. Fresh rollout means clean results; this is the moment to measure, not later.</div>
+    <div class="d">The user builds a 25/75 percentage rollout. Before it serves anyone, an inline card in the targeting canvas offers to start it as an A/B test on the same audience, included in their plan. Fresh rollout means clean results; this is the moment to measure, not later. <span style="color:var(--purpleDark);font-weight:600">&rarr; Walked end to end in Flow A (entry, step 1)</span></div>
   </a>
   <a class="opt" href="moment-2-save.html">
     <div class="t">Moment 2: experiment offer in the save confirmation <span class="tag">EXPERIMENTATION</span></div>
-    <div class="d">Same offer as Moment 1, but as a save-confirmation modal after they commit. They just took a measurable risk in production; peak motivation, higher intrusion. A/B these two placements.</div>
+    <div class="d">Same offer as Moment 1, but as a save-confirmation modal after they commit. They just took a measurable risk in production; peak motivation, higher intrusion. A/B these two placements. <span style="color:var(--purpleDark);font-weight:600">&rarr; Walked end to end in Flow A (alternate entry)</span></div>
   </a>
   <a class="opt" href="moment-3-replay.html">
     <div class="t">Moment 3: observability setup when a rollout goes live <span class="tag">OBSERVABILITY</span></div>
-    <div class="d">The account has zero telemetry (like 99% of Foundation customers), and a rollout just went live. The Monitoring page shows evaluations climbing next to empty error and session panels: real users are on the new experience and nothing shows what they see. One setup fills the page in.</div>
+    <div class="d">The account has zero telemetry (like 99% of Foundation customers), and a rollout just went live. The Monitoring page shows evaluations climbing next to empty error and session panels: real users are on the new experience and nothing shows what they see. One setup fills the page in. <span style="color:var(--purpleDark);font-weight:600">&rarr; Walked end to end in Flow C (entry 2, step 2)</span></div>
   </a>
   <a class="opt" href="moment-4-metrics.html">
     <div class="t">Moment 4: add-metrics nudge on the flags list <span class="tag">METRICS</span></div>
-    <div class="d">A config-derived banner says the quiet part: 3 recent rollouts split traffic and nobody measured the outcome. The fix is forward-looking: create a metric from an event they already send (two clicks, no code), so the NEXT release starts as an A/B test or guarded rollout. Deliberately not retroactive: users on running flags are already exposed, so converting those mid-flight would give muddy results.</div>
+    <div class="d">A config-derived banner says the quiet part: 3 recent rollouts split traffic and nobody measured the outcome. The fix is forward-looking: create a metric from an event they already send (two clicks, no code), so the NEXT release starts as an A/B test or guarded rollout. Deliberately not retroactive: users on running flags are already exposed, so converting those mid-flight would give muddy results. <span style="color:var(--purpleDark);font-weight:600">&rarr; Walked end to end in Flow D (step 1)</span></div>
   </a>
   <a class="opt" href="moment-5-guarded.html">
     <div class="t">Moment 5: guarded rollout allowance in the mode picker <span class="tag">GUARDED ROLLOUTS</span></div>
-    <div class="d">Every account includes 5 guarded rollouts and nothing in the product says so until the allowance is half gone. A Recommended tag and one inclusion line in the rollout mode picker the user already sees, with the auto-created error metric pre-selected when telemetry exists.</div>
+    <div class="d">Every account includes 5 guarded rollouts and nothing in the product says so until the allowance is half gone. A Recommended tag and one inclusion line in the rollout mode picker the user already sees, with the auto-created error metric pre-selected when telemetry exists. <span style="color:var(--purpleDark);font-weight:600">&rarr; Walked end to end in Flow B (step 1)</span></div>
   </a>
   <a class="opt" href="moment-6-o11y-install.html">
     <div class="t">Moment 6: observability checkbox at SDK install <span class="tag">OBSERVABILITY</span></div>
-    <div class="d">The single lowest-friction moment: the user is already in their init file. One checkbox extends the install snippet with the o11y plugins, and unlocks Moments 3 and 5 downstream. Precedent: the experimentation snippet checkbox already shipped on this page.</div>
+    <div class="d">The single lowest-friction moment: the user is already in their init file. One checkbox extends the install snippet with the o11y plugins, and unlocks Moments 3 and 5 downstream. Precedent: the experimentation snippet checkbox already shipped on this page. <span style="color:var(--purpleDark);font-weight:600">&rarr; Walked end to end in Flow C (entry 1, step 1)</span></div>
   </a>
 
   <h2 style="font-size:17px;font-weight:650;margin:26px 0 2px">3. The build plan, and why the designs are the way they are</h2>
