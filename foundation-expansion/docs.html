@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foundation expansion · docs</title>
+<link rel="stylesheet" href="chrome.css">
+<style>
+  body{min-width:0;display:flex !important;flex-direction:row !important;background:var(--gray0);min-height:100vh}
+  .side{width:270px;flex:none;background:#1B1D26;color:#C9CEDD;padding:22px 0;position:sticky;top:0;height:100vh;overflow:auto}
+  .side .shdr{padding:0 20px 10px;font-size:14.5px;font-weight:700;color:#fff}
+  .side .shdr a{color:#9BA3BC;text-decoration:none;font-size:12px;font-weight:500;display:block;margin-top:3px}
+  .side .grp{padding:14px 20px 5px;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:#7C84A0}
+  .side a.doc{display:block;padding:7px 20px;color:#C9CEDD;text-decoration:none;font-size:13px;border-left:3px solid transparent}
+  .side a.doc:hover{background:#232635}
+  .side a.doc.on{background:#262A3B;color:#fff;border-left-color:#7855FA;font-weight:600}
+  .doccol{flex:1;min-width:0;padding:38px 48px 120px;max-width:940px}
+  .md h1{font-size:24px;font-weight:700;margin:0 0 14px}
+  .md h2{font-size:18px;font-weight:650;margin:28px 0 10px;padding-top:14px;border-top:1px solid var(--gray100)}
+  .md h3{font-size:15px;font-weight:650;margin:20px 0 8px}
+  .md p{font-size:13.5px;line-height:1.65;color:var(--gray800);margin:9px 0}
+  .md li{font-size:13.5px;line-height:1.6;color:var(--gray800);margin:5px 0}
+  .md ul,.md ol{padding-left:22px;margin:8px 0}
+  .md code{background:var(--gray100);border-radius:4px;padding:1px 5px;font:12px ui-monospace,Menlo,monospace}
+  .md table{border-collapse:collapse;width:100%;margin:12px 0;font-size:12.5px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 0 0 1px var(--gray100)}
+  .md th{background:var(--gray0);text-align:left;padding:8px 12px;font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--gray500);border-bottom:1px solid var(--gray100)}
+  .md td{padding:9px 12px;border-bottom:1px solid var(--gray50,#F3F4F7);vertical-align:top;line-height:1.55}
+  .md tr:last-child td{border-bottom:none}
+  .md hr{border:none;border-top:1px solid var(--gray150,#E2E5EA);margin:26px 0}
+  .md blockquote{border-left:3px solid var(--purple100);margin:10px 0;padding:2px 14px;color:var(--gray600)}
+  .md a{color:var(--purpleDark,#5B3DF5)}
+  .loading{color:var(--gray500);font-size:13.5px;padding:40px 0}
+  @media (max-width:900px){.side{display:none}}
+</style>
+</head>
+<body>
+<nav class="side" id="side">
+  <div class="shdr">Foundation expansion<a href="index.html">&larr; Back to the hub</a></div>
+</nav>
+<main class="doccol"><div class="md" id="md"><div class="loading">Loading&hellip;</div></div></main>
+<script>
+const DOCS = [
+  ['brief', 'BRIEF.md', 'Product brief', 'THE PROBLEM'],
+  ['exploration', 'EXPLORATION.md', 'Exploration: verdicts + shortlist', 'THE PROBLEM'],
+  ['flows', 'FLOWS.md', 'Flow specs (v1 + v2 amendments)', 'THE DESIGNS'],
+  ['punchlist', 'PUNCHLIST.md', 'Punch list: product changes', 'THE BUILD'],
+  ['adversary', 'research/adversary-findings.md', 'Adversarial review (25 findings)', 'THE BUILD'],
+];
+const side = document.getElementById('side');
+let lastGroup = '';
+for (const [id, , title, group] of DOCS) {
+  if (group !== lastGroup) { const g = document.createElement('div'); g.className = 'grp'; g.textContent = group; side.appendChild(g); lastGroup = group; }
+  const a = document.createElement('a'); a.className = 'doc'; a.id = 'nav-' + id; a.href = '?doc=' + id; a.textContent = title; side.appendChild(a);
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function inline(s){
+  return s
+    .replace(/`([^`]+)`/g, (m,c)=>'<code>'+c+'</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+}
+function render(text){
+  const lines = text.split('\n');
+  let html = '', i = 0, inUl = false, inOl = false;
+  const closeLists = ()=>{ if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} };
+  while (i < lines.length) {
+    let l = lines[i];
+    if (/^\s*---+\s*$/.test(l)) { closeLists(); html += '<hr>'; i++; continue; }
+    if (/^### /.test(l)) { closeLists(); html += '<h3>'+inline(esc(l.slice(4)))+'</h3>'; i++; continue; }
+    if (/^## /.test(l)) { closeLists(); html += '<h2>'+inline(esc(l.slice(3)))+'</h2>'; i++; continue; }
+    if (/^# /.test(l)) { closeLists(); html += '<h1>'+inline(esc(l.slice(2)))+'</h1>'; i++; continue; }
+    if (/^\|/.test(l)) {
+      closeLists();
+      const rows = [];
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i]); i++; }
+      const cells = r => r.replace(/^\||\|$/g,'').split('|').map(c=>inline(esc(c.trim())));
+      let t = '<table>';
+      let start = 0;
+      if (rows.length > 1 && /^\|[\s\-|:]+\|$/.test(rows[1])) { t += '<tr>'+cells(rows[0]).map(c=>'<th>'+c+'</th>').join('')+'</tr>'; start = 2; }
+      for (let r = start; r < rows.length; r++) { if (/^\|[\s\-|:]+\|$/.test(rows[r])) continue; t += '<tr>'+cells(rows[r]).map(c=>'<td>'+c+'</td>').join('')+'</tr>'; }
+      html += t + '</table>'; continue;
+    }
+    if (/^\s*[-*] /.test(l)) { if(!inUl){closeLists();html+='<ul>';inUl=true;} html += '<li>'+inline(esc(l.replace(/^\s*[-*] /,'')))+'</li>'; i++; continue; }
+    if (/^\s*\d+\. /.test(l)) { if(!inOl){closeLists();html+='<ol>';inOl=true;} html += '<li>'+inline(esc(l.replace(/^\s*\d+\. /,'')))+'</li>'; i++; continue; }
+    if (/^> /.test(l)) { closeLists(); html += '<blockquote>'+inline(esc(l.slice(2)))+'</blockquote>'; i++; continue; }
+    if (l.trim() === '') { closeLists(); i++; continue; }
+    closeLists();
+    let para = [];
+    while (i < lines.length && lines[i].trim() !== '' && !/^(#|\||\s*[-*] |\s*\d+\. |> )/.test(lines[i]) && !/^\s*---+\s*$/.test(lines[i])) { para.push(lines[i]); i++; }
+    html += '<p>'+inline(esc(para.join(' ')))+'</p>';
+  }
+  closeLists();
+  return html;
+}
+const id = new URLSearchParams(location.search).get('doc') || 'exploration';
+const entry = DOCS.find(d => d[0] === id) || DOCS[1];
+document.getElementById('nav-' + entry[0])?.classList.add('on');
+document.title = entry[2] + ' · Foundation expansion';
+fetch(entry[1]).then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+  .then(t => { document.getElementById('md').innerHTML = render(t); })
+  .catch(() => { document.getElementById('md').innerHTML = '<p>Could not load ' + entry[1] + '. If you are serving this folder yourself, make sure the research/ subfolder is included.</p>'; });
+</script>
+</body>
+</html>

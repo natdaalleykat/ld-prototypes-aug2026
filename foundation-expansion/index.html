@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="robots" content="noindex">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Foundation expansion moments · prototype</title>
 <link rel="stylesheet" href="chrome.css">
@@ -29,7 +30,22 @@
     <b>The ladder.</b> The three products adopt in an order: telemetry first (one config block at install time), because it auto-creates the error metrics that make a guarded rollout zero-setup, and guarded rollouts teach the metric-plus-rollout mechanics that make a first experiment a small step instead of a leap. Every moment below nudges one rung.
   </div>
 
-  <h2 style="font-size:17px;font-weight:650;margin:8px 0 2px">End-to-end flows (implementation-ready designs)</h2>
+  <h2 style="font-size:17px;font-weight:650;margin:8px 0 2px">1. The problem, and what we verified</h2>
+  <div class="meta">Why this exists, the ground truths that reshaped it (all verified against the product code and live flag state), and the per-goal verdicts.</div>
+  <a class="opt" href="docs.html?doc=brief">
+    <div class="t">Product brief <span class="tag">DOC</span></div>
+    <div class="d">Goals, method, deliverables, principles. Start here for the one-page version.</div>
+  </a>
+  <a class="opt" href="docs.html?doc=exploration">
+    <div class="t">The exploration: ground truths, verdicts, shortlist <span class="tag">DOC</span></div>
+    <div class="d">Ten verified ground truths (the 5-included guarded allowance nobody announces, why "keep your split and measure it" doesn't exist, the o11y keystone thesis), moments per goal with feasibility verdicts, killed ideas with reasons, smallest tests.</div>
+  </a>
+  <a class="opt" href="docs.html?doc=flags">
+    <div class="t">Live entitlements and flag state <span class="tag">DOC</span></div>
+    <div class="d">The real numbers pulled from the internal LD instance: who gets guarded rollouts (everyone: 5 soft, 7 hard, lifetime), who has experimentation and o11y, which enabling flags are already live in production. Deeper research notes live in the internal version.</div>
+  </a>
+
+  <h2 style="font-size:17px;font-weight:650;margin:26px 0 2px">2. Design prototypes: end-to-end flows</h2>
   <div class="meta">Click-through walkthroughs: every screen from trigger to done, including the branches. Use the arrows or dots in the dark bar, and the "Why this moment" button for design decisions and gating.</div>
 
   <a class="opt" href="flow-experiment.html">
@@ -77,7 +93,22 @@
     <div class="d">The single lowest-friction moment: the user is already in their init file. One checkbox extends the install snippet with the o11y plugins, and unlocks Moments 3 and 5 downstream. Precedent: the experimentation snippet checkbox already shipped on this page.</div>
   </a>
 
-  <div class="meta" style="margin-top:26px">Every page has a "Why this moment" button in the bottom switcher with the trigger, the gating rules, and the risk to test. Numbers in the mocks (traffic, lift, error counts) are illustrative.</div>
+  <h2 style="font-size:17px;font-weight:650;margin:26px 0 2px">3. The build plan, and why the designs are the way they are</h2>
+  <div class="meta">What has to change in the product to ship the flows, sized and anchored to the actual code, plus the review that pressure-tested the designs.</div>
+  <a class="opt" href="docs.html?doc=punchlist">
+    <div class="t">Punch list of product changes <span class="tag">DOC</span></div>
+    <div class="d">Every change per flow with code anchors and XS/S/M/L sizes, the shared build-once module, sequencing (what ships first and what waits for click data), the instrumentation gate, and the one product decision that belongs to another team.</div>
+  </a>
+  <a class="opt" href="docs.html?doc=flows">
+    <div class="t">Flow specs, v1 plus the v2 amendments <span class="tag">DOC</span></div>
+    <div class="d">The written decisions behind each flow (auto-create or not, what attaches automatically, the no-metric branch, defaults) and the twelve amendments the adversarial review forced, kept visible as a decision trail.</div>
+  </a>
+  <a class="opt" href="docs.html?doc=adversary">
+    <div class="t">The adversarial review <span class="tag">DOC</span></div>
+    <div class="d">25 findings from a hostile pass playing skeptical engineer and designer: five blockers (all resolved), the scope traps, the copy that would have lied, and what got cut.</div>
+  </a>
+
+  <div class="meta" style="margin-top:26px">Every prototype page has a "Why this moment" button in the bottom switcher with the trigger, gating rules, and design decisions. Numbers in the mocks (traffic, lift, error counts) are illustrative; entitlement numbers (5 included, quotas) are real.</div>
 </div>
 </body>
 </html>
