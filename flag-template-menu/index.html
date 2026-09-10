@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Create flag button: control vs treatment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ---------- prototype harness (not product UI) ---------- -->
+<div class="harness" id="harness">
+  <span class="label">A/B prototype: Create flag button</span>
+  <div class="pills" role="tablist" aria-label="Variant">
+    <button data-variant="control" role="tab">Control: split button (today)</button>
+    <button data-variant="treatment" role="tab">Treatment: click opens menu</button>
+  </div>
+  <span class="note">Prototype for A/B: treatment makes the primary click open the template menu.</span>
+</div>
+
+<!-- ---------- fake app chrome (flag list) ---------- -->
+<div class="app">
+  <aside class="sidenav" aria-hidden="true">
+    <div class="proj">
+      <div class="proj-dot"></div>
+      <div><div class="proj-name">Acme Web</div><div class="proj-env">Production</div></div>
+    </div>
+    <div class="nav-item active">Flags</div>
+    <div class="nav-item">Segments</div>
+    <div class="nav-item">Contexts</div>
+    <div class="nav-item">Experiments</div>
+    <div class="nav-item">Releases</div>
+    <div class="nav-item">Metrics</div>
+    <div class="nav-item">AI Configs</div>
+    <div class="nav-item">Live events</div>
+    <div class="nav-sep"></div>
+    <div class="nav-item">Integrations</div>
+    <div class="nav-item">Settings</div>
+  </aside>
+
+  <main class="chrome">
+    <div class="page-head">
+      <h1>Flags</h1>
+      <div class="head-actions">
+        <div class="search">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <span>Search flags</span>
+        </div>
+        <button class="btn">Filters <span class="chev">&#9662;</span></button>
+        <div id="createBtnSlot" class="create-slot"></div>
+      </div>
+    </div>
+
+    <div class="list-meta">
+      <span>12 flags</span>
+      <span class="dot">&middot;</span>
+      <span>Sorted by <b>Creation date</b></span>
+    </div>
+
+    <div class="flag-row">
+      <div class="flag-main">
+        <div class="name">Enable new checkout</div>
+        <div class="key">enable-new-checkout <span class="tag">release</span></div>
+      </div>
+      <div class="flag-side"><span class="status live">Live</span><div class="toggle on"></div></div>
+    </div>
+    <div class="flag-row">
+      <div class="flag-main">
+        <div class="name">Beta dashboard</div>
+        <div class="key">beta-dashboard <span class="tag">beta</span></div>
+      </div>
+      <div class="flag-side"><span class="status">New</span><div class="toggle"></div></div>
+    </div>
+    <div class="flag-row">
+      <div class="flag-main">
+        <div class="name">Search relevance model</div>
+        <div class="key">search-relevance-model <span class="tag">experiment</span></div>
+      </div>
+      <div class="flag-side"><span class="status live">Live</span><div class="toggle on"></div></div>
+    </div>
+    <div class="flag-row">
+      <div class="flag-main">
+        <div class="name">Payments provider kill switch</div>
+        <div class="key">payments-provider-kill-switch <span class="tag">kill-switch</span></div>
+      </div>
+      <div class="flag-side"><span class="status live">Live</span><div class="toggle on"></div></div>
+    </div>
+    <div class="flag-row">
+      <div class="flag-main">
+        <div class="name">Postgres to Aurora migration</div>
+        <div class="key">postgres-to-aurora <span class="tag">migration</span></div>
+      </div>
+      <div class="flag-side"><span class="status">Active</span><div class="toggle on"></div></div>
+    </div>
+  </main>
+</div>
+
+<!-- ---------- create flag dialog (mirrors CreateFlagForm) ---------- -->
+<div class="overlay" id="overlay">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+    <div class="dialog-head">
+      <h2 id="dialogTitle">Create flag</h2>
+      <button class="icon-x" id="closeDialogBtn" aria-label="Close">&#10005;</button>
+    </div>
+
+    <div class="dialog-body">
+      <div class="applied-banner" id="appliedBanner" role="status">
+        <span class="ab-icon" id="appliedIcon"></span>
+        <span>Started from <b id="appliedName">Release</b> template, everything below is editable.</span>
+      </div>
+
+      <div class="two-col" style="margin-top:4px">
+        <div>
+          <label class="field-label" for="fName">Name <span class="req">*</span></label>
+          <input type="text" id="fName" />
+        </div>
+        <div>
+          <label class="field-label" for="fKey">Key <span class="req">*</span></label>
+          <input type="text" id="fKey" />
+        </div>
+      </div>
+
+      <label class="field-label" for="fDesc">Description</label>
+      <textarea rows="2" id="fDesc"></textarea>
+
+      <div class="variations-block">
+        <div class="variations-head">
+          <div class="vtype">
+            <label class="field-label" for="fType" style="margin-top:0">Variations</label>
+            <select id="fType">
+              <option value="boolean">Boolean</option>
+              <option value="string">String</option>
+              <option value="number">Number</option>
+              <option value="json">JSON</option>
+            </select>
+          </div>
+          <button class="btn small chip" title="Template" id="inlineTemplateBtn">
+            <span class="ic" id="inlineTemplateIcon"></span> <span id="inlineTemplateName">Default</span> <span class="chev">&#9662;</span>
+          </button>
+        </div>
+        <div id="varRows"></div>
+        <div class="serve-sentence">
+          Serve <span class="pill" id="serveOn">True</span> when targeting is <b>ON</b> and the flag has no rules<br />
+          Serve <span class="pill" id="serveOff">False</span> when targeting is <b>OFF</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <div class="footer-chips">
+        <button class="btn small chip" title="Maintainer">&#128100; Natalie</button>
+        <button class="btn small chip" title="Tags" id="tagsChip">&#127991;</button>
+        <button class="btn small chip" title="SDK availability">&#127760; All SDKs</button>
+        <button class="btn small chip" title="Flag duration" id="durationChip">&#128336; Permanent</button>
+        <button class="btn small chip" title="Add prerequisite">&#9939; Prerequisite</button>
+      </div>
+      <button class="btn primary" id="submitBtn">Create flag</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
