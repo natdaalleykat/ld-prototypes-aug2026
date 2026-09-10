@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Plans · Billing · LaunchDarkly (prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-mode="control">
+
+<!-- Prototype switcher (not part of the product UI) -->
+<div class="proto-bar" role="toolbar" aria-label="Prototype mode">
+  <span class="proto-label">Prototype · Plans page pricing calculator</span>
+  <div class="proto-pills">
+    <button class="pill" data-set-mode="control">Control: today</button>
+    <button class="pill" data-set-mode="treatment">Treatment: calculator</button>
+  </div>
+</div>
+
+<div class="app">
+  <nav class="sidenav" aria-label="Product navigation">
+    <div class="wordmark"><span class="dot"></span>LaunchDarkly</div>
+    <div class="project">Default project <span class="chev">&#9662;</span></div>
+    <ul>
+      <li>Home</li><li>Flags</li><li>Segments</li><li>Contexts</li>
+      <li>Experiments</li><li>AI Configs</li><li>Observability</li>
+      <li>Releases</li><li>Integrations</li>
+    </ul>
+    <div class="navsep"></div>
+    <ul><li class="active">Account settings</li></ul>
+  </nav>
+
+  <main class="main">
+    <div class="crumbs">Account settings <span>/</span> Billing</div>
+    <h1 class="pagetitle">Billing</h1>
+    <div class="tabs">
+      <span>Overview</span><span class="on">Plans</span><span>Usage</span><span>Payment method</span><span>Invoices</span>
+    </div>
+
+    <!-- ChoosePlanContainer -->
+    <div class="container">
+      <div class="planCards">
+        <div class="header">
+          <h2 class="checkoutStep">Choose a plan</h2>
+          <div class="accountId">Account ID
+            <button class="btn small" type="button">5f3a9c2e1b7d4e00123456ab <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-5A1.5 1.5 0 0 0 3 3.5v6A1.5 1.5 0 0 0 4.5 11H5"/></svg></button>
+          </div>
+        </div>
+
+        <!-- Slot: PricingConciergeBanner (control) -->
+        <div class="slot control-only">
+          <div class="alert info" role="status">
+            <svg class="alert-icon" width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm-.9 5.2a.9.9 0 1 1 1.8 0 .9.9 0 0 1-1.8 0ZM9.2 9h1.6v5H9.2V9Z"/></svg>
+            <div class="alert-body">
+              <div class="alert-heading">Need help estimating costs?</div>
+              <p>Chat with our AI pricing concierge to get a personalized cost estimate based on your architecture and usage patterns.</p>
+              <button class="btn primary small cta" type="button">Get pricing estimate</button>
+            </div>
+            <button class="dismiss" aria-label="Dismiss" type="button">&#x2715;</button>
+          </div>
+        </div>
+
+        <!-- Slot: inline estimator (treatment) -->
+        <div class="slot treatment-only">
+          <section class="calc" aria-labelledby="calc-title">
+            <div class="calc-inputs">
+              <h3 id="calc-title">Estimate your monthly cost</h3>
+              <p class="calc-sub">For the Foundation plan (pay-as-you-go). Change the numbers to match your setup.</p>
+
+              <label class="field">
+                <span class="field-label">Server-side service connections</span>
+                <input id="in-sc" type="number" min="0" step="1" value="12" inputmode="numeric">
+                <span class="help">One per running server-side SDK instance. A relay proxy still counts each instance behind it.</span>
+              </label>
+
+              <label class="field">
+                <span class="field-label">Client-side monthly active users</span>
+                <input id="in-mau" type="number" min="0" step="100" value="25000" inputmode="numeric">
+                <span class="help">Unique users your client-side SDKs see per month.</span>
+              </label>
+
+              <label class="field">
+                <span class="field-label">Experimentation keys (optional)</span>
+                <input id="in-keys" type="number" min="0" step="1000" value="0" inputmode="numeric">
+                <span class="help">Unique keys in experiments per month. Leave 0 if you're not running experiments yet.</span>
+              </label>
+
+              <div class="field">
+                <span class="field-label">Billing</span>
+                <div class="seg" role="radiogroup" aria-label="Billing">
+                  <button class="seg-btn on" type="button" role="radio" aria-checked="true" data-billing="monthly">Monthly</button>
+                  <button class="seg-btn" type="button" role="radio" aria-checked="false" data-billing="annual">Annual <em>save 2 months</em></button>
+                </div>
+              </div>
+
+              <button class="linkish" id="prefill" type="button">Prefill from my trial usage</button>
+              <div class="trial-note" id="trial-note" hidden>Your trial so far: 3 service connections, 1,200 MAU</div>
+            </div>
+
+            <div class="calc-output">
+              <div class="total-label" id="total-label">Estimated monthly cost</div>
+              <div class="total" id="total">$0</div>
+              <div class="total-annual" id="total-annual"></div>
+
+              <table class="breakdown">
+                <thead><tr><th>Line item</th><th>Usage</th><th class="num">Per month</th></tr></thead>
+                <tbody>
+                  <tr><td>Service connections<div class="sub" id="sc-rate"></div></td><td id="sc-usage"></td><td class="num" id="sc-cost"></td></tr>
+                  <tr><td>Client-side MAU<div class="sub" id="mau-rate"></div></td><td id="mau-usage"></td><td class="num" id="mau-cost"></td></tr>
+                  <tr><td>Experimentation keys<div class="sub" id="keys-rate"></div></td><td id="keys-usage"></td><td class="num" id="keys-cost"></td></tr>
+                </tbody>
+              </table>
+
+              <div class="state" id="state-dev" hidden>
+                <div class="note green">The free Developer plan covers this usage.</div>
+              </div>
+              <div class="state" id="state-sales" hidden>
+                <div class="note gray">Estimates this size usually qualify for annual volume pricing.</div>
+                <button class="btn" type="button">Talk to sales</button>
+              </div>
+              <div class="state" id="state-continue" hidden>
+                <button class="btn primary" id="continue" type="button">Continue with Foundation</button>
+              </div>
+
+              <p class="foot">Estimate only. Your bill is based on actual usage. Prices from <a href="https://launchdarkly.com/pricing" target="_blank" rel="noreferrer">launchdarkly.com/pricing</a>.</p>
+            </div>
+          </section>
+        </div>
+
+        <!-- PlanCard grid -->
+        <div class="cardGrid">
+
+          <!-- Developer (developer2025Plan, version 2 marketing copy) -->
+          <article class="planCard">
+            <div class="topSection">
+              <div class="topSectionContent">
+                <h3 class="planCardTitle">Developer <span class="tag">Plan after trial</span></h3>
+                <p class="planCardDescription">One platform for features and agents. Free to start.</p>
+                <p class="planCardPrice">Free</p>
+                <p class="planCardPriceDescription">No credit card required</p>
+              </div>
+              <button class="btn large ctaButton" type="button">Select plan</button>
+            </div>
+            <div class="bottomSection">
+              <div class="featureGroup">
+                <p class="bottomSectionTitle muted">CodeControl:</p>
+                <ul class="features">
+                  <li>Unlimited seats</li><li>Unlimited feature flags</li><li>30 idiomatic SDKs</li>
+                  <li>5K session replays and errors</li><li>10M logs and traces</li><li>A/B tests and experiments</li>
+                </ul>
+              </div>
+              <div class="featureGroup">
+                <p class="bottomSectionTitle muted">AgentControl:</p>
+                <ul class="features">
+                  <li>Unlimited seats</li><li>Unlimited playgrounds</li><li>Unlimited offline evals</li>
+                  <li>Unlimited datasets</li><li>5,000 AI runs</li><li>No overages</li><li>14 days data retention</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <!-- Foundation (foundationPlan, version 3 marketing copy, recommended) -->
+          <article class="planCard recommended" id="foundation-card">
+            <div class="topSection">
+              <div class="topSectionContent">
+                <h3 class="planCardTitle">Foundation</h3>
+                <p class="planCardDescription">Ship features and agents to production. Scale both without hitting a ceiling.</p>
+                <p class="planCardPrice">Pay-as-you-go</p>
+                <p class="planCardPriceDescription">Billed monthly, or save annually</p>
+                <p class="planCardEstimate treatment-only" id="card-estimate"></p>
+              </div>
+              <button class="btn large ctaButton" type="button"><span class="control-only">Select plan</span><span class="treatment-only">Customize plan</span></button>
+            </div>
+            <div class="bottomSection">
+              <div class="featureGroup">
+                <p class="bottomSectionTitle muted">CodeControl:</p>
+                <ul class="features">
+                  <li>Everything in Developer, plus:</li><li>Unlimited projects</li><li>User, account, device targeting</li>
+                  <li>Scalable observability usage</li><li>Scalable experimentation usage</li><li>Single sign on</li>
+                </ul>
+              </div>
+              <div class="featureGroup">
+                <p class="bottomSectionTitle muted">AgentControl:</p>
+                <ul class="features">
+                  <li>Usage-based pricing past 5,000 AI runs/mo</li><li>User, account, device targeting</li>
+                  <li>Scalable observability usage</li><li>Scalable experimentation usage</li><li>Single sign on</li>
+                  <li>30 days data retention</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <!-- Guardian (guardianPlan, version 2 marketing copy) -->
+          <article class="planCard">
+            <div class="topSection">
+              <div class="topSectionContent">
+                <h3 class="planCardTitle">Guardian</h3>
+                <p class="planCardDescription">Monitor and guard everything you ship features and agents.</p>
+                <p class="planCardPrice">Custom pricing</p>
+                <p class="planCardPriceDescription">Contact us for customized plans</p>
+              </div>
+              <button class="btn large ctaButton" type="button">Get quote</button>
+            </div>
+            <div class="bottomSection">
+              <div class="featureGroup">
+                <p class="bottomSectionTitle muted">CodeControl:</p>
+                <ul class="features">
+                  <li>Everything in Foundation, plus:</li><li>Advanced user targeting</li><li>Release automation</li>
+                  <li>Workflows, scheduling, &amp; approvals</li><li>SAML / SCIM</li><li>Release assistant</li><li>Custom roles &amp; teams</li>
+                </ul>
+              </div>
+              <div class="featureGroup">
+                <p class="bottomSectionTitle muted">AgentControl:</p>
+                <ul class="features">
+                  <li>Advanced user targeting</li><li>Release automation</li><li>Workflows, scheduling, &amp; approvals</li>
+                  <li>SAML / SCIM</li><li>Release assistant</li><li>Custom roles &amp; teams</li><li>Custom AI runs</li>
+                  <li>100 days data retention</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="compareFeaturesButtonContainer">
+          <a class="compareFeaturesButton" href="https://launchdarkly.com/pricing/" target="_blank" rel="noreferrer">
+            Compare all features
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 3.5H3.5v9h9V9.5M9 3h4v4M13 3 7.5 8.5"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
