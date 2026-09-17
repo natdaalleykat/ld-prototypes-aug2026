@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="robots" content="noindex" />
+<title>Foundation plan picker: where the AgentControl-only choice should live</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --purple: #6b4dff; --purple-soft: #efeaff;
+    --ink: #1c1d22; --ink-2: #4a4c56; --ink-3: #7a7d89; --line: #e3e4ea;
+    --bg: #f4f4f7; --card: #fff;
+    --warn: #fff6e5; --warn-line: #f2c57a; --ok: #e9f8ef; --ok-line: #9ad7b0; --bad: #fdeeee; --bad-line: #f0a8a8; --info: #eef3ff; --info-line: #c9d6ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); background: var(--bg); font-size: 14px; line-height: 1.45; }
+  a { color: var(--purple); }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 28px 24px 60px; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .meta { color: var(--ink-3); font-size: 13px; margin-bottom: 22px; }
+
+  /* writeup */
+  .doc { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 26px; }
+  .box { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+  .box h2 { font-size: 15px; margin: 0 0 10px; }
+  .box p { margin: 0 0 8px; color: var(--ink-2); }
+  .box ul { margin: 0; padding-left: 18px; color: var(--ink-2); }
+  .box li { margin-bottom: 6px; }
+  .box.wide { grid-column: 1 / -1; }
+  table.opts { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.opts th, table.opts td { text-align: left; vertical-align: top; padding: 8px 10px; border-top: 1px solid var(--line); }
+  table.opts th { color: var(--ink-3); font-weight: 600; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; border-top: none; }
+  .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .pill.do { background: var(--ok); border: 1px solid var(--ok-line); color: #1d6b3b; }
+  .pill.stop { background: var(--warn); border: 1px solid var(--warn-line); color: #8a5a00; }
+  .pill.no { background: var(--bad); border: 1px solid var(--bad-line); color: #9a2b2b; }
+  .pill.now { background: var(--info); border: 1px solid var(--info-line); color: #2a45a6; }
+  .k { color: var(--ink); font-weight: 600; }
+  table.what { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+  table.what td, table.what th { padding: 6px 8px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+  table.what th { border-top: none; color: var(--ink-3); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+
+  /* tabs + mock */
+  .tabs { position: sticky; top: 0; z-index: 5; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .tabs .title { font-weight: 600; margin-right: 10px; }
+  .tab { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 7px 14px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+  .tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 20px; }
+  @media (max-width: 1200px) { .layout { grid-template-columns: 1fr; } }
+
+  .picker { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px 26px; }
+  .picker-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .picker-head h2 { margin: 0; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .back { border: 1px solid var(--line); background: #fff; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 16px; line-height: 1; }
+  .acct { font-size: 12px; color: var(--ink-3); }
+  .acct code { background: #f1f1f5; border: 1px solid var(--line); padding: 3px 8px; border-radius: 6px; color: var(--ink-2); font-size: 11px; }
+  .concierge { background: #f7f8fc; border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; }
+  .concierge b { display: block; font-size: 13px; margin-bottom: 2px; }
+  .concierge p { margin: 0 0 8px; color: var(--ink-2); font-size: 12.5px; }
+  .concierge .btn-sm { display: inline-block; background: #3d5afe; color: #fff; border-radius: 6px; padding: 5px 10px; font-size: 12px; }
+  .toggle-panel { display: flex; align-items: center; gap: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; }
+  .toggle-panel .heading { font-weight: 600; margin-right: 8px; font-size: 15px; }
+  .toggle-panel .sub { color: var(--ink-2); }
+  .switch { position: relative; width: 44px; height: 24px; border-radius: 999px; background: #cfd0d8; cursor: pointer; transition: background .15s; flex: none; border: none; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .switch[aria-checked="true"] { background: var(--purple); }
+  .switch[aria-checked="true"]::after { left: 23px; }
+  .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } }
+  .card { border: 1px solid var(--line); border-radius: 10px; padding: 20px 20px 22px; background: #fff; display: flex; flex-direction: column; }
+  .card.recommended { border-color: var(--purple); box-shadow: 0 0 0 1px var(--purple) inset; }
+  .card h3 { margin: 0 0 8px; font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .tag { font-size: 11px; font-weight: 500; color: var(--ink-2); background: #f1f1f5; border-radius: 999px; padding: 3px 8px; }
+  .tagline { color: var(--ink-2); margin: 0 0 14px; min-height: 40px; }
+  .price { font-size: 22px; font-weight: 600; margin: 0 0 2px; }
+  .price-sub { color: var(--ink-3); font-size: 12.5px; margin: 0 0 16px; min-height: 17px; }
+  .cta { display: inline-block; border-radius: 6px; padding: 9px 16px; font-weight: 600; font-size: 14px; border: 1px solid var(--purple); color: var(--purple); background: #fff; width: max-content; cursor: default; }
+  .cta.primary { background: var(--purple); color: #fff; }
+  .cta.live { cursor: pointer; }
+  .divider { border-top: 1px solid var(--line); margin: 18px 0 14px; }
+  .group-h { font-size: 11px; letter-spacing: .08em; color: var(--ink-3); font-weight: 600; margin: 0 0 10px; text-transform: uppercase; }
+  .feat-h { font-size: 13px; color: var(--ink-2); margin: 0 0 10px; }
+  ul.feats { list-style: none; margin: 0 0 6px; padding: 0; }
+  ul.feats li { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 14px; }
+  ul.feats li::before { content: "✓"; color: var(--purple); font-weight: 700; flex: none; }
+  .compare { text-align: center; margin-top: 22px; }
+  .compare span { display: inline-block; border: 1px solid var(--line); border-radius: 6px; padding: 8px 14px; font-weight: 600; font-size: 13px; }
+  .seg { display: flex; flex-direction: column; gap: 6px; margin: 0 0 14px; }
+  .seg label { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; cursor: pointer; font-size: 13px; }
+  .seg label.on { border-color: var(--purple); background: var(--purple-soft); }
+  .seg input { margin-top: 2px; accent-color: var(--purple); }
+  .seg b { display: block; font-weight: 600; }
+  .seg small { color: var(--ink-2); }
+
+  /* customize step (option C) */
+  .cust { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; }
+  @media (max-width: 900px) { .cust { grid-template-columns: 1fr; } }
+  .cust-card { border: 1px solid var(--line); border-radius: 10px; padding: 20px; background: #fff; }
+  .cust-card h3 { margin: 0; font-size: 20px; }
+  .cust-price { color: var(--ink-2); margin: 2px 0 16px; }
+  .scope { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; background: #fafafc; }
+  .scope-h { display: flex; align-items: center; gap: 8px; font-weight: 600; margin-bottom: 10px; }
+  .info-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--ink-3); color: var(--ink-3); background: #fff; font-size: 12px; font-weight: 700; cursor: pointer; line-height: 1; }
+  .info-btn.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .scope-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 700px) { .scope-opts { grid-template-columns: 1fr; } }
+  .scope-opts label { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 8px; padding: 12px; cursor: pointer; background: #fff; }
+  .scope-opts label.on { border-color: var(--purple); box-shadow: 0 0 0 1px var(--purple) inset; }
+  .scope-opts input { margin-top: 3px; accent-color: var(--purple); }
+  .scope-opts b { display: block; }
+  .scope-opts small { color: var(--ink-2); display: block; margin-top: 2px; }
+  .infomark { margin-top: 12px; border: 1px solid var(--info-line); background: var(--info); border-radius: 8px; padding: 12px 14px; font-size: 13px; }
+  .infomark table { width: 100%; border-collapse: collapse; margin: 6px 0 8px; }
+  .infomark th, .infomark td { text-align: left; padding: 5px 6px; border-top: 1px solid #d9e1fb; vertical-align: top; }
+  .infomark th { border-top: none; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #2a45a6; }
+  .infomark p { margin: 4px 0; color: var(--ink-2); }
+  .inclusions h4 { margin: 0 0 6px; font-size: 14px; }
+  .inclusions ul { margin: 0 0 16px; padding-left: 18px; color: var(--ink-2); }
+  .interval { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 14px; }
+  .interval span { padding: 7px 14px; font-size: 13px; cursor: default; }
+  .interval span.on { background: var(--ink); color: #fff; }
+  .rates h4 { margin: 0 0 8px; font-size: 14px; }
+  table.rates-t { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.rates-t th, table.rates-t td { text-align: left; padding: 8px 8px; border-top: 1px solid var(--line); }
+  table.rates-t th { border-top: none; color: var(--ink-3); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  table.rates-t td.dim { color: var(--ink-3); }
+  tr.removed td { color: #b0b2bd; text-decoration: line-through; }
+  .summary { border: 1px solid var(--line); border-radius: 10px; padding: 18px; background: #fff; }
+  .summary h4 { margin: 0 0 10px; font-size: 15px; }
+  .summary .row { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  .summary .row.total { font-weight: 600; font-size: 15px; }
+  .summary .cta { width: 100%; text-align: center; margin-top: 14px; }
+  .summary p { color: var(--ink-3); font-size: 12px; margin: 10px 0 0; }
+
+  /* side panel */
+  .side { display: flex; flex-direction: column; gap: 14px; }
+  .note { border-radius: 10px; padding: 14px 16px; border: 1px solid var(--line); background: #fff; }
+  .note h4 { margin: 0 0 8px; font-size: 13px; }
+  .note ul { margin: 0; padding-left: 18px; }
+  .note li { margin: 0 0 8px; color: var(--ink-2); }
+  .note.warn { background: var(--warn); border-color: var(--warn-line); }
+  .note.ok { background: var(--ok); border-color: var(--ok-line); }
+  .note.bad { background: var(--bad); border-color: var(--bad-line); }
+  .state { font-size: 12px; color: var(--ink-3); margin-bottom: 8px; }
+  .foot { color: var(--ink-3); font-size: 12px; margin-top: 18px; }
+  .hidden { display: none !important; }
+  code { font-size: 12px; background: #f1f1f5; padding: 1px 4px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Foundation plan picker: where should the AgentControl-only choice live?</h1>
+  <div class="meta">Natalie Friedman · Sep 17 2026 · Interactive reconstruction of the in-app Plans page as a trialist sees it. Copy and plan versions come from gonfalon plan data on main.</div>
+
+  <div class="doc">
+    <div class="box">
+      <h2>The problem</h2>
+      <p>Trialists see an <span class="k">Add CodeControl</span> switch above the plan cards. It frames feature flags as the add-on and AgentControl as the core product, on the page where most trialists came for flags. Turning it off silently changes the Foundation card to a different plan while the name and price headline stay the same.</p>
+      <p>It exists because pricing requires AgentControl to be purchasable standalone, and Billing implemented that as a page-level switch that picks between two Foundation plan versions (Megan Heskett, Jun 3 to 16 2026, PRs 64130, 64234, 64832; spec was the Lovable billing prototype).</p>
+    </div>
+    <div class="box">
+      <h2>What the switch actually does</h2>
+      <table class="what">
+        <tr><th>Card</th><th>Switch ON</th><th>Switch OFF</th></tr>
+        <tr><td class="k">Developer</td><td>Full copy</td><td>AgentControl copy only. <span class="k">Same free plan</span>, features hidden.</td></tr>
+        <tr><td class="k">Foundation</td><td>v3: flags + AgentControl + observability</td><td>v4: AgentControl + observability. Flags capped at free tier. Monthly billing only.</td></tr>
+        <tr><td class="k">Guardian</td><td>Full copy</td><td>AgentControl copy only. <span class="k">Same plan</span>, features hidden.</td></tr>
+      </table>
+      <p style="margin-top:8px">Only the Foundation card changes what you buy. No event tracks the switch, and the purchase event has no version, so we cannot see how often trialists choose v4.</p>
+    </div>
+    <div class="box">
+      <h2>What "AgentControl only" really is</h2>
+      <ul>
+        <li><span class="k">Not a cheaper plan.</span> AI runs cost the same on both versions: 5,000 free, then $5 per 1,000. Service connections from AI-only environments never count on any plan (pricing DACI), so a pure AgentControl team pays the same on the full platform.</li>
+        <li><span class="k">It is a spending guardrail.</span> v4 keeps flags on the free tier so flag usage can never create a charge. The trade: monthly billing only, and flags go read-only past 5 service connections or 1,000 client-side MAU.</li>
+        <li><span class="k">One-way door.</span> v4 to full platform is allowed any time. Full platform back to v4 is blocked in code (support only). Existing Foundation customers can never pick v4.</li>
+        <li>Relevant to a small minority of trialists. In the last 60 days, 411 of 4,745 welcome-survey completers (8.7%) said AI was the first thing they wanted to do; 57% said flags.</li>
+      </ul>
+    </div>
+
+    <div class="box wide">
+      <h2>Options</h2>
+      <table class="opts">
+        <tr><th style="width:26%">Option</th><th>What changes</th><th style="width:38%">Why, or why not</th><th>Verdict</th></tr>
+        <tr><td class="k">Keep today's switch</td><td>Nothing.</td><td>Confusing framing for 100% of trialists to serve a small minority. Jeff Williamson objected on Jun 15; the compromise was default ON.</td><td><span class="pill no">Fix it</span></td></tr>
+        <tr><td class="k">A · Remove switch, choice inside the Foundation card</td><td>Plans page shows the full product on every card. Foundation card carries a two-option radio.</td><td>Honest and keeps v4 reachable, but the card is already the densest on the page and both options share the "Pay-as-you-go" headline, so the difference still reads as copy, not price.</td><td><span class="pill stop">Acceptable</span></td></tr>
+        <tr><td class="k">B · Invert to "Add AgentControl"</td><td>Flags-first framing. OFF shows flags-only cards.</td><td><span class="k">Cannot ship.</span> There is no flags-only Foundation for new customers (BIS-2763: "no option for new customers to be on FM only"). Every new Foundation plan includes AgentControl at the same AI runs rate. OFF would hide copy while still billing AI runs, or needs a new SKU that P&amp;P rejected in the pricing DACI.</td><td><span class="pill no">Not possible</span></td></tr>
+        <tr><td class="k">B2 · Flip polarity: "AgentControl only" switch, default off</td><td>Default view is the full platform. Turning it on shows today's OFF state.</td><td>Smallest change (one label, one default, one file) and fixes the framing. Still puts a product-scope decision above the fold for every trialist, and Developer and Guardian would still swap copy for a plan that does not change.</td><td><span class="pill stop">Stopgap</span></td></tr>
+        <tr><td class="k">C · Remove from Plans page, pick in the Customize step</td><td>One Foundation card. The full-platform vs AgentControl-only choice appears at the top of Customize plan, next to the rates table, with an infomark that says what you get, what you don't, and that CodeControl can be added later.</td><td>Puts the decision where it has consequences: the rates table below it changes live, so "what am I not buying" is visible as removed line items rather than abstract copy. Default is full platform, so nobody has to opt in to flags. The existing <code>fullPlatform</code> URL parameter can preselect AgentControl only for people arriving from AgentControl surfaces.</td><td><span class="pill do">Recommended</span></td></tr>
+        <tr><td class="k">D · Show the AgentControl-only option only to accounts that came in through AgentControl</td><td>Backend decides who is offered v4. Everyone else sees one Foundation with no choice anywhere.</td><td>Already an open decision in Eric Angeles's config-driven picker spec (Jeremy Madison owns "Foundation v4 availability scoped to AIC-campaign accounts in the resolver"). Pair it with C: C is the UI for whoever is eligible, D shrinks who sees it at all.</td><td><span class="pill now">Do with C</span></td></tr>
+        <tr><td class="k">E · Two Foundation cards</td><td>"Foundation" and "Foundation for AgentControl" side by side.</td><td>Four cards, two with the same name and price headline, and it doubles the recommended plan to serve a minority. Rejected.</td><td><span class="pill no">Rejected</span></td></tr>
+        <tr><td class="k">Remove v4 entirely</td><td>No AgentControl-only self-serve plan.</td><td><span class="k">Cannot ship.</span> The pricing DACI (final, May 1) requires AgentControl to be purchasable standalone, and the no-platform-fee decision was made on that basis.</td><td><span class="pill no">Not possible</span></td></tr>
+      </table>
+    </div>
+
+    <div class="box wide">
+      <h2>Recommendation</h2>
+      <ul>
+        <li><span class="k">Ship C now.</span> Delete the switch for trial and Developer viewers, render every card as full platform, and move the choice into Customize plan as a two-option picker with the infomark below. Default full platform. Frontend only, reuses the version storage that already exists.</li>
+        <li><span class="k">Instrument it.</span> Add a version property to the plan-selected and purchase events, and a picker-changed event, so v3 vs v4 demand is measurable for the first time.</li>
+        <li><span class="k">Land D when Jeremy's resolver scoping ships.</span> At that point most trialists never see the picker because the catalog returns one Foundation. The picker only renders when two Foundation versions come back.</li>
+        <li><span class="k">Leave the existing-customer flow alone.</span> Foundation v1/v2 customers see "Add AgentControl", a different job (upgrade to v3) reached from the AgentControl opt-in page.</li>
+        <li><span class="k">Decide this week.</span> Jeremy is porting the switch-dependent copy into backend YAML for the config-driven picker (spec dated Sep 9). Eric's spec currently keeps the switch as-is; changing where the choice lives is a scope add he needs before flag-on.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <span class="title">Try each option</span>
+    <button class="tab active" data-tab="current">Current</button>
+    <button class="tab" data-tab="a">A · In the Foundation card</button>
+    <button class="tab" data-tab="b">B · Invert (why not)</button>
+    <button class="tab" data-tab="b2">B2 · "AgentControl only" switch</button>
+    <button class="tab" data-tab="c">C · Pick in Customize plan (recommended)</button>
+  </div>
+
+  <div class="layout">
+    <div class="picker" id="picker">
+      <div class="picker-head">
+        <h2 id="pageTitle"><button class="back hidden" id="backBtn" aria-label="Back">←</button><span id="pageTitleText">Choose a plan</span></h2>
+        <div class="acct">Account ID <code>6aa177febe108d0a5feb3f2f</code></div>
+      </div>
+
+      <div id="plansScreen">
+        <div class="concierge">
+          <b>Need help estimating costs?</b>
+          <p>Chat with our AI pricing concierge to get a personalized cost estimate based on your architecture and usage patterns.</p>
+          <span class="btn-sm">Get pricing estimate</span>
+        </div>
+        <div class="toggle-panel" id="togglePanel">
+          <button class="switch" id="switch" role="switch" aria-checked="true" aria-label="toggle"></button>
+          <div><span class="heading" id="toggleTitle"></span><span class="sub" id="toggleSub"></span></div>
+        </div>
+        <div class="cards" id="cards"></div>
+        <div class="compare"><span>Compare all features ↗</span></div>
+      </div>
+
+      <div id="customizeScreen" class="hidden"></div>
+    </div>
+
+    <aside class="side" id="side"></aside>
+  </div>
+
+  <div class="foot">
+    Sources: gonfalon <code>packages/plan-manager/src/planData</code> and <code>shared/AgentControlToggle</code> (main, Sep 16 2026); PRs 64130, 64234, 64688, 64832; Jira BIS-2763/2779/2780; DACI: AI Configs Pricing &amp; Packaging (AIC/4565336545); AI Configs Billing Project Planning (PD/4697948169); UI Tech Spec: Config-driven billing plan picker (PD/5315920117); #blitz-ac-billing-phase-2, Jun 15 to 18 2026. Option B off-state copy is illustrative; no such plan exists. Rates in the Customize mock are the current monthly overage rates from <code>products.ts</code>.
+  </div>
+</div>
+
+<script>
+// ---------- plan data (mirrors gonfalon planData) ----------
+const DEV_CC = ['Unlimited seats','Unlimited feature flags','30 idiomatic SDKs','5K session replays and errors','10M logs and traces','A/B tests and experiments'];
+const DEV_AC = ['Unlimited seats','Unlimited playgrounds','Unlimited offline evals','Unlimited datasets','5,000 AI runs','No overages','14 days data retention'];
+const FND_CC = ['Everything in Developer, plus:','Unlimited projects','User, account, device targeting','Scalable observability usage','Scalable experimentation usage','Single sign on'];
+const FND_AC = ['Usage-based pricing past 5,000 AI runs/mo','User, account, device targeting','Scalable observability usage','Scalable experimentation usage','Single sign on','30 days data retention'];
+const GRD_CC = ['Everything in Foundation, plus:','Advanced user targeting','Release automation','Workflows, scheduling, & approvals','SAML / SCIM','Release assistant','Custom roles & teams'];
+const GRD_AC = ['Advanced user targeting','Release automation','Workflows, scheduling, & approvals','SAML / SCIM','Release assistant','Custom roles & teams','Custom AI runs','100 days data retention'];
+
+const CARDS = {
+  dev: {
+    full:   { tagline: 'One platform for features and agents. Free to start.', price: 'Free', sub: 'No credit card required', groups: [{h:'CodeControl', items: DEV_CC},{h:'AgentControl', items: DEV_AC}] },
+    acOnly: { tagline: 'Start governing AI agents. Free to begin.', price: 'Free', sub: 'No credit card required', list: {h:'Free plan includes', items: DEV_AC} },
+    ccOnly: { tagline: 'Feature flags, observability and experiments. Free to start.', price: 'Free', sub: 'No credit card required', list: {h:'Free plan includes', items: DEV_CC} },
+  },
+  fnd: {
+    full:   { tagline: 'Ship features and agents to production. Scale both without hitting a ceiling.', price: 'Pay-as-you-go', sub: 'Billed monthly, or save annually', groups: [{h:'CodeControl', items: FND_CC},{h:'AgentControl', items: FND_AC}] },
+    acOnly: { tagline: 'Ship agents to production. Scale usage without hitting a ceiling.', price: 'Pay-as-you-go', sub: '$5 per 1k AI runs past 5k / mo · monthly billing only', list: {h:'Everything in Developer, plus', items: FND_AC} },
+    ccOnly: { tagline: 'Ship features to production. Scale without hitting a ceiling.', price: 'Pay-as-you-go', sub: 'Billed monthly, or save annually', list: {h:'Everything in Developer, plus', items: FND_CC.slice(1)} },
+  },
+  grd: {
+    full:   { tagline: 'Monitor and guard everything you ship features and agents.', price: 'Custom pricing', sub: 'Contact us for customized plans', groups: [{h:'CodeControl', items: GRD_CC},{h:'AgentControl', items: GRD_AC}] },
+    acOnly: { tagline: 'Monitor and guard every agent in production.', price: 'Custom pricing', sub: 'Contact us for customized plans', list: {h:'Everything in Foundation, plus', items: GRD_AC} },
+    ccOnly: { tagline: 'Monitor and guard everything you ship to production.', price: 'Custom pricing', sub: 'Contact us for customized plans', list: {h:'Everything in Foundation, plus', items: GRD_CC.slice(1)} },
+  },
+};
+
+// monthly rates from products.ts
+const RATES = {
+  v3: [
+    ['Service connections', '5', '$12 each'],
+    ['Client-side MAU', '1,000', '$10 / 1,000'],
+    ['AI runs', '5,000', '$5 / 1,000'],
+    ['Session replays', '5,000', '$3.50 / 1,000'],
+    ['Errors', '5,000', '$0.30 / 1,000'],
+    ['Traces', '10M', '$1.50 / 1M'],
+    ['Logs', '10M', '$1.50 / 1M'],
+    ['Experimentation MAU', '100,000', 'Included'],
+  ],
+  v4remove: ['Service connections', 'Client-side MAU'],
+};
+
+function featList(h, items, cls) {
+  return (h ? `<p class="${cls||'group-h'}">${h}</p>` : '') + `<ul class="feats">${items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+}
+function cardHtml(key, state, extra, liveCta) {
+  const meta = { dev: {name:'Developer', tag:'Plan after trial', cta:'Select plan'}, fnd: {name:'Foundation', cta:'Select plan', primary:true, rec:true}, grd: {name:'Guardian', cta:'Get quote'} }[key];
+  const s = CARDS[key][state];
+  const body = s.groups
+    ? s.groups.map((g, i) => (i ? '<div class="divider"></div>' : '') + featList(g.h + ':', g.items)).join('')
+    : featList(s.list.h, s.list.items, 'feat-h');
+  return `<div class="card ${meta.rec ? 'recommended' : ''}">
+    <h3>${meta.name}${meta.tag ? `<span class="tag">${meta.tag}</span>` : ''}</h3>
+    <p class="tagline">${s.tagline}</p>
+    <p class="price">${s.price}</p>
+    <p class="price-sub">${s.sub}</p>
+    ${extra || ''}
+    <span class="cta ${meta.primary ? 'primary' : ''} ${liveCta ? 'live' : ''}" ${liveCta ? 'id="fndSelect"' : ''}>${meta.cta}</span>
+    <div class="divider"></div>
+    ${body}
+  </div>`;
+}
+
+// ---------- option C: customize step ----------
+const C = { screen: 'plans', scope: 'full', info: false };
+function customizeHtml() {
+  const ac = C.scope === 'ac';
+  const rows = RATES.v3.map(([p, inc, rate]) => {
+    const removed = ac && RATES.v4remove.includes(p);
+    return `<tr class="${removed ? 'removed' : ''}"><td>${p}</td><td>${removed ? 'Free tier only' : inc}</td><td class="${removed ? '' : 'dim'}">${removed ? 'Not billed' : rate}</td></tr>`;
+  }).join('');
+  const infomark = `
+    <div class="infomark">
+      <table>
+        <tr><th></th><th>Full platform</th><th>AgentControl only</th></tr>
+        <tr><td class="k">Feature flags and experimentation</td><td>Unlimited projects and targeting. Service connections and client-side MAU billed past the free amounts.</td><td>Stay on the free tier: 5 service connections, 1,000 client-side MAU. Flags go read-only past that until you add CodeControl.</td></tr>
+        <tr><td class="k">AgentControl</td><td>5,000 AI runs free, then $5 per 1,000</td><td>Same</td></tr>
+        <tr><td class="k">Observability</td><td>Usage-based</td><td>Same</td></tr>
+        <tr><td class="k">Billing</td><td>Monthly, or annual with 2 free months</td><td>Monthly only</td></tr>
+      </table>
+      <p><span class="k">Change later:</span> you can add CodeControl to an AgentControl-only plan any time from Billing. Moving from the full platform back to AgentControl only needs a support request.</p>
+    </div>`;
+  return `
+    <div class="cust">
+      <div class="cust-card">
+        <h3>Foundation Plan</h3>
+        <p class="cust-price">Price based on monthly usage</p>
+
+        <div class="scope">
+          <div class="scope-h">What do you want billed?
+            <button class="info-btn ${C.info ? 'on' : ''}" id="infoBtn" aria-label="What is the difference">?</button>
+            <span style="font-weight:400;color:var(--ink-3);font-size:12px">What's the difference?</span>
+          </div>
+          <div class="scope-opts">
+            <label class="${!ac ? 'on' : ''}"><input type="radio" name="scope" value="full" ${!ac ? 'checked' : ''}><span><b>Full platform</b><small>Feature flags, experimentation, observability and AgentControl. Recommended.</small></span></label>
+            <label class="${ac ? 'on' : ''}"><input type="radio" name="scope" value="ac" ${ac ? 'checked' : ''}><span><b>AgentControl only</b><small>AI runs and observability are billed. Feature flags stay on the free tier. Monthly billing only.</small></span></label>
+          </div>
+          ${C.info ? infomark : ''}
+        </div>
+
+        <div class="inclusions">
+          <h4>What's included:</h4>
+          <ul>
+            <li>Built-in monthly usage, plus <b>100K experimentation MAU.</b></li>
+            ${ac ? '<li>Feature flags and experimentation within the free Developer limits.</li>' : ''}
+          </ul>
+        </div>
+
+        ${ac ? '<p class="state" style="margin-bottom:10px">Annual billing is not available on AgentControl only.</p>' : '<div class="interval"><span class="on">Monthly</span><span>Annual · 2 free months</span></div>'}
+
+        <div class="rates">
+          <h4>Usage and rates by product</h4>
+          <table class="rates-t">
+            <tr><th>Product</th><th>Included</th><th>Standard rate</th></tr>
+            ${rows}
+          </table>
+        </div>
+      </div>
+      <div class="summary">
+        <h4>Summary</h4>
+        <div class="row"><span>Plan</span><span>Foundation${ac ? ' · AgentControl only' : ''}</span></div>
+        <div class="row"><span>Billing</span><span>Monthly</span></div>
+        <div class="row"><span>Base fee</span><span>$0</span></div>
+        <div class="row total"><span>Due today</span><span>$0.00</span></div>
+        <span class="cta primary">Continue to checkout</span>
+        <p>Usage above the included amounts is billed at the end of each month.${ac ? ' Feature flag usage is never billed on this plan.' : ''}</p>
+      </div>
+    </div>`;
+}
+
+// ---------- tabs ----------
+const TABS = {
+  current: {
+    toggle: { title: 'Add CodeControl', sub: 'Feature flagging and experimentation', default: true },
+    render(on) { const st = on ? 'full' : 'acOnly'; return cardHtml('dev', st) + cardHtml('fnd', st) + cardHtml('grd', st); },
+    side(on) { return `
+      <div class="note"><div class="state">Switch is <b>${on ? 'ON (default for trialists since Jun 16)' : 'OFF'}</b>. Flip it.</div>
+        <h4>Today</h4>
+        <ul>
+          <li>Only the Foundation card changes plan (v3 ON, v4 OFF). Developer and Guardian only change copy and hide included features when OFF.</li>
+          <li>Both Foundation states are named "Foundation" with a "Pay-as-you-go" headline, so the difference is invisible unless you read the subtitle.</li>
+        </ul></div>
+      <div class="note warn"><h4>Why it reads AgentControl-first</h4><ul><li>The label makes flags the add-on. Jeff Williamson objected on Jun 15; the Jun 16 compromise kept the label and defaulted it ON.</li></ul></div>`; }
+  },
+  a: {
+    toggle: null, acOnlyChoice: false,
+    render() {
+      const c = this.acOnlyChoice;
+      const seg = `<div class="seg" id="seg">
+        <label class="${!c ? 'on' : ''}"><input type="radio" name="fnd" value="full" ${!c ? 'checked' : ''}><span><b>Full platform</b><small>CodeControl + AgentControl. Billed monthly, or save annually.</small></span></label>
+        <label class="${c ? 'on' : ''}"><input type="radio" name="fnd" value="ac" ${c ? 'checked' : ''}><span><b>AgentControl only</b><small>$5 per 1k AI runs past 5k/mo. Monthly billing. Flags stay within free limits.</small></span></label>
+      </div>`;
+      return cardHtml('dev', 'full') + cardHtml('fnd', c ? 'acOnly' : 'full', seg) + cardHtml('grd', 'full');
+    },
+    side() { return `
+      <div class="note ok"><h4>Fixes</h4><ul><li>Every card shows the whole product. Nobody opts in to flags.</li><li>The AgentControl-only plan stays reachable.</li></ul></div>
+      <div class="note warn"><h4>Costs</h4><ul><li>The Foundation card is already the densest on the page; the radio pushes the feature list further down.</li><li>Both options share the same price headline, so the difference still reads as copy. In Customize plan (option C) it reads as line items.</li></ul></div>`; }
+  },
+  b: {
+    toggle: { title: 'Add AgentControl', sub: 'Runtime control for your agents', default: false },
+    render(on) { const st = on ? 'full' : 'ccOnly'; return cardHtml('dev', st) + cardHtml('fnd', st) + cardHtml('grd', st); },
+    side(on) { return `
+      <div class="note"><div class="state">Switch is <b>${on ? 'ON' : 'OFF'}</b>. Flip it.</div><h4>What it looks like</h4><ul><li>ON is today's default. OFF shows flags-only cards and reads flags-first.</li></ul></div>
+      <div class="note bad"><h4>Why it cannot ship</h4>
+        <ul>
+          <li><span class="k">OFF has nothing to sell.</span> No flags-only Foundation exists for new customers (BIS-2763). Every new Foundation includes AgentControl at the same AI runs rate.</li>
+          <li>A trialist who leaves it OFF and buys still gets AI runs billed on usage. Worse surprise than today.</li>
+          <li>A real OFF state means a new plan version that P&amp;P rejected in the pricing DACI. Pricing decision, not UI.</li>
+          <li>The AgentControl-only plan becomes unreachable with no alternative path.</li>
+        </ul></div>`; }
+  },
+  b2: {
+    toggle: { title: 'AgentControl only', sub: 'Skip CodeControl and pay only for AI runs and observability', default: false },
+    render(on) { const st = on ? 'acOnly' : 'full'; return cardHtml('dev', st) + cardHtml('fnd', st) + cardHtml('grd', st); },
+    side(on) { return `
+      <div class="note"><div class="state">Switch is <b>${on ? 'ON' : 'OFF (default)'}</b>. Flip it.</div>
+        <h4>Same mechanics, flipped polarity</h4>
+        <ul><li>OFF (default) is today's ON. ON is today's OFF. One label and one default in one file.</li><li>Flags stop being the add-on; the exception is what you opt into.</li></ul></div>
+      <div class="note warn"><h4>Why it is a stopgap</h4>
+        <ul>
+          <li>A product-scope decision still sits above the fold for every trialist, though it matters to a small minority.</li>
+          <li>"AgentControl only" next to three plans is ambiguous: it looks like it applies to Developer and Guardian, which do not change.</li>
+          <li>Developer and Guardian still swap to AgentControl-only copy when ON and hide included features. If this ships, make ON change only the Foundation card.</li>
+        </ul></div>`; }
+  },
+  c: {
+    toggle: null,
+    render() { return cardHtml('dev', 'full') + cardHtml('fnd', 'full', '', true) + cardHtml('grd', 'full'); },
+    side() {
+      if (C.screen === 'plans') return `
+        <div class="note ok"><h4>Plans page</h4><ul><li>No switch. Every card is the full product. Click <b>Select plan</b> on Foundation to see the Customize step.</li><li>One Foundation, one headline, one decision on this page: which tier.</li></ul></div>
+        <div class="note"><h4>Entry points</h4><ul><li>AgentControl surfaces (opt-in page, "AI runs exceeded" banner) can deep-link to Customize with the AgentControl-only option preselected via the existing <code>fullPlatform</code> parameter.</li></ul></div>`;
+      return `
+        <div class="note ok"><h4>Customize step</h4>
+          <ul>
+            <li>The choice sits directly above the rates table. Pick <b>AgentControl only</b> and the service connection and MAU lines are struck out, the annual option disappears, and the summary says flag usage is never billed.</li>
+            <li>The <b>?</b> infomark answers the three questions the switch never did: what you get, what you don't, and whether you can change later.</li>
+            <li>Default is full platform. Nobody opts in to flags.</li>
+          </ul></div>
+        <div class="note"><h4>Build notes</h4>
+          <ul>
+            <li>Plan version is already stored in session for checkout (<code>usePlanVersionStorage</code>); the picker writes it instead of the page-level switch.</li>
+            <li>With the config-driven catalog, the picker renders only when two Foundation versions come back. Once Jeremy scopes v4 to AgentControl-origin accounts, most trialists never see it.</li>
+            <li>Add a version property to plan-selected and purchase events so v3 vs v4 demand is measurable.</li>
+          </ul></div>`;
+    }
+  },
+};
+
+let active = 'current';
+let toggleOn = true;
+const $ = (id) => document.getElementById(id);
+
+function draw() {
+  const t = TABS[active];
+  const panel = $('togglePanel');
+  if (t.toggle) {
+    panel.classList.remove('hidden');
+    $('toggleTitle').textContent = t.toggle.title;
+    $('toggleSub').textContent = t.toggle.sub;
+    $('switch').setAttribute('aria-checked', String(toggleOn));
+  } else panel.classList.add('hidden');
+
+  const showCustomize = active === 'c' && C.screen === 'customize';
+  $('plansScreen').classList.toggle('hidden', showCustomize);
+  $('customizeScreen').classList.toggle('hidden', !showCustomize);
+  $('backBtn').classList.toggle('hidden', !showCustomize);
+  $('pageTitleText').textContent = showCustomize ? 'Customize plan' : 'Choose a plan';
+
+  if (showCustomize) {
+    $('customizeScreen').innerHTML = customizeHtml();
+    $('customizeScreen').querySelectorAll('input[name=scope]').forEach(r => r.addEventListener('change', e => { C.scope = e.target.value; draw(); }));
+    $('infoBtn').addEventListener('click', () => { C.info = !C.info; draw(); });
+  } else {
+    $('cards').innerHTML = t.render(toggleOn);
+    const seg = $('seg');
+    if (seg) seg.querySelectorAll('input').forEach(r => r.addEventListener('change', e => { TABS.a.acOnlyChoice = e.target.value === 'ac'; draw(); }));
+    const sel = $('fndSelect');
+    if (sel) sel.addEventListener('click', () => { C.screen = 'customize'; draw(); $('picker').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  }
+  $('side').innerHTML = t.side(toggleOn);
+}
+
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  active = b.dataset.tab;
+  toggleOn = TABS[active].toggle ? TABS[active].toggle.default : true;
+  if (active !== 'c') C.screen = 'plans';
+  draw();
+  $('tabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+$('switch').addEventListener('click', () => { toggleOn = !toggleOn; draw(); });
+$('backBtn').addEventListener('click', () => { C.screen = 'plans'; draw(); });
+
+// deep link: ?tab=c&screen=customize&scope=ac&info=1
+const q = new URLSearchParams(location.search);
+if (q.get('tab') && TABS[q.get('tab')]) {
+  active = q.get('tab');
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x.dataset.tab === active));
+  toggleOn = TABS[active].toggle ? TABS[active].toggle.default : true;
+  if (q.get('screen') === 'customize') C.screen = 'customize';
+  if (q.get('scope') === 'ac') C.scope = 'ac';
+  if (q.get('info') === '1') C.info = true;
+}
+draw();
+</script>
+</body>
+</html>
