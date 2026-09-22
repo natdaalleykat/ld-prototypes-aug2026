@@ -68,10 +68,13 @@ details.more li{padding:8px 0;border-top:1px solid var(--line)}
 details.more li b{color:var(--text);font-weight:600;display:block}
 .hidden{display:none}
 @media (max-width:720px){.mhead,.row,.total{grid-template-columns:1fr}.out{text-align:left}.ctl{justify-content:flex-start}}
+.sub2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:12px 18px 0}
+.flash{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px;transition:outline .2s}
+.rng{color:var(--muted);font-size:12px}
 </style></head><body><div class="wrap">
 <header>
   <div><h1>Estimate your Foundation cost</h1><p>Answer in your own terms. We convert to what you are billed on and show every assumption.</p></div>
-  <div class="seg" id="interval"><button data-v="annual" class="on">Billed yearly</button><button data-v="monthly">Pay monthly</button></div>
+  <div class="seg" id="interval"><button data-v="monthly" class="on">Pay monthly</button><button data-v="annual">Billed yearly</button></div>
 </header>
 
 <div class="product">
@@ -87,21 +90,34 @@ details.more li b{color:var(--text);font-weight:600;display:block}
     </div>
     <button class="toggle open" data-t="scIn">How we count this</button>
     <div class="inputs open" id="scIn">
-      <div class="row"><div><label>Your backend runs as</label><div class="h">Pick what most of it is. Mixed? Estimate each kind separately and add them.</div></div>
-        <div class="ctl"><div class="seg sm" id="shape"><button data-v="proc" class="on">Long-running services</button><button data-v="fn">Functions</button></div></div></div>
-      <div class="row shape-proc"><div><label>Copies running in production</label><div class="h">Containers, pods, VMs or replicas that run the SDK. Monthly average, not peak.</div></div>
+      <div class="sub2">Long-running services</div>
+      <div class="row"><div><label>Copies running in production</label><div class="h">Containers, pods, VMs or replicas that run the SDK. Monthly average, not peak. Enter 0 if everything is serverless.</div></div>
         <div class="ctl"><input type="number" id="copies" value="6" min="0"><span class="unit">copies</span></div></div>
-      <div class="row shape-proc"><div><label>Processes per copy that start the SDK</label><div class="h">Most services: 1. Python or Ruby web servers (gunicorn, Puma) usually run <i>3 to 5</i> workers, and each one connects.</div></div>
+      <div class="row"><div><label>Processes per copy that start the SDK</label><div class="h">Forked worker processes each connect: gunicorn, Puma, Celery, Sidekiq, Temporal and Kafka consumers, sidecars. Python and Ruby web servers usually run <i>3 to 5</i>. Threads inside one process share one client.</div></div>
         <div class="ctl"><input type="number" id="procs" value="1" min="1"><span class="unit">per copy</span></div></div>
-      <div class="row shape-fn hidden"><div><label>Function runs per month</label><div class="h">All invocations of functions that use a server-side SDK, such as Lambda or Cloud Run.</div></div>
-        <div class="ctl"><input type="number" id="invocations" value="1000000" min="0" step="100000"><span class="unit">runs</span></div></div>
-      <div class="row shape-fn hidden"><div><label>Average run time</label><div class="h">We add up actual run time. Time the client stays warm after a cold start counts too.</div></div>
+      <div class="row"><div><label>How much of the month they run</label><div class="h">Connected minutes are what we bill, so part-time copies cost less.</div></div>
+        <div class="ctl"><select id="uptime"><option value="1">All month, 24x7</option><option value="0.27">Business hours (9 h x 5 days)</option><option value="0.5">About half the time</option></select></div></div>
+      <div class="sub2">Serverless functions <span style="text-transform:none;letter-spacing:0">(leave at 0 if none)</span></div>
+      <div class="row"><div><label>Function runs per month</label><div class="h">All invocations of functions that use a server-side SDK, such as Lambda or Cloud Run.</div></div>
+        <div class="ctl"><input type="number" id="invocations" value="0" min="0" step="100000"><span class="unit">runs</span></div></div>
+      <div class="row fn-only hidden"><div><label>Average run time</label><div class="h">We add up actual run time, sampled each minute. A short run is not rounded up to a minute.</div></div>
         <div class="ctl"><input type="number" id="duration" value="0.4" min="0" step="0.1"><span class="unit">seconds</span></div></div>
-      <div class="row"><div><label>Environments it connects to</label><div class="h">Production plus staging, QA, dev. Each one counts the same as production.</div></div>
+      <div class="row fn-only hidden"><div><label>Cold starts per month</label><div class="h">After a cold start the SDK client stays warm about 5 minutes when it is created outside the handler. Prefilled at 1 per 1,000 runs; your cloud console has the real number.</div></div>
+        <div class="ctl"><input type="number" id="coldstarts" value="" placeholder="auto" min="0" step="100"><span class="unit">cold starts</span></div></div>
+      <div class="sub2">Applies to everything above</div>
+      <div class="row"><div><label>Environments it connects to</label><div class="h">Production plus staging, QA, dev. LaunchDarkly bills every environment at the same rate.</div></div>
         <div class="ctl"><input type="number" id="envs" value="3" min="1"><span class="unit">environments</span></div></div>
-      <div class="row"><div><label>Engineers working on this backend</label><div class="h">We assume half run it on a laptop about 5 hours a day. Free if they use the local flag mirror (LaunchDarkly dev server).</div></div>
+      <div class="row"><div><label>Non-production fleets compared with production</label><div class="h">Staging is often smaller, but per-engineer and preview environments can make it larger.</div></div>
+        <div class="ctl"><select id="nonprod"><option value="0.5">About half the size</option><option value="1" selected>About the same</option><option value="1.5">Larger</option></select></div></div>
+      <div class="row"><div><label>Engineers working on this backend</label><div class="h">Each one running it locally against LaunchDarkly counts for the hours connected.</div></div>
         <div class="ctl"><input type="number" id="engineers" value="8" min="0"><span class="unit">people</span></div></div>
-      <div class="row"><div><label class="check"><input type="checkbox" id="reduced"><span>Runs on Kubernetes or serverless, or uses the Python or Ruby SDK<div class="h">These setups create far more connections for the same workload, so we apply a 50% discount and halve the per-connection price to reflect that. You confirm it at checkout.</div></span></label></div><div></div></div>
+      <div class="row"><div><label>Local development and CI connect to</label><div class="h">The LaunchDarkly dev server serves flags from a local process, so laptops and CI pointed at it create no connections.</div></div>
+        <div class="ctl"><select id="devmode"><option value="ld">LaunchDarkly directly</option><option value="dev">The dev server (free)</option></select></div></div>
+      <div class="row dev-ld"><div><label>Laptop hours per engineer per working day</label><div class="h">Average across the team. Many people run the backend only some of the time.</div></div>
+        <div class="ctl"><input type="number" id="hours" value="2.5" min="0" step="0.5"><span class="unit">hours</span></div></div>
+      <div class="row dev-ld"><div><label>Test or CI runs per month that start the SDK</label><div class="h">We assume 2 minutes each. Parallel jobs each count.</div></div>
+        <div class="ctl"><input type="number" id="ciruns" value="500" min="0" step="100"><span class="unit">runs</span></div></div>
+      <div class="row"><div><label class="check"><input type="checkbox" id="reduced"><span>Runs on Kubernetes or serverless, or uses the Python or Ruby SDK<div class="h">These setups create far more connections for the same workload, so we apply a 50% discount and halve the per-connection price to reflect that. You confirm it at checkout, and LaunchDarkly may verify it.</div></span></label></div><div></div></div>
       <div class="formula" id="scFormula"></div>
       <div class="assume" id="scAssume"></div>
     </div>
@@ -114,8 +130,8 @@ details.more li b{color:var(--text);font-weight:600;display:block}
     </div>
     <button class="toggle open" data-t="mauIn">How we count this</button>
     <div class="inputs open" id="mauIn">
-      <div class="row"><div><label>People who use your web or mobile app per month</label><div class="h">Signed-in and anonymous together. Enter 0 if you only use flags on the backend.</div></div>
-        <div class="ctl"><input type="number" id="people" value="0" min="0" step="1000"><span class="unit">people</span></div></div>
+      <div class="row"><div><label>Unique people or devices your web or mobile app sees per month</label><div class="h">Signed-in and anonymous together. We bill on unique keys, so if you key on device, count devices. Enter 0 if flags run only on the backend.</div></div>
+        <div class="ctl"><input type="number" id="people" value="0" min="0" step="1000"><span class="unit">per month</span></div></div>
       <div class="row"><div><label>Anonymous visitors get a stored ID</label><div class="h">A cookie or localStorage key. Without it, every visit looks like a new person.</div></div>
         <div class="ctl"><div class="seg sm" id="persist"><button data-v="yes" class="on">Yes</button><button data-v="no">No</button><button data-v="unsure">Not sure</button></div></div></div>
       <div class="row persist-no hidden"><div><label>Visits per visitor per month</label><div class="h">Each visit becomes a new key when no ID is stored.</div></div>
@@ -129,7 +145,7 @@ details.more li b{color:var(--text);font-weight:600;display:block}
   <div class="ptitle"><h2>AgentControl</h2><span class="tag">5,000 RUNS INCLUDED</span></div>
   <div class="meter">
     <div class="mhead">
-      <div><h3>Production AI runs</h3><div class="sub">$5 per 1,000 after the first 5,000, billed monthly on every plan. One run = one tracked LLM request or online eval.</div></div>
+      <div><h3>Production AI runs</h3><div class="sub">$5 per 1,000 after the first 5,000, billed monthly on every plan. One run = one tracked LLM request or one automated quality check (online eval). Run data is kept 30 days on Foundation.</div></div>
       <div class="out"><div class="ctl"><input type="number" id="airuns" value="0" min="0" step="1000"><span class="unit">runs / mo</span></div><div class="c" id="aiCost"></div></div>
     </div>
   </div>
@@ -138,21 +154,21 @@ details.more li b{color:var(--text);font-weight:600;display:block}
 <div class="product">
   <div class="ptitle"><h2>Observability</h2><span class="tag">INCLUDED UP TO LIMITS</span></div>
   <div class="meter">
-    <div class="mhead"><div><h3>Session replays, errors, logs and traces</h3><div class="sub">5k replays, 5k errors, 10M logs and 10M traces free each month. Usage above that bills monthly at the rates below; prepaying yearly lowers them.</div></div>
+    <div class="mhead"><div><h3>Session replays, errors, logs and traces</h3><div class="sub" id="o11ySub"></div></div>
       <div class="out"><div class="c" id="o11yCost"></div></div></div>
     <button class="toggle" data-t="o11yIn">Add expected volume</button>
     <div class="inputs" id="o11yIn">
-      <div class="row"><div><label>Session replays</label><div class="h">$3.50 per 1,000 after 5,000</div></div><div class="ctl"><input type="number" id="replays" value="0" min="0" step="1000"><span class="unit">/ mo</span></div></div>
-      <div class="row"><div><label>Errors</label><div class="h">$0.30 per 1,000 after 5,000</div></div><div class="ctl"><input type="number" id="errors" value="0" min="0" step="1000"><span class="unit">/ mo</span></div></div>
-      <div class="row"><div><label>Log lines</label><div class="h">$1.50 per million after 10 million</div></div><div class="ctl"><input type="number" id="logs" value="0" min="0" step="1000000"><span class="unit">/ mo</span></div></div>
-      <div class="row"><div><label>Trace spans</label><div class="h">$1.50 per million after 10 million</div></div><div class="ctl"><input type="number" id="traces" value="0" min="0" step="1000000"><span class="unit">/ mo</span></div></div>
+      <div class="row"><div><label>Session replays</label><div class="h" id="hReplays"></div></div><div class="ctl"><input type="number" id="replays" value="0" min="0" step="1000"><span class="unit">/ mo</span></div></div>
+      <div class="row"><div><label>Errors</label><div class="h" id="hErrors"></div></div><div class="ctl"><input type="number" id="errors" value="0" min="0" step="1000"><span class="unit">/ mo</span></div></div>
+      <div class="row"><div><label>Log lines</label><div class="h" id="hLogs"></div></div><div class="ctl"><input type="number" id="logs" value="0" min="0" step="1000000"><span class="unit">/ mo</span></div></div>
+      <div class="row"><div><label>Trace spans</label><div class="h" id="hTraces"></div></div><div class="ctl"><input type="number" id="traces" value="0" min="0" step="1000000"><span class="unit">/ mo</span></div></div>
     </div>
   </div>
 </div>
 
 <div class="total">
   <div>
-    <div class="big"><span id="totMonthly">$0</span><small>per month</small></div>
+    <div class="big"><span id="totBig">$0</span><small id="totUnit">per month</small></div>
     <div class="alt" id="totAlt"></div>
     <div class="lines" id="lines"></div>
   </div>
@@ -164,58 +180,111 @@ details.more li b{color:var(--text);font-weight:600;display:block}
   <li><b>How many flags you have, or how often you evaluate them.</b> 10 flags and 10,000 flags cost the same. Backend requests do not count. The one exception is PHP, which polls instead of streaming: 732 polls a month equals 1 connection.</li>
   <li><b>Pod size.</b> CPU and memory do not count. How many copies run, and for how long, does.</li>
   <li><b>Reconnects.</b> A dropped stream that reconnects does not start a new charge. We only add up connected minutes. A rolling deploy counts the few minutes old and new copies overlap.</li>
-  <li><b>Your browser and mobile SDKs.</b> They never create a connection. They count as monthly active users.</li>
+  <li><b>Your browser, mobile and edge SDKs.</b> They never create a connection. Browser and mobile SDKs count as monthly active users.</li>
 </ul></details>
 <details class="more"><summary>Your first week after you buy</summary><ul>
   <li><b>Set an application ID on every service.</b> Otherwise your usage page says "Unknown" and you cannot see which service is using connections.</li>
-  <li><b>Point laptops and CI at the local flag mirror.</b> The LaunchDarkly dev server serves flags locally, so those minutes are free.</li>
-  <li><b>Share one SDK client per process.</b> Create it once at startup, not per request or per worker thread.</li>
+  <li><b>Point laptops and CI at the dev server.</b> It serves flags from a local process, so those hours create no connections.</li>
+  <li><b>Create one SDK client per process, at startup.</b> Not per request. Forked workers each need their own; threads in one process share it.</li>
 </ul></details>
-<p style="color:var(--muted);font-size:12px;margin-top:18px">Estimate only. Billing is based on measured usage: connected minutes divided by 43,800 for connections, unique keys per month for MAU.</p>
+<p style="color:var(--muted);font-size:12px;margin-top:18px">Estimate only. Billing is based on measured usage: connected minutes divided by 43,800 for connections, unique context keys per month for MAU.</p>
 </div>
 <script>
 const $=id=>document.getElementById(id);
-const RATES={annual:{sc:10,mau:8.33},monthly:{sc:12,mau:10}};
+const RATES={annual:{sc:10,mau:8.33,replays:2.92,errors:0.25,logs:1.25,traces:1.25},monthly:{sc:12,mau:10,replays:3.5,errors:0.3,logs:1.5,traces:1.5}};
 const FREE={sc:5,mau:1000,ai:5000,replays:5000,errors:5000,logs:10e6,traces:10e6};
-const state={interval:'annual',shape:'proc',persist:'yes'};
+const state={interval:'monthly',persist:'yes'};
 const fmt=n=>'$'+Math.round(n).toLocaleString();
 const fmt2=n=>n.toLocaleString(undefined,{maximumFractionDigits:1});
 const num=id=>Math.max(0,parseFloat($(id).value)||0);
 function seg(id,key,cb){$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{state[key]=b.dataset.v;$(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));cb&&cb();calc();});}
-seg('interval','interval');seg('shape','shape',()=>{if(state.shape==='fn')$('reduced').checked=true;document.querySelectorAll('.shape-proc').forEach(e=>e.classList.toggle('hidden',state.shape!=='proc'));document.querySelectorAll('.shape-fn').forEach(e=>e.classList.toggle('hidden',state.shape!=='fn'));});
+seg('interval','interval');
 seg('persist','persist',()=>{document.querySelectorAll('.persist-no').forEach(e=>e.classList.toggle('hidden',state.persist==='yes'));});
 document.querySelectorAll('.toggle').forEach(b=>b.onclick=()=>{const t=$(b.dataset.t);t.classList.toggle('open');b.classList.toggle('open');});
-document.querySelectorAll('input').forEach(i=>i.addEventListener('input',calc));
-function calc(){
-  const r=RATES[state.interval]; const reduced=$('reduced').checked; const scRate=reduced?r.sc/2:r.sc;
-  const envs=Math.max(1,num('envs')); const eng=num('engineers');
-  const laptops=eng*0.5*(5*21)/730;  // half the engineers, 5h/day, 21 days, over 730h
-  let prod=0, f='';
-  if(state.shape==='proc'){ const copies=num('copies'), procs=Math.max(1,num('procs')); prod=copies*procs;
-    f=`<b>${fmt2(copies)}</b> copies × <b>${fmt2(procs)}</b> processes × <b>${envs}</b> environments = <b>${fmt2(prod*envs)}</b> connections<br>+ laptops: ${eng} engineers, half of them 5 h/day = <b>${fmt2(laptops)}</b>`; }
-  else { const inv=num('invocations'), dur=num('duration'); const minutes=inv*dur/60; const warm=inv/1000*5; prod=(minutes+warm)/43800;
-    f=`<b>${inv.toLocaleString()}</b> runs × <b>${dur}</b> s = <b>${fmt2(minutes)}</b> min, + 5 warm min per 1,000 runs = <b>${fmt2(warm)}</b> min. Total <b>${fmt2(minutes+warm)}</b> min ÷ 43,800 = <b>${fmt2(prod)}</b> per environment × <b>${envs}</b><br>+ laptops <b>${fmt2(laptops)}</b>`; }
-  const sc=prod*envs+laptops; const scBill=Math.max(0,sc-FREE.sc); const scCost=scBill*scRate;
-  $('scCount').textContent=fmt2(sc); $('scFormula').innerHTML=f;
-  $('scRate').textContent=`($${scRate} per connection per month${reduced?' after a 50% discount, list $'+r.sc:''}, first 5 free)`;
-  $('scCost').innerHTML=`${fmt2(scBill)} billable × ${reduced?`<s>$${r.sc}</s>`:''}$${scRate} = <b>${fmt(scCost)}</b>/mo`;
-  $('scAssume').innerHTML=`<div>Assumed: every copy runs all month. Non-production environments run the same copies as production.<a href="#">Edit</a></div><div>Assumed: ${Math.round(eng/2)} of ${eng} engineers run it locally 5 h a day = ${fmt2(laptops)} connections = ${fmt(Math.min(laptops,scBill)*scRate)}/mo. $0 with the dev server.<a href="#">Edit</a></div>${reduced?`<div>50% discount applied because you ticked Kubernetes / serverless / Python / Ruby: $${r.sc} becomes $${scRate} per connection. Saves ${fmt(scBill*(r.sc-scRate))}/mo.<a href="#">Edit</a></div>`:''}`;
-  // MAU
-  const people=num('people'); const visits=state.persist==='yes'?1:num('visits'); const mau=people*visits; const mauBill=Math.max(0,mau-FREE.mau); const mauCost=mauBill/1000*r.mau;
-  $('mauCount').textContent=mau.toLocaleString(); $('mauRate').textContent=`($${r.mau} per 1,000 per month, first 1,000 free)`;
-  $('mauCost').innerHTML=`${fmt2(mauBill/1000)}k billable × $${r.mau} = <b>${fmt(mauCost)}</b>/mo`;
-  $('mauFormula').innerHTML= people===0?`No client-side SDKs, so 0 MAU. Backend services never create MAU.`:(visits===1?`<b>${people.toLocaleString()}</b> people, each counted once because the ID is stored = <b>${mau.toLocaleString()}</b> MAU`:`<b>${people.toLocaleString()}</b> people × <b>${visits}</b> visits, each visit a new key = <b>${mau.toLocaleString()}</b> MAU. Storing the ID would make it ${people.toLocaleString()}.`);
-  // AI + o11y
-  const ai=Math.max(0,num('airuns')-FREE.ai)/1000*5; $('aiCost').innerHTML= num('airuns')>0?`${fmt2(Math.max(0,num('airuns')-FREE.ai)/1000)}k over the free 5k × $5 = <b>${fmt(ai)}</b>/mo`:`<b>$0</b>/mo within the free 5,000`;
-  const o=Math.max(0,num('replays')-FREE.replays)/1000*3.5+Math.max(0,num('errors')-FREE.errors)/1000*0.3+Math.max(0,num('logs')-FREE.logs)/1e6*1.5+Math.max(0,num('traces')-FREE.traces)/1e6*1.5;
-  $('o11yCost').innerHTML=`<b>${fmt(o)}</b>/mo`;
-  const total=scCost+mauCost+ai+o; const annual=total*12;
-  $('totMonthly').textContent=fmt(total);
-  $('totAlt').textContent= state.interval==='annual'?`${fmt(annual)} a year, billed yearly. Pay monthly instead: about ${fmt(estimateOther('monthly'))} a month.`:`${fmt(annual)} a year if this holds. Billed yearly instead: about ${fmt(estimateOther('annual'))} a month.`;
-  $('lines').innerHTML=`<div><span>Service connections</span><b>${fmt(scCost)}</b></div><div><span>Monthly active users</span><b>${fmt(mauCost)}</b></div><div><span>AI runs</span><b>${fmt(ai)}</b></div><div><span>Observability</span><b>${fmt(o)}</b></div><div><span>Included every month</span><span>5 connections, 1,000 MAU, 5,000 AI runs, observability up to the limits above</span></div>`;
-  const sales=annual>=11000; $('ctaBtn').textContent=sales?'Talk to sales':'Start on Foundation';
-  $('route').textContent= sales?`At ${fmt(annual)} a year we move you to an invoice, and volume pricing lowers the rate above.`:(state.interval==='annual'?`Buy online with a card. You prepay this usage level for 12 months at the yearly rate. Anything above it is billed at the start of the next month at the pay-monthly rate ($${reduced?6:12} per connection, $10 per 1,000 MAU). Raise your level any time; it takes effect next month.`:`Buy online with a card. Nothing is prepaid. At the start of each month we charge your card for last month's usage above the free 5 connections and 1,000 MAU.`);
+document.querySelectorAll('input,select').forEach(i=>{i.addEventListener('input',calc);i.addEventListener('change',calc);});
+$('invocations').addEventListener('input',()=>{ if(num('invocations')>0 && !$('reduced').dataset.touched) $('reduced').checked=true; });
+$('reduced').addEventListener('change',()=>{$('reduced').dataset.touched='1';});
+window.focusInput=id=>{const el=$(id); el.scrollIntoView({block:'center'}); el.focus(); el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),1500); return false;};
+function edit(id){return `<a href="#" onclick="return focusInput('${id}')">Edit</a>`;}
+
+function connections(){
+  const copies=num('copies'), procs=Math.max(1,num('procs')), uptime=parseFloat($('uptime').value);
+  const envs=Math.max(1,num('envs')), np=parseFloat($('nonprod').value);
+  const envFactor=1+(envs-1)*np;
+  const prodLR=copies*procs*uptime;                       // long-running, production
+  const inv=num('invocations'), dur=num('duration');
+  const cold= $('coldstarts').value==='' ? inv/1000 : num('coldstarts');
+  const fnMin=inv*dur/60 + cold*5;
+  const prodFN=fnMin/43800;
+  const dev=$('devmode').value==='dev';
+  const eng=num('engineers'), hours=num('hours'), ci=num('ciruns');
+  const laptops=dev?0:eng*hours*21/730;                   // 730 h = 43,800 min
+  const cimin=dev?0:ci*2/730*60/60;                        // 2 min per run -> hours/730
+  const ciConn=dev?0:ci*2/43800;
+  const total=(prodLR+prodFN)*envFactor+laptops+ciConn;
+  return {copies,procs,uptime,envs,np,envFactor,prodLR,inv,dur,cold,fnMin,prodFN,dev,eng,hours,ci,laptops,ciConn,total};
 }
-function estimateOther(interval){const r=RATES[interval];const reduced=$('reduced').checked;const scRate=reduced?r.sc/2:r.sc;const envs=Math.max(1,num('envs'));const eng=num('engineers');const laptops=eng*0.5*105/730;let prod=state.shape==='proc'?num('copies')*Math.max(1,num('procs')):(num('invocations')*num('duration')/60+num('invocations')/1000*5)/43800;const sc=Math.max(0,prod*envs+laptops-5)*scRate;const mau=Math.max(0,num('people')*(state.persist==='yes'?1:num('visits'))-1000)/1000*r.mau;const o=Math.max(0,num('replays')-5000)/1000*3.5+Math.max(0,num('errors')-5000)/1000*0.3+Math.max(0,num('logs')-10e6)/1e6*1.5+Math.max(0,num('traces')-10e6)/1e6*1.5;return sc+mau+Math.max(0,num('airuns')-5000)/1000*5+o;}
+function mauCount(){
+  const people=num('people'); const visits=state.persist==='yes'?1:num('visits');
+  return {people,visits,mau:people*visits,low:people,high:people*Math.max(1,num('visits'))};
+}
+function priceAt(interval){
+  const r=RATES[interval]; const reduced=$('reduced').checked; const scRate=reduced?r.sc/2:r.sc;
+  const c=connections(); const scBill=Math.max(0,c.total-FREE.sc); const scCost=scBill*scRate;
+  const m=mauCount(); const mauBill=Math.max(0,m.mau-FREE.mau); const mauCost=mauBill/1000*r.mau;
+  const ai=Math.max(0,num('airuns')-FREE.ai)/1000*5;
+  const o=Math.max(0,num('replays')-FREE.replays)/1000*r.replays+Math.max(0,num('errors')-FREE.errors)/1000*r.errors+Math.max(0,num('logs')-FREE.logs)/1e6*r.logs+Math.max(0,num('traces')-FREE.traces)/1e6*r.traces;
+  return {r,reduced,scRate,c,scBill,scCost,m,mauBill,mauCost,ai,o,total:scCost+mauCost+ai+o};
+}
+
+function calc(){
+  document.querySelectorAll('.fn-only').forEach(e=>e.classList.toggle('hidden',num('invocations')===0));
+  document.querySelectorAll('.dev-ld').forEach(e=>e.classList.toggle('hidden',$('devmode').value==='dev'));
+  const p=priceAt(state.interval), c=p.c, r=p.r;
+  // connections
+  $('scCount').textContent=fmt2(c.total);
+  $('scRate').textContent=`($${p.scRate} per connection per month${p.reduced?' after a 50% discount, list $'+r.sc:''}, first 5 free)`;
+  $('scCost').innerHTML=`${fmt2(p.scBill)} billable × ${p.reduced?`<s>$${r.sc}</s> `:''}$${p.scRate} = <b>${fmt(p.scCost)}</b>/mo`;
+  let f='';
+  if(c.copies>0) f+=`<b>${fmt2(c.copies)}</b> copies × <b>${c.procs}</b> processes × <b>${c.uptime}</b> of the month = <b>${fmt2(c.prodLR)}</b> in production<br>`;
+  if(c.inv>0) f+=`<b>${c.inv.toLocaleString()}</b> runs × <b>${c.dur}</b> s = ${fmt2(c.inv*c.dur/60)} min, + <b>${fmt2(c.cold)}</b> cold starts × 5 warm min = ${fmt2(c.cold*5)} min. ${fmt2(c.fnMin)} min ÷ 43,800 = <b>${fmt2(c.prodFN)}</b> in production<br>`;
+  f+=`× <b>${fmt2(c.envFactor)}</b> for ${c.envs} environments (non-production at ${c.np}× production) = <b>${fmt2((c.prodLR+c.prodFN)*c.envFactor)}</b><br>`;
+  f+= c.dev?`+ laptops and CI: <b>0</b> (dev server)`:`+ laptops: ${c.eng} engineers × ${c.hours} h × 21 days ÷ 730 h = <b>${fmt2(c.laptops)}</b>, + CI: ${c.ci} runs × 2 min ÷ 43,800 = <b>${fmt2(c.ciConn)}</b>`;
+  $('scFormula').innerHTML=f;
+  let a='';
+  if(c.copies>0) a+=`<div>Assumed: copies run ${c.uptime===1?'all month':c.uptime===0.5?'about half the time':'business hours only'}. ${edit('uptime')}</div>`;
+  a+=`<div>Assumed: non-production environments run ${c.np===1?'the same copies as':c.np<1?'about half the copies of':'about 1.5× the copies of'} production. ${edit('nonprod')}</div>`;
+  if(c.inv>0 && $('coldstarts').value==='') a+=`<div>Assumed: 1 cold start per 1,000 runs (${fmt2(c.cold)} a month), 5 warm minutes each = ${fmt2(c.cold*5/43800*c.envFactor)} connections. ${edit('coldstarts')}</div>`;
+  a+= c.dev?`<div>Assumed: laptops and CI use the dev server, so they add 0 connections. ${edit('devmode')}</div>`:`<div>Assumed: ${c.eng} engineers × ${c.hours} h a day on a laptop = ${fmt2(c.laptops)} connections, and ${c.ci} CI runs × 2 min = ${fmt2(c.ciConn)}. Both 0 with the dev server. ${edit('devmode')}</div>`;
+  if(p.reduced) a+=`<div>50% discount applied because you ticked Kubernetes / serverless / Python / Ruby: $${r.sc} becomes $${p.scRate} per connection. Saves ${fmt(p.scBill*(r.sc-p.scRate))}/mo. ${edit('reduced')}</div>`;
+  $('scAssume').innerHTML=a;
+  // MAU
+  const m=p.m;
+  $('mauCount').textContent=m.mau.toLocaleString(); $('mauRate').textContent=`($${r.mau} per 1,000 per month, first 1,000 free)`;
+  $('mauCost').innerHTML=`${fmt2(p.mauBill/1000)}k billable × $${r.mau} = <b>${fmt(p.mauCost)}</b>/mo`;
+  let mf= m.people===0?`No client-side SDKs, so 0 MAU. Backend services never create MAU.`:
+    (m.visits===1?`<b>${m.people.toLocaleString()}</b> people, each counted once because the ID is stored = <b>${m.mau.toLocaleString()}</b> MAU`:
+     `<b>${m.people.toLocaleString()}</b> people × <b>${m.visits}</b> visits, each visit a new key = <b>${m.mau.toLocaleString()}</b> MAU. Storing the ID would make it ${m.people.toLocaleString()}.`);
+  if(state.persist==='unsure' && m.people>0) mf+=`<br><span class="rng">You said you are not sure, so we priced the higher case. Your real number is between ${m.low.toLocaleString()} and ${m.high.toLocaleString()} MAU.</span>`;
+  $('mauFormula').innerHTML=mf;
+  // AI + o11y
+  $('aiCost').innerHTML= num('airuns')>0?`${fmt2(Math.max(0,num('airuns')-FREE.ai)/1000)}k over the free 5k × $5 = <b>${fmt(p.ai)}</b>/mo`:`<b>$0</b>/mo within the free 5,000`;
+  $('o11yCost').innerHTML=`<b>${fmt(p.o)}</b>/mo`;
+  $('o11ySub').textContent= state.interval==='annual'?`5k replays, 5k errors, 10M logs and 10M traces free each month. Above that you prepay a volume for the year at the rates below; anything over it bills monthly at the pay-monthly rates.`:`5k replays, 5k errors, 10M logs and 10M traces free each month. Above that we bill last month's usage at the rates below.`;
+  $('hReplays').textContent=`$${r.replays} per 1,000 after 5,000${state.interval==='annual'?'. Volume tiers lower this above 25,000 a month':''}`;
+  $('hErrors').textContent=`$${r.errors} per 1,000 after 5,000`; $('hLogs').textContent=`$${r.logs} per million after 10 million`; $('hTraces').textContent=`$${r.traces} per million after 10 million`;
+  // total
+  const annualEq=priceAt('annual').total*12;   // threshold judged on the yearly-rate total, independent of the toggle
+  const monthlyAlt=priceAt('monthly').total;
+  if(state.interval==='annual'){ $('totBig').textContent=fmt(p.total*12); $('totUnit').textContent='per year, billed once'; $('totAlt').textContent=`About ${fmt(p.total)} a month. Pay monthly instead: about ${fmt(monthlyAlt)} a month, nothing prepaid.`; }
+  else { $('totBig').textContent=fmt(p.total); $('totUnit').textContent='per month'; $('totAlt').textContent=`${fmt(p.total*12)} a year if this holds. Billed yearly instead: about ${fmt(annualEq)} a year (${fmt(annualEq/12)} a month).`; }
+  $('lines').innerHTML=`<div><span>Service connections</span><b>${fmt(p.scCost)}/mo</b></div><div><span>Monthly active users</span><b>${fmt(p.mauCost)}/mo</b></div><div><span>AI runs</span><b>${fmt(p.ai)}/mo</b></div><div><span>Observability</span><b>${fmt(p.o)}/mo</b></div><div><span>Included every month</span><span>5 connections, 1,000 MAU, 5,000 AI runs, observability up to the limits above</span></div>`;
+  const overFloor=annualEq>=11000;
+  $('ctaBtn').textContent='Start on Foundation';
+  const base= state.interval==='annual'
+    ?`Buy online with a card. You prepay this usage level for 12 months at the yearly rate. Anything above it is billed at the start of the next month at the pay-monthly rate ($${p.reduced?6:12} per connection, $10 per 1,000 MAU). Raise your level any time; it takes effect next month.`
+    :`Buy online with a card. Nothing is prepaid. At the start of each month we charge your card for last month's usage above the free 5 connections and 1,000 MAU.`;
+  $('route').textContent= overFloor?`${base} At about ${fmt(annualEq)} a year you also qualify for an invoice with volume pricing below the rates shown here. Talk to sales if you want that.`:base;
+}
 calc();
 </script></div></body></html>
