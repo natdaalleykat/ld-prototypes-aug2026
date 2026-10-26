@@ -604,5 +604,7 @@
     S.modal = 'review'; renderModal();
     setTimeout(save, 50);
   }
+  if (auto === 'review') { S.rollout = 50; renderTargeting(); S.modal = 'review'; renderModal(); }
+  if (auto === 'off-review') { S.flagOn = false; renderTargeting(); S.modal = 'review'; renderModal(); }
   if (qs.get('view') === 'monitoring') go('monitoring', qs.get('dest') || (variant === 'baseline' ? 'current' : 'improved'));
 })();
