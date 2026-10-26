@@ -1,0 +1,15 @@
+@font-face {
+	font-family: "Audimat 3000 Regulier";
+	font-style: normal;
+	font-weight: 400;
+	src: url("./assets/Audimat3000-Regulier.var-subset.woff2") format("woff2");
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Inter";
+	font-style: normal;
+	font-weight: 300 800;
+	src: url("./assets/Inter.var-subset.woff2") format("woff2");
+	font-display: swap;
+}

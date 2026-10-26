@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Cross-product expansion: prototypes</title>
+<style>body{font-family:-apple-system,Inter,sans-serif;max-width:760px;margin:40px auto;padding:0 20px;color:#111827;line-height:1.5}h1{font-size:22px}h2{font-size:16px;margin-top:28px}a{color:#4f46e5}li{margin:6px 0}.n{color:#6b7280;font-size:13px}</style></head><body>
+<h1>Cross-product expansion: clickable prototypes</h1>
+<p class="n">Oct 26 2026. Companion to the Confluence write-up "Cross-product expansion experiment: what went wrong and what to do next". Each prototype has a guide in the bottom-left corner and a "Play the flow for me" button.</p>
+<h2>Session replay nudge (o11y): current vs proposed</h2>
+<ul>
+<li><a href="session-replay-nudge-mock/?v=baseline">Current (shipped)</a>: card after any direct save, no gates, per-flag per-browser dismissal</li>
+<li><a href="session-replay-nudge-mock/?v=proposed">Proposed</a>: same moment, gated to flag on + client SDK + no sessions, once per member, replay-led destination</li>
+<li class="n">Try: flip the flag off and save, or set "client SDK: no" in the top bar. Earlier alternates are also in the bar.</li>
+</ul>
+<h2>Experiment suggestion: suggest, do not create inline</h2>
+<ul>
+<li><a href="experiment-suggest-mock/?v=current">Current (shipped)</a>: permanent button on the default rule, name + hypothesis modal</li>
+<li><a href="experiment-suggest-mock/?v=a">A: while setting a rollout</a> (PRD moment)</li>
+<li><a href="experiment-suggest-mock/?v=b">B: after saving a rollout</a></li>
+<li><a href="experiment-suggest-mock/?v=c">C: in Review and save</a></li>
+<li><a href="experiment-suggest-mock/?v=d">D: rule hint + explainer</a></li>
+<li class="n">All four hand off to the standard experiment design page with name, hypothesis, metric and audience prefilled. Nothing is created inline.</li>
+</ul>
+<h2>What shipped, side by side</h2>
+<ul>
+<li><a href="cross-product-treatments-mock/?arm=all&clean=1">All three arms</a> (control, experimentation, observability)</li>
+<li><a href="cross-product-treatments-mock/?arm=hackathon&clean=1">Shipped button vs hackathon concept (reconstruction)</a></li>
+</ul>
+</body></html>

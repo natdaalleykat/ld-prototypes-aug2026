@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en" data-theme="default">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>cross-product-expansion-arms — the three treatments</title>
+<link rel="stylesheet" href="lp/fonts.css" />
+<link rel="stylesheet" href="lp/index.css" />
+<link rel="stylesheet" href="lp/themes.css" />
+<style>
+*, *::after, *::before { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--lp-color-bg-ui-secondary); font-family: var(--lp-font-family-base); font-size: var(--lp-font-size-300); line-height: var(--lp-line-height-300); color: var(--lp-color-text-ui-primary-base); }
+h1,h2,h3,p { margin: 0; }
+h3 { font-weight: var(--lp-font-weight-medium); font-size: var(--lp-font-size-300); line-height: var(--lp-line-height-300); }
+button { font-family: inherit; }
+.lp-icon { vertical-align: middle; flex: none; display: inline-block; fill: var(--lp-color-fill-ui-primary); }
+.lp-icon.small { width: 16px; height: 16px; } .lp-icon.medium { width: 20px; height: 20px; }
+.lp-button { display: inline-flex; align-items: center; justify-content: center; gap: var(--lp-spacing-200); margin: 0; text-decoration: none; appearance: none; border-radius: var(--lp-border-radius-medium); border: none; white-space: nowrap; position: relative; cursor: pointer; }
+.lp-button.medium { font: var(--lp-text-label-1-semibold); padding: calc(5px + var(--lp-button-padding, 0px)) var(--lp-spacing-300); }
+.lp-button.default { --lp-button-padding: 0px; background: var(--lp-color-bg-interactive-secondary-base); border: 1px solid var(--lp-color-border-interactive-secondary-base); color: var(--lp-color-text-ui-primary-base); }
+.lp-button.primary { --lp-button-padding: 1px; background: var(--lp-color-bg-interactive-primary-base); color: var(--lp-color-text-interactive-primary-base); }
+.lp-button.minimal { --lp-button-padding: 1px; background: var(--lp-color-bg-interactive-tertiary-base); color: var(--lp-color-text-ui-primary-base); }
+.lp-iconbutton { padding: 0; flex-shrink: 0; } .lp-iconbutton.medium { height: 32px; width: 32px; } .lp-iconbutton.small { height: 24px; width: 24px; }
+.lp-popover { position: absolute; z-index: 40; width: max-content; border-radius: var(--lp-border-radius-medium); background: var(--lp-color-bg-overlay-secondary); border: 1px solid transparent; box-shadow: 0 0 1px var(--lp-color-shadow-ui-secondary), 0 0 4px var(--lp-color-shadow-ui-secondary), 0 4px 8px var(--lp-color-shadow-ui-secondary), 0 2px 12px var(--lp-color-shadow-ui-secondary); }
+.lp-menu { min-width: 144px; padding: var(--lp-spacing-200); }
+.lp-menuitem { cursor: pointer; padding: var(--lp-spacing-200) var(--lp-spacing-300); border-radius: var(--lp-border-radius-regular); font: var(--lp-text-label-1-medium); display: flex; gap: var(--lp-spacing-300); align-items: center; background: var(--lp-color-bg-interactive-secondary-hover); }
+.lp-switch { display: inline-flex; align-items: center; } .lp-switch .track { position: relative; display: flex; align-items: center; padding: var(--lp-spacing-200); width: 3.375rem; height: 24px; border-radius: var(--lp-border-radius-large); background: var(--lp-color-green-500); border: 1px solid var(--lp-color-green-600); }
+.lp-switch .handle { display: block; background: var(--lp-color-white-950); width: 16px; height: 16px; border-radius: 50%; transform: translateX(calc(100% + var(--lp-spacing-400))); }
+.lp-switch .label { position: absolute; left: var(--lp-spacing-300); font: var(--lp-text-body-2-semibold); color: var(--lp-color-white-950); }
+/* targeting page */
+.page { width: 1120px; margin: 0 auto; padding: 24px 32px 28px; background: var(--lp-color-bg-ui-primary); }
+.layout { display: flex; flex-direction: column; gap: 12px; }
+.heading { display: flex; justify-content: space-between; align-items: center; }
+.heading h2 { font: var(--lp-text-heading-2-medium); display: flex; align-items: center; gap: var(--lp-spacing-200); }
+.envSwatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; background: #417505; margin-right: 2px; }
+.headingActions { display: flex; align-items: center; gap: var(--lp-spacing-300); }
+.config { background: var(--lp-color-bg-ui-secondary); border-radius: var(--lp-border-radius-medium); }
+.stage { padding: 0 32px 24px; }
+.entry { display: flex; justify-content: center; margin-block: 8px; font: var(--lp-text-body-2-semibold); color: var(--lp-color-text-ui-secondary); }
+.sectionLine { display: flex; justify-content: center; align-items: center; height: calc(var(--lp-spacing-500) * 2); } .sectionLine .line { width: 2px; height: calc(var(--lp-spacing-500) * 2 - 4px); border-radius: 2px; background: var(--lp-color-border-ui-primary); }
+.connector { position: relative; display: flex; justify-content: center; align-items: center; padding-block: var(--lp-spacing-500); }
+.connector::before { content: ''; position: absolute; top: 2px; bottom: 2px; left: 50%; width: 2px; border-radius: 2px; background: var(--lp-color-border-ui-primary); transform: translateX(-50%); }
+.addButtonWrapper { position: relative; z-index: 1; }
+.card { position: relative; background: var(--lp-color-bg-ui-primary); border-radius: var(--lp-border-radius-medium); border: 1px solid var(--lp-color-border-ui-secondary); }
+.cardHeader { display: flex; gap: 8px; padding: 8px 16px; align-items: center; min-height: 2.1875rem; border-bottom: 1px solid var(--lp-color-border-ui-secondary); }
+.cardTitle { flex-grow: 1; }
+.cardBody { padding: 12px 16px; }
+.fallthroughBody { color: var(--lp-color-text-ui-secondary); padding: 20px; }
+.ruleBody { color: var(--lp-color-text-ui-secondary); padding: 20px; }
+.ruleHeader { flex-grow: 1; display: flex; align-items: center; gap: 10px; }
+.targetingStatus { min-height: 32px; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.rolloutContainer { display: inline-flex; align-items: center; gap: var(--lp-spacing-500); }
+.serveLabel { font: var(--lp-text-body-2-semibold); }
+.variation { display: inline-flex; align-items: baseline; white-space: nowrap; }
+.diamond { display: inline-grid; align-self: center; margin-inline-end: 4px; } .diamond svg { width: 16px; height: 16px; }
+.clause { font: var(--lp-text-body-2-regular); color: var(--lp-color-text-ui-secondary); display: flex; gap: var(--lp-spacing-300); align-items: baseline; }
+.clause code { display: inline-block; padding: 2px 4px; border-radius: 2px; font-family: var(--lp-font-family-monospace); font-size: 87.5%; background: var(--lp-color-bg-ui-secondary); border: 1px solid var(--lp-color-border-ui-primary); color: var(--lp-color-text-code-keyword); }
+.rollout { margin-top: var(--lp-spacing-400); } .serve { margin: 0; display: flex; align-items: baseline; gap: var(--lp-spacing-500); font-size: var(--lp-font-size-200); }
+.fallbackNote { font: var(--lp-text-body-2-regular); color: var(--lp-color-text-ui-secondary); }
+.toast { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--lp-border-radius-medium); background: var(--lp-color-bg-feedback-success, #e6f6ec); color: var(--lp-color-text-feedback-success, #0f6b3a); font: var(--lp-text-body-2-medium); border: 1px solid var(--lp-color-border-feedback-success, #9ed6b4); position: absolute; right: 300px; top: 22px; }
+/* SessionReplayCard.module.css (verbatim behavior) */
+@property --session-replay-cta-gradient-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.srcard { position: relative; display: flex; flex-wrap: wrap; gap: 24px; align-items: center; padding: 12px 16px; padding-inline-end: 40px; border: 1px solid transparent; border-radius: var(--lp-border-radius-medium);
+  background: linear-gradient(var(--lp-color-bg-ui-primary), var(--lp-color-bg-ui-primary)) padding-box, conic-gradient(from var(--session-replay-cta-gradient-angle), var(--lp-color-border-ui-primary), var(--lp-color-brand-blue-light, #7aa7ff), var(--lp-color-border-ui-primary)) border-box;
+  box-shadow: 0 1px 2px var(--lp-color-shadow-ui-secondary), 0 4px 12px var(--lp-color-shadow-ui-primary); animation: rotate-gradient-border 5s linear infinite; }
+@keyframes rotate-gradient-border { to { --session-replay-cta-gradient-angle: 360deg; } }
+.srcopy { display: flex; flex: 1 1 260px; flex-direction: column; gap: 4px; }
+.srtitleRow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.srtitle { font: var(--lp-text-heading-2-semibold); font-family: 'Sora', var(--lp-font-family-base); }
+.srchip { padding: 2px 8px; border-radius: var(--lp-border-radius-regular); background: var(--lp-color-bg-ui-secondary); font: var(--lp-text-small-1-medium); color: var(--lp-color-text-ui-secondary); white-space: nowrap; }
+.srbody { font: var(--lp-text-body-2-regular); color: var(--lp-color-text-ui-secondary); }
+.sraction { align-self: flex-start; margin-block-start: 4px; }
+.srdismiss { position: absolute; top: 8px; inset-inline-end: 8px; }
+.preview { --replay-play-state: running; display: flex; flex: 0 1 240px; flex-direction: column; gap: 8px; min-width: 200px; }
+.stagesvg { width: 100%; height: auto; }
+.window { fill: var(--lp-color-bg-ui-secondary); stroke: var(--lp-color-border-ui-primary); } .divider { stroke: var(--lp-color-border-ui-primary); }
+.trafficLight, .textBlock { fill: var(--lp-color-border-ui-primary); } .textBlockQuiet { fill: var(--lp-color-border-ui-secondary); }
+.sidePanel { fill: var(--lp-color-bg-ui-primary); stroke: var(--lp-color-border-ui-primary); }
+.target { fill: var(--lp-color-border-ui-primary); animation: highlight-target 7s infinite; }
+@keyframes highlight-target { 0%,22% { fill: var(--lp-color-border-ui-primary);} 25%,38% { fill: var(--lp-color-bg-interactive-primary-base);} 46%,100% { fill: var(--lp-color-border-ui-primary);} }
+.ripple { fill: none; stroke: var(--lp-color-bg-interactive-primary-base); stroke-width: 1.5px; opacity: 0; transform: scale(0); transform-box: fill-box; transform-origin: 50%; animation-duration: 7s; animation-timing-function: ease-out; animation-iteration-count: infinite; }
+.rippleTarget { animation-name: ripple-target; } .ripplePanel { animation-name: ripple-panel; }
+@keyframes ripple-target { 0%,23% { opacity:0; transform: scale(.2);} 26% { opacity:.7; transform: scale(.3);} 36%,100% { opacity:0; transform: scale(1);} }
+@keyframes ripple-panel { 0%,53% { opacity:0; transform: scale(.2);} 56% { opacity:.7; transform: scale(.3);} 66%,100% { opacity:0; transform: scale(1);} }
+.cursor { animation: move-cursor 7s ease-in-out infinite; } .cursorArrow { fill: var(--lp-color-text-ui-primary-base); stroke: var(--lp-color-bg-ui-primary); stroke-width: 1px; }
+@keyframes move-cursor { 0% { transform: translate(120px,34px);} 22%,32% { transform: translate(40px,82px);} 52%,62% { transform: translate(195px,59px);} 100% { transform: translate(120px,34px);} }
+.scrubber { display: flex; gap: 8px; align-items: center; } .track2 { position: relative; flex: 1; height: 4px; border-radius: 2px; background: var(--lp-color-border-ui-primary); }
+.progress { position: absolute; inset: 0; border-radius: inherit; background: var(--lp-color-bg-interactive-primary-base); transform: scaleX(.3); transform-origin: left center; animation: fill-progress 7s linear infinite; }
+@keyframes fill-progress { from { transform: scaleX(0);} to { transform: scaleX(1);} }
+.playhead { position: absolute; top: 50%; left: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--lp-color-bg-interactive-primary-base); transform: translate(-50%,-50%); animation: advance-playhead 7s linear infinite; }
+@keyframes advance-playhead { from { left: 0%;} to { left: 100%;} }
+/* hackathon concept callout */
+.hk-callout { margin-top: 18px; display: flex; gap: 16px; padding: 16px 18px; border-radius: var(--lp-border-radius-medium); border: 1px solid var(--lp-color-border-ui-primary); border-left: 4px solid #5b43ff; background: var(--lp-color-bg-ui-primary); box-shadow: 0 1px 2px var(--lp-color-shadow-ui-secondary), 0 4px 12px var(--lp-color-shadow-ui-primary); color: var(--lp-color-text-ui-primary-base); }
+.hk-step { font: var(--lp-text-small-1-medium); color: #5b43ff; background: #efeaff; border-radius: 999px; padding: 2px 10px; height: fit-content; white-space: nowrap; }
+.hk-body h4 { margin: 0 0 4px; font: var(--lp-text-heading-2-semibold); font-family: 'Sora', var(--lp-font-family-base); }
+.hk-body p { margin: 0 0 12px; font: var(--lp-text-body-2-regular); color: var(--lp-color-text-ui-secondary); }
+.hk-q > span { display: block; font: var(--lp-text-label-1-semibold); margin-bottom: 6px; }
+.hk-q label { display: flex; align-items: baseline; gap: 8px; font: var(--lp-text-body-2-regular); padding: 6px 0; } .hk-q small { color: var(--lp-color-text-ui-secondary); }
+.hk-actions { display: flex; gap: 10px; margin-top: 12px; }
+/* framing (not product) */
+.frame { width: 1120px; margin: 28px auto; }
+.armlabel { display: flex; align-items: baseline; gap: 12px; margin: 0 0 10px; font: var(--lp-text-body-1-regular); color: var(--lp-color-text-ui-secondary); }
+.armlabel b { font: var(--lp-text-heading-2-semibold); color: var(--lp-color-text-ui-primary-base); }
+.armlabel code { font-family: var(--lp-font-family-monospace); font-size: 12px; background: #fff; border: 1px solid var(--lp-color-border-ui-primary); border-radius: 4px; padding: 1px 6px; }
+.shot { border: 1px solid var(--lp-color-border-ui-primary); border-radius: 10px; overflow: hidden; background: var(--lp-color-bg-ui-primary); box-shadow: 0 6px 24px rgb(0 0 0 / .06); }
+.callout { position: absolute; z-index: 30; background: #1f2937; color: #fff; font: 12px/1.35 var(--lp-font-family-base); padding: 6px 9px; border-radius: 6px; max-width: 320px; box-shadow: 0 4px 12px rgb(0 0 0 / .25); }
+.callout::after { content: ''; position: absolute; width: 10px; height: 10px; background: #1f2937; transform: rotate(45deg); }
+.callout.up::after { top: -5px; left: 18px; } .callout.down::after { bottom: -5px; left: 18px; }
+.devbar { position: fixed; bottom: 12px; right: 12px; display: flex; gap: 6px; background: rgb(35 37 42 / .92); color: #fff; padding: 8px 10px; border-radius: 8px; font: 12px/1.4 var(--lp-font-family-base); z-index: 200; align-items: center; }
+.devbar a { color: #9ecbff; text-decoration: none; padding: 3px 7px; border-radius: 4px; border: 1px solid rgb(255 255 255 / .2); } .devbar a.on { background: #fff; color: #23252a; }
+[hidden] { display: none !important; }
+body[data-callouts="0"] .callout { display: none; }
+</style>
+</head>
+<body>
+
+<template id="targetingTpl">
+  <div class="page">
+    <div class="layout">
+      <div class="heading">
+        <h2>Flag targeting configuration for <span class="envSwatch"></span>Production</h2>
+        <div class="headingActions">
+          <button class="lp-button default medium" type="button"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-chevron-down"/></svg>Collapse all</button>
+          <button class="lp-button minimal medium" type="button"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-flask"/></svg>Test run</button>
+        </div>
+      </div>
+      <div class="config"><div class="stage">
+        <div class="entry">All traffic</div>
+        <div class="sectionLine"><div class="line"></div></div>
+        <div class="card"><div class="cardBody"><div class="targetingStatus">Flag is&nbsp;<span class="lp-switch"><span class="track"><span class="label">On</span><span class="handle"></span></span></span>&nbsp;serving <span>variations based on rules</span></div></div></div>
+        <div class="connector"><div class="addButtonWrapper"><button class="lp-button default lp-iconbutton small" type="button"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-add"/></svg></button></div></div>
+        <div class="card">
+          <div class="cardHeader">
+            <button class="lp-button minimal lp-iconbutton medium" type="button"><svg class="lp-icon medium"><use href="lp/sprite.svg#lp-icon-chevron-down"/></svg></button>
+            <div class="ruleHeader"><h3 class="cardTitle">Rule 1</h3></div>
+            <button class="lp-button minimal lp-iconbutton medium" type="button"><svg class="lp-icon medium"><use href="lp/sprite.svg#lp-icon-more-vert"/></svg></button>
+            <button class="lp-button default medium" type="button"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-edit"/></svg>Edit</button>
+          </div>
+          <div class="cardBody ruleBody">
+            <div class="clause"><span>If</span><code>user</code><code>email</code><span>ends with</span><code>@launchdarkly.com</code></div>
+            <div class="rollout"><p class="serve"><span class="serveLabel">Serve</span><span class="variation"><span class="diamond"><svg viewBox="0 0 20 20" style="fill:#34B6D0"><use href="lp/sprite.svg#lp-icon-diamond"/></svg></span><span>true</span></span></p></div>
+          </div>
+        </div>
+        <div class="connector"><div class="addButtonWrapper"><button class="lp-button default lp-iconbutton small" type="button"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-add"/></svg></button></div></div>
+        <div class="card" data-slot="fallthrough">
+          <div class="cardHeader">
+            <button class="lp-button minimal lp-iconbutton medium" type="button"><svg class="lp-icon medium"><use href="lp/sprite.svg#lp-icon-chevron-down"/></svg></button>
+            <h3 class="cardTitle">Default rule</h3>
+            <span data-slot="fallthrough-action" style="position:relative; display:inline-flex;"></span>
+            <button class="lp-button default medium" type="button"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-edit"/></svg>Edit</button>
+          </div>
+          <div class="cardBody fallthroughBody"><div class="rolloutContainer"><div class="serveLabel">Serve</div><span class="variation"><span class="diamond"><svg viewBox="0 0 20 20" style="fill:#34B6D0"><use href="lp/sprite.svg#lp-icon-diamond"/></svg></span><span>true</span></span></div></div>
+        </div>
+      </div></div>
+      <div class="fallbackNote">If targeting is off, serve <span class="variation" style="vertical-align:middle"><span class="diamond"><svg viewBox="0 0 20 20" style="fill:#EEC340"><use href="lp/sprite.svg#lp-icon-diamond"/></svg></span><span style="color:var(--lp-color-text-ui-primary-base)">false</span></span></div>
+      <div data-slot="after-footer"></div>
+    </div>
+  </div>
+</template>
+
+<template id="kebabTpl">
+  <button class="lp-button minimal lp-iconbutton medium" type="button" aria-label="default rule options"><svg class="lp-icon medium"><use href="lp/sprite.svg#lp-icon-more-vert"/></svg></button>
+  <div class="lp-popover" data-menu style="top: calc(100% + 4px); right: 0;"><div class="lp-menu" role="menu"><div class="lp-menuitem" role="menuitem"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-flask"/></svg>Create experiment from rule</div></div></div>
+</template>
+
+<template id="buttonTpl">
+  <button class="lp-button default medium" type="button" data-test-id="create-experiment-from-rule-button"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-flask"/></svg>Create experiment from rule</button>
+</template>
+
+<template id="nudgeTpl">
+  <div class="srcard" role="status" data-test-id="session-replay-cta">
+    <div class="srcopy">
+      <div class="srtitleRow"><h3 class="srtitle">Replay real user sessions on what you just shipped</h3><span class="srchip">5K sessions a month included</span></div>
+      <p class="srbody">Watch recordings of real users on this flag, tagged with the flag variation they were served. Errors, logs, and traces turn on with the same setup.</p>
+      <a class="lp-button primary medium sraction" href="#">Set up session replay</a>
+    </div>
+    <div class="preview">
+      <svg class="stagesvg" viewBox="0 0 240 103" aria-hidden="true">
+        <rect x="1" y="1" width="238" height="100" rx="8" class="window"/><line x1="1" y1="22" x2="239" y2="22" class="divider"/>
+        <circle cx="14" cy="11.5" r="3" class="trafficLight"/><circle cx="25" cy="11.5" r="3" class="trafficLight"/><circle cx="36" cy="11.5" r="3" class="trafficLight"/>
+        <rect x="16" y="32" width="92" height="9" rx="4.5" class="textBlock"/><rect x="16" y="48" width="140" height="6" rx="3" class="textBlockQuiet"/><rect x="16" y="60" width="118" height="6" rx="3" class="textBlockQuiet"/>
+        <rect x="16" y="76" width="52" height="16" rx="8" class="target"/><rect x="170" y="30" width="54" height="62" rx="6" class="sidePanel"/>
+        <circle cx="42" cy="84" r="12" class="ripple rippleTarget"/><circle cx="197" cy="61" r="12" class="ripple ripplePanel"/>
+        <g class="cursor"><path d="M0 0 L0 12.5 L3.2 9.8 L5.4 14.6 L7.8 13.5 L5.6 8.8 L9.6 8.4 Z" class="cursorArrow"/></g>
+      </svg>
+      <div class="scrubber"><button class="lp-button minimal lp-iconbutton small" type="button" aria-label="Pause"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-pause"/></svg></button><div class="track2"><div class="progress"></div><div class="playhead"></div></div></div>
+    </div>
+    <span class="srdismiss"><button class="lp-button minimal lp-iconbutton small" type="button" aria-label="Dismiss recommendation"><svg class="lp-icon small"><use href="lp/sprite.svg#lp-icon-cancel"/></svg></button></span>
+  </div>
+</template>
+
+<div id="root"></div>
+
+<div class="devbar" id="devbar">
+  <span style="opacity:.7">show:</span>
+  <a href="?arm=all" data-v="all">all three</a>
+  <a href="?arm=control" data-v="control">control</a>
+  <a href="?arm=experimentation" data-v="experimentation">experimentation</a>
+  <a href="?arm=observability" data-v="observability">observability</a>
+  <a href="?arm=hackathon" data-v="hackathon">hackathon concept</a>
+  <a href="?arm=all&callouts=0" data-v="plain">no callouts</a>
+</div>
+
+<script>
+(function () {
+  const q = new URLSearchParams(location.search);
+  const arm = ['control','experimentation','observability','hackathon'].includes(q.get('arm')) ? q.get('arm') : 'all';
+  if (q.get('callouts') === '0') document.body.dataset.callouts = '0';
+  if (q.get('clean') === '1') document.getElementById('devbar').hidden = true;
+  document.querySelectorAll('.devbar a').forEach(a => { if (a.dataset.v === arm && q.get('callouts') !== '0') a.classList.add('on'); if (a.dataset.v==='plain' && q.get('callouts')==='0') a.classList.add('on'); });
+
+  const T = id => document.getElementById(id).content.cloneNode(true);
+  const root = document.getElementById('root');
+
+  const META = {
+    control: { title: 'Control', share: '80% of eligible Foundation accounts', desc: 'Nothing new. "Create experiment from rule" stays as the single item inside the default rule’s kebab menu (shown open here). No post-save card.' },
+    experimentation: { title: 'Experimentation arm', share: '10%', desc: 'The kebab is replaced by a labeled "Create experiment from rule" button next to Edit on the default rule. Opens the same Create experiment modal. No impression event.' },
+    hackathon: { title: 'Hackathon concept (reconstruction)', share: 'Sep 30 2026 hackathon, Activation team (Sruthy, Matt, Ari, Scott) + PR 73278 (James)', desc: 'Rollout-to-Experiment Callout: a prompt on a 50/50 rollout rule that walks the user into a first experiment one question at a time, landing on a draft with the metric and hypothesis already filled in.' },
+    observability: { title: 'Observability arm', share: '10%', desc: 'After a direct targeting save, the Session replay card renders below the page (after the footer). It scrolls itself into view. Dismiss is per flag per browser; otherwise it re-renders on every save session.' },
+  };
+
+  function build(which) {
+    const frame = document.createElement('section');
+    frame.className = 'frame';
+    const m = META[which];
+    frame.innerHTML = `<div class="armlabel"><b>${m.title}</b><span>${m.share}</span><code>cross-product-expansion-arms = ${which}</code></div>`;
+    const shot = document.createElement('div'); shot.className = 'shot'; shot.style.position = 'relative';
+    shot.appendChild(T('targetingTpl'));
+    const slot = shot.querySelector('[data-slot="fallthrough-action"]');
+    if (which === 'hackathon') {
+      slot.appendChild(T('kebabTpl')); slot.querySelector('[data-menu]').hidden = true;
+      const body = shot.querySelector('[data-slot="fallthrough"] .fallthroughBody');
+      body.innerHTML = `<div class="rolloutContainer"><div class="serveLabel">Serve</div><span style="font:var(--lp-text-body-2-regular)">a percentage rollout</span></div>
+        <div style="margin-top:14px;display:flex;gap:28px;align-items:center;font:var(--lp-text-body-2-regular)">
+          <span class="variation"><span class="diamond"><svg viewBox="0 0 20 20" style="fill:#34B6D0"><use href="lp/sprite.svg#lp-icon-diamond"/></svg></span>true</span><b>50%</b>
+          <span class="variation"><span class="diamond"><svg viewBox="0 0 20 20" style="fill:#EEC340"><use href="lp/sprite.svg#lp-icon-diamond"/></svg></span>false</span><b>50%</b>
+        </div>
+        <div class="hk-callout">
+          <div class="hk-step">1 of 3</div>
+          <div class="hk-body">
+            <h4>You are splitting traffic 50/50. Want to know which variation is actually better?</h4>
+            <p>This rule already gives every user a random variation. Turning it into an experiment adds a metric so you can see the difference, and it is included in your plan.</p>
+            <div class="hk-q"><span>What should we measure?</span>
+              <label><input type="radio" checked> Error rate <small>auto-created from your telemetry, no code</small></label>
+              <label><input type="radio"> Page load time <small>auto-created</small></label>
+              <label><input type="radio"> Something I track in my app <small>pick an event on the next step</small></label>
+            </div>
+            <div class="hk-actions"><button class="lp-button primary medium" type="button"><svg class="lp-icon small" style="fill:#fff"><use href="lp/sprite.svg#lp-icon-flask"/></svg>Next: name it</button><button class="lp-button minimal medium" type="button">Not now</button></div>
+          </div>
+        </div>`;
+      const c = document.createElement('div'); c.className = 'callout up'; c.style.cssText = 'right: 40px; top: 300px; max-width: 340px;';
+      c.textContent = 'Reconstruction, not their screens: the flow is from the TTW write-up of Sruthy, Matt, Ari and Scott\'s pitch (Loom is private); the prefilled metric, hypothesis and "included in your plan" notice are from James Solum\'s hackathon PR 73278.';
+      shot.appendChild(c);
+    } else if (which === 'experimentation') {
+      slot.appendChild(T('buttonTpl'));
+      const c = document.createElement('div'); c.className = 'callout up'; c.style.cssText = 'right: 330px; top: 56px;';
+      c.textContent = 'Treatment: promoted button (flask icon). Tracked only on click.';
+      slot.closest('[data-slot="fallthrough"]').appendChild(c);
+    } else {
+      slot.appendChild(T('kebabTpl'));
+      if (which === 'control') {
+        const c = document.createElement('div'); c.className = 'callout up'; c.style.cssText = 'right: 400px; top: 56px;';
+        c.textContent = 'Existing kebab: one menu item. "Menu opened" is the only pre-click event.';
+        slot.closest('[data-slot="fallthrough"]').appendChild(c);
+      } else {
+        slot.querySelector('[data-menu]').hidden = true;
+      }
+    }
+    if (which === 'observability') {
+      const after = shot.querySelector('[data-slot="after-footer"]');
+      after.style.marginTop = '12px';
+      after.appendChild(T('nudgeTpl'));
+      const toast = document.createElement('div'); toast.className = 'toast'; toast.innerHTML = '<svg class="lp-icon small" style="fill:currentColor"><use href="lp/sprite.svg#lp-icon-check-circle"/></svg>Changes saved';
+      shot.appendChild(toast);
+      const c = document.createElement('div'); c.className = 'callout down'; c.style.cssText = 'left: 700px; bottom: 172px; max-width: 360px;';
+      c.textContent = 'Treatment: card appears only after the save applies. Fires "Session Replay Nudge Mounted" each time it renders.';
+      shot.appendChild(c);
+    }
+    frame.appendChild(shot);
+    return frame;
+  }
+
+  (arm === 'all' ? ['control','experimentation','observability'] : arm === 'hackathon' ? ['experimentation','hackathon'] : [arm]).forEach(w => root.appendChild(build(w)));
+  if (arm !== 'all' && arm !== 'hackathon') { document.querySelector('.armlabel').style.display = q.get('label') === '1' ? '' : 'none'; }
+})();
+</script>
+</body>
+</html>
