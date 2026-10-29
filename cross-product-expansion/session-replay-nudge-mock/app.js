@@ -29,7 +29,7 @@
 
   // ---------- persistent "member" state (dismissed = never again for this member) ----------
   const KEY = 'srn-mock-' + variant;
-  const mem = JSON.parse(localStorage.getItem(KEY) || '{}');
+  const mem = variant === 'v2' ? {} : JSON.parse(localStorage.getItem(KEY) || '{}');
   function persist() { localStorage.setItem(KEY, JSON.stringify(mem)); }
 
   // ---------- page-session state ----------
@@ -357,8 +357,8 @@
         : (S.flagOn && S.listening !== 'got');
 
     if (variant === 'v2') {
-      if (eligible && !mem.dismissed) {
-        mem.dismissed = true; persist(); renderSwitcher();   // "once" is recorded on show, not on Done
+      if (eligible && !S.v2shown) {
+        S.v2shown = true; mem.dismissed = true; renderSwitcher();   // "once" is recorded on show; mock keeps it per page load so a reload resets
         S.modal = 'success'; renderModal(); renderTargeting(); return;
       }
       S.modal = null; renderModal(); renderTargeting(); toast('<span class="ok">&#10003;</span> Flag saved'); return;
@@ -484,7 +484,7 @@
 
   // ---------- flow map: where in the flow each version puts the nudge ----------
   const fmap = document.createElement('div'); fmap.className = 'fmap'; document.body.appendChild(fmap);
-  let fmapOpen = qs.get('map') !== '0';
+  let fmapOpen = qs.get('map') === '1';
   function renderFlowMap() {
     if (!fmapOpen) { fmap.classList.remove('show'); return; }
     const cur = variant === 'baseline';
@@ -527,6 +527,9 @@
       text = variant === 'baseline'
         ? 'This is where the current button lands: the generic <b>Set up Observability</b> box. Nothing says "session replay" or knows which SDK you use. Click <b>Targeting</b> to go back.'
         : 'Proposed destination: replay-led, SDK detected, three steps. Click <b>I\u2019ve deployed</b> to see the listening state. Click <b>Targeting</b> to go back.';
+    } else if (S.modal === 'success') {
+      step = 'Step 4 of 4'; target = '#scta';
+      text = 'Alternative: the save confirmation becomes a modal with the offer. Shown once per member. <b>Set up session replay</b> goes to the destination; <b>Done</b> closes it.';
     } else if (S.modal === 'review') {
       step = 'Step 3 of 4'; target = '#msave';
       text = 'Click <b>Save changes</b>. In production this is the trigger: a save that applies immediately (not an approval request, not scheduled).';
@@ -540,7 +543,10 @@
       text = 'Now click <b>Review and save</b> in the footer.';
     } else {
       step = 'Step 1 of 4';
-      if (variant === 'proposed' && (mem.seen || mem.dismissed)) {
+      if (variant === 'v2' && S.v2shown) {
+        target = null;
+        text = 'Already shown once this page load. In production it would be once per member. Reload the page (or click Reset) to see it again.';
+      } else if (variant === 'proposed' && (mem.seen || mem.dismissed)) {
         target = null;
         text = 'This member already saw the proposed nudge once, so it will not show again. Click <b>Reset</b> in the top bar to start over.';
       } else if (variant === 'baseline' && (mem.dismissedFlags || {})['new-checkout-flow']) {
