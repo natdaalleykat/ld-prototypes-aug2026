@@ -9,7 +9,7 @@ const PROMPTS = (() => {
 - Step 1 is read-only. Show me what you found before you change anything, and keep that report short enough to read in a minute.
 - If this repo already uses LaunchDarkly, reuse its client, key setup, flag conventions and LaunchDarkly project. Skip the SDK install, the keys and the links below, and tell me which project it points at.
 - Where this repo's own rules (CLAUDE.md, AGENTS.md, contributing docs) conflict with mine, follow the repo and tell me.
-- If I have uncommitted changes, list them and ask whether to carry them onto the new branch. Never commit.
+- If I have uncommitted changes other than lockfiles, list them and ask whether to carry them onto the new branch. Never commit.
 - When you ask me to choose, name your default so I can just say "go".
 - If nothing is worth doing, say what you checked and stop. Don't make a change just to have something to show.`;
 
@@ -50,7 +50,7 @@ Job: put my work in progress behind a release flag so it can merge without being
 
 ${RULES}
 
-1. First decide whether there is unreleased work here that adds behavior. Read git status, my uncommitted changes (ignore lockfile-only diffs), and the commits on this branch that are not on the default branch. If the two can't be compared, use the uncommitted changes and say so.
+1. First decide whether there is unreleased work here that adds behavior. Read git status, my uncommitted changes, and the commits on this branch that are not on the default branch. If the two can't be compared, use the uncommitted changes and say so.
    - If there is: show me where the new behavior enters the code (up to 3 places, file and line, one sentence each) and which one you would wrap. Ask me to confirm.
    - If the work only removes or refactors, is already behind a flag, or nothing is in progress: say so, and don't add a flag to code that has already shipped. Ask me what I'm about to build next, so you can set up its flag and guard before I write it.
 2. After I answer, work on a branch. ${SDK} Wrap the new code path in a boolean flag named release-<feature>. The code fallback is false, so the old behavior runs until I turn the flag on.
