@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Agent jobs on SDK setup · prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1D1F24; --ink2:#3D4148; --muted:#6C727A; --faint:#9299A3;
+  --line:#E3E6EB; --line2:#EEF0F3; --bg:#F7F8FA; --card:#fff;
+  --blue:#405BFF; --blue-d:#2F45D6; --blue-50:#F2F4FF; --blue-100:#DDE3FF;
+  --green:#0B7D4F; --green-50:#EAF7F0;
+  --red:#C4332B; --red-50:#FDEEEC;
+  --violet:#6B3FC4; --violet-50:#F3EDFD;
+  --amber:#9A5B00; --amber-50:#FFF4DC;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--card);color:var(--ink);font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:96px}
+button{font:inherit;color:inherit;cursor:pointer}
+svg{display:block}
+
+/* product chrome */
+.top{border-bottom:1px solid var(--line);background:#fff}
+.top .in{max-width:1040px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:8px}
+.top .sp{flex:1}
+.ghost{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:6px 10px;font-weight:600;font-size:13px}
+.ghost:hover{background:var(--bg)}
+.ghost svg{width:15px;height:15px;stroke:var(--ink2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+.page{max-width:1040px;margin:0 auto;padding:36px 24px 0}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;color:var(--blue-d);background:var(--blue-50);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;margin-bottom:14px}
+.eyebrow svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.head{display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap}
+.head .txt{flex:1 1 520px;min-width:0}
+h1{font-size:28px;line-height:1.2;letter-spacing:-.015em;font-weight:700;margin:0 0 8px;text-wrap:balance}
+.sub{font-size:15.5px;color:var(--ink2);margin:0;max-width:62ch}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;padding:3px;background:var(--bg);flex:none}
+.seg button{border:0;background:transparent;border-radius:6px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(20,24,34,.12)}
+
+/* trust strip */
+.trust{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:10px;margin:24px 0 22px;background:var(--bg)}
+.trust div{display:flex;gap:10px;padding:12px 16px;align-items:flex-start;font-size:13px;color:var(--ink2)}
+.trust div+div{border-left:1px solid var(--line)}
+.trust b{display:block;color:var(--ink);font-weight:600}
+.trust svg{width:17px;height:17px;flex:none;margin-top:1px;stroke:var(--green);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+/* job cards (option A) */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.job{position:relative;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;display:flex;gap:14px;align-items:flex-start;transition:border-color .12s,box-shadow .12s,transform .12s}
+.job:hover{border-color:#C3C9D4;box-shadow:0 4px 16px rgba(20,24,34,.07);transform:translateY(-1px)}
+.job:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.job[aria-pressed=true]{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue),0 6px 20px rgba(64,91,255,.13)}
+.ico{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none}
+.ico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.k-kill .ico{background:var(--red-50);color:var(--red)}
+.k-dark .ico{background:var(--blue-50);color:var(--blue-d)}
+.k-flags .ico{background:var(--violet-50);color:var(--violet)}
+.k-tune .ico{background:var(--amber-50);color:var(--amber)}
+.job .b{min-width:0;flex:1}
+.job h3{font-size:16px;line-height:1.3;margin:0 0 5px;font-weight:650;letter-spacing:-.005em;padding-right:26px}
+.job p{margin:0;color:var(--ink2);font-size:13.5px}
+.finds{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px;align-items:center}
+.finds span.l{font-size:11.5px;color:var(--faint);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-right:2px}
+.chip{font:500 11.5px/1 var(--mono);background:var(--bg);border:1px solid var(--line2);color:var(--ink2);border-radius:5px;padding:4px 6px;white-space:nowrap}
+.get{margin-top:12px;padding-top:11px;border-top:1px dashed var(--line);font-size:13px;color:var(--ink)}
+.get b{font-weight:600}
+.tick{position:absolute;top:16px;right:16px;width:20px;height:20px;border-radius:50%;border:1.5px solid #C3C9D4;display:grid;place-items:center}
+.job[aria-pressed=true] .tick{background:var(--blue);border-color:var(--blue)}
+.tick svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.job[aria-pressed=true] .tick svg{opacity:1}
+.basic{margin:14px 2px 0;font-size:13.5px;color:var(--muted)}
+.basic button{border:0;background:none;padding:0;color:var(--blue-d);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+
+/* prompt panel */
+.panel{margin-top:18px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;animation:rise .22s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.panel{animation:none}.job{transition:none}}
+.panel .ph{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel .ph .t{flex:1 1 260px;min-width:0}
+.panel .ph .t b{display:block;font-size:15px;font-weight:650}
+.panel .ph .t span{font-size:13px;color:var(--muted)}
+.primary{display:inline-flex;align-items:center;gap:7px;border:0;background:var(--blue);color:#fff;border-radius:7px;padding:9px 14px;font-weight:600;font-size:14px;flex:none}
+.primary:hover{background:var(--blue-d)}
+.primary svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.primary.done{background:var(--green)}
+.cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+.col{padding:16px 18px;min-width:0}
+.col+.col{border-left:1px solid var(--line);background:var(--bg)}
+.lab{font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);margin:0 0 8px}
+.prompt{position:relative}
+.prompt pre{margin:0;font:400 12.5px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:12px 14px;max-height:232px;overflow:hidden}
+.prompt.open pre{max-height:none}
+.prompt .fade{position:absolute;left:1px;right:1px;bottom:1px;height:70px;border-radius:0 0 8px 8px;background:linear-gradient(rgba(247,248,250,0),var(--bg) 78%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px}
+.prompt.open .fade{position:static;height:auto;background:none;padding:8px 0 0}
+.link{border:0;background:none;padding:0;color:var(--blue-d);font-weight:600;font-size:13px}
+.link:hover{text-decoration:underline}
+.keys{margin-top:10px;font-size:12.5px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:baseline}
+.keys span{flex:1 1 220px;min-width:0}
+.keys svg{flex:none;width:13px;height:13px;stroke:var(--muted);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;position:relative;top:2px}
+.report{font:400 12.5px/1.55 var(--mono);overflow-wrap:anywhere;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--ink);margin:0}
+.r-i{color:var(--muted);margin-bottom:10px}
+.r-row{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line2)}
+.r-n{flex:none;color:var(--blue-d);font-weight:500}
+.r-t{color:var(--blue-d);font-weight:500}
+.r-p{color:var(--muted);font-size:12px}
+.r-w{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:var(--ink2);margin-top:2px}
+.r-q{border-top:1px solid var(--line2);padding-top:10px;margin-top:2px;font-weight:500}
+.then{margin:12px 0 0;padding:0;list-style:none;font-size:13px;color:var(--ink2);counter-reset:s}
+.then li{counter-increment:s;display:flex;gap:9px;padding:3px 0}
+.then li::before{content:counter(s);flex:none;width:18px;height:18px;border-radius:50%;background:#fff;border:1px solid var(--line);font-size:11px;font-weight:600;display:grid;place-items:center;color:var(--muted);margin-top:1px}
+
+/* watch strip */
+.watch{border-top:1px solid var(--line);padding:14px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:#fff}
+.watch .msg{flex:1 1 320px;font-size:13.5px;color:var(--ink2);min-width:0}
+.watch .msg b{color:var(--ink);font-weight:600}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--blue);flex:none;box-shadow:0 0 0 0 rgba(64,91,255,.5);animation:pulse 1.6s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(64,91,255,0)}100%{box-shadow:0 0 0 0 rgba(64,91,255,0)}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+.steps{display:flex;gap:14px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.steps span{display:inline-flex;gap:6px;align-items:center}
+.dot{width:15px;height:15px;border-radius:50%;border:1.5px solid #C3C9D4;display:grid;place-items:center;flex:none}
+.steps .ok{color:var(--ink)}
+.steps .ok .dot{background:var(--green);border-color:var(--green)}
+.dot svg{width:9px;height:9px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.ok .dot svg{opacity:1}
+.payoff{border-top:1px solid var(--line);background:var(--green-50);padding:16px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.payoff .msg{flex:1 1 320px;min-width:0}
+.payoff .msg b{display:block;font-size:15px;font-weight:650;margin-bottom:2px}
+.payoff .msg span{font-size:13.5px;color:var(--ink2)}
+.payoff code,.watch code{font:500 12.5px var(--mono);background:rgba(255,255,255,.7);border:1px solid rgba(11,125,79,.2);border-radius:4px;padding:1px 5px}
+.watch code{background:var(--bg);border-color:var(--line)}
+
+/* option B list */
+.list{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.row{border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row>button{width:100%;text-align:left;border:0;background:#fff;padding:16px 18px;display:flex;gap:14px;align-items:center}
+.row>button:hover{background:var(--bg)}
+.row>button:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.row h3{font-size:15.5px;margin:0 0 2px;font-weight:650}
+.row p{margin:0;font-size:13.5px;color:var(--ink2)}
+.row .b{flex:1;min-width:0}
+.chev{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;transition:transform .15s}
+.row.open .chev{transform:rotate(180deg)}
+.row.open>button{background:var(--blue-50)}
+.row .panel{margin:0;border:0;border-top:1px solid var(--line);border-radius:0}
+
+/* manual placeholder */
+.manual{border:1px dashed var(--line);border-radius:12px;padding:28px;color:var(--muted);text-align:center;margin-top:24px}
+
+/* prototype bar + notes */
+.bar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#16181D;color:#E9EBEF;border-radius:12px;padding:6px;display:flex;gap:4px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.28);max-width:calc(100vw - 24px);overflow-x:auto;z-index:20;font-size:13px}
+.bar .tag{padding:0 10px 0 8px;color:#9AA1AC;white-space:nowrap;font-weight:500}
+.bar button{border:0;background:transparent;color:#C9CED6;border-radius:8px;padding:7px 11px;font-weight:600;white-space:nowrap}
+.bar button:hover{background:#262A31;color:#fff}
+.bar button[aria-pressed=true]{background:#fff;color:#16181D}
+.bar .sepv{width:1px;height:18px;background:#343943;margin:0 4px;flex:none}
+.notes{position:fixed;right:16px;bottom:74px;width:min(440px,calc(100vw - 32px));max-height:min(70vh,640px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 50px rgba(20,24,34,.22);padding:20px 22px;z-index:19;display:none}
+.notes.on{display:block}
+.notes h2{font-size:16px;margin:0 0 10px}
+.notes h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);margin:16px 0 6px}
+.notes ul{margin:0;padding-left:18px}
+.notes li{margin:5px 0;color:var(--ink2);font-size:13.5px}
+.notes li b{color:var(--ink)}
+
+@media (max-width:780px){
+  h1{font-size:23px}
+  .grid{grid-template-columns:1fr}
+  .trust{grid-template-columns:1fr}
+  .trust div+div{border-left:0;border-top:1px solid var(--line)}
+  .cols{grid-template-columns:1fr}
+  .col+.col{border-left:0;border-top:1px solid var(--line)}
+  .top .hide-s{display:none}
+  .bar .tag{display:none}
+  .page{padding:24px 16px 0}
+}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="in">
+  <svg width="30" height="30" viewBox="0 0 32 32" aria-label="Product mark placeholder"><path d="M4 16h20M17 8l8 8-8 8M10 10l6 6-6 6" fill="none" stroke="#1D1F24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="sp"></span>
+  <button class="ghost hide-s"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/></svg>Get support</button>
+  <button class="ghost hide-s"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V5h8v3M3 13h18"/></svg>Explore sandbox</button>
+  <button class="ghost"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>Close setup</button>
+</div></header>
+
+<main class="page">
+  <div class="head">
+    <div class="txt">
+      <span class="eyebrow"><svg viewBox="0 0 24 24"><path d="M12 3l2.2 5.3L20 9l-4.3 3.9L17 19l-5-3-5 3 1.3-6.1L4 9l5.8-.7z"/></svg>Your first five minutes</span>
+      <h1>Start with something real in your own code</h1>
+      <p class="sub">Pick a job. Your coding agent scans your repo, shows you what it found, and sets it up on a branch. LaunchDarkly gets installed along the way.</p>
+    </div>
+    <div class="seg" role="group" aria-label="Setup method">
+      <button id="m-ai" aria-pressed="true">With your coding agent</button>
+      <button id="m-manual" aria-pressed="false">Install manually</button>
+    </div>
+  </div>
+
+  <div id="ai">
+    <div class="trust">
+      <div><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.700-7-5.500-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span><b>Your agent does all of it</b>The scan runs in your own coding agent. LaunchDarkly never gets access to your repo.</span></div>
+      <div><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span><b>Nothing to install first</b>No MCP server, no API token, no skill download. One prompt, with your keys already in it.</span></div>
+      <div><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.500"/><circle cx="6" cy="18" r="2.500"/><circle cx="18" cy="8" r="2.500"/><path d="M6 8.500v7M18 10.500c0 4-6 3-6 7"/></svg><span><b>You approve every change</b>It reports before it edits, works on a branch, and commits nothing.</span></div>
+    </div>
+    <div id="stage"></div>
+  </div>
+  <div id="manual" class="manual" hidden>Manual install is unchanged from today: pick your SDK and follow the snippets.<br>It is out of scope for this prototype.</div>
+</main>
+
+<div class="notes" id="notes" role="dialog" aria-label="Why this design"></div>
+
+<nav class="bar" aria-label="Prototype controls">
+  <span class="tag">Prototype · potential direction</span>
+  <button id="v-a" aria-pressed="true">A · Cards</button>
+  <button id="v-b" aria-pressed="false">B · List</button>
+  <span class="sepv"></span>
+  <button id="demo">Demo: next state</button>
+  <button id="why" aria-pressed="false">Why</button>
+</nav>
+
+<script>
+const I = {
+  kill:'<svg viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.300 7.300a8 8 0 1 0 11.400 0"/></svg>',
+  dark:'<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.500"/><circle cx="6" cy="18" r="2.500"/><circle cx="18" cy="8" r="2.500"/><path d="M6 8.500v7M18 10.500c0 4-6 3-6 7"/></svg>',
+  flags:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="6" rx="3"/><circle cx="17.500" cy="8" r="1.300"/><rect x="3" y="14" width="18" height="6" rx="3"/><circle cx="6.500" cy="17" r="1.300"/></svg>',
+  tune:'<svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>',
+  copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
+  check:'<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>',
+  lock:'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  chev:'<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>'
+};
+
+const OPEN = `You're setting up LaunchDarkly in this repo for me. Everything you do stays in this repo. LaunchDarkly has no access to my code.`;
+const KEYS = (withKeys) => withKeys ?
+`Keys for project "default", environment "Production". Use the one that matches this app. Put it in .env, make sure .env is gitignored, read it from the environment, and never print it.
+   Server-side SDK key: sdk-EXAMPLE-0000-0000-000000000000
+   Client-side ID:      6901e2f4a1b2c3d4e5f60718
+   Mobile key:          mob-EXAMPLE-0000-0000-000000000000` :
+`Ask me for the LaunchDarkly key this app needs (server-side SDK key, client-side ID, or mobile key). Put it in .env, make sure .env is gitignored, read it from the environment, and never print it.`;
+const LINK = (tpl) => `You don't need LaunchDarkly API access. Give me this link with the values filled in so I can create the flag in one click, then wait until I say it exists:
+   https://app.launchdarkly.com/projects/default/flags/new?template=${tpl}&flagKey=<flag key>&description=<one line, URL-encoded>`;
+const STOP = `If you find nothing worth doing, tell me what you checked and stop. Don't make a change just to have something to show.`;
+
+const JOBS = [
+ { id:'kill', cls:'k-kill', icon:I.kill,
+   title:'Put an off switch on your riskiest dependency',
+   desc:'Your agent finds the outside calls that could take your app down and adds a kill switch to the one you choose.',
+   chips:['payments','email / SMS','LLM APIs','auth'],
+   get:'a switch you can flip in seconds, with no deploy.',
+   flag:'kill-switch-routing-provider',
+   payoffT:'Now try the part that matters',
+   payoff:'Turn <code>kill-switch-routing-provider</code> off and watch the call stop. No deploy, no restart.',
+   report:rep('Scanned 214 files. 3 outside calls worth a kill switch:',[
+     ['Routing provider','src/dispatch/assign.ts:88','Every assignment waits on it. If it hangs, dispatch stops.'],
+     ['SMS notifications','src/notify/sms.ts:31','No timeout set. An outage ties up request threads.'],
+     ['LLM summary','src/support/summarize.ts:54','Runs on every ticket view. Cost and latency spike together.']],
+     'Which one should I guard? (default: 1)'),
+   prompt:(k)=>`${OPEN}
+
+Job: put a kill switch on the riskiest outside dependency in this app.
+
+1. Scan first and change nothing. Find calls to third-party services (payments, email or SMS, auth, LLM and other APIs, queues) and any recent changes around them. Show me the top 3 as a short list: file and line, what breaks if it fails, and why a kill switch helps. Ask me which one to guard.
+2. After I choose, work on a new branch and do not commit. Install the LaunchDarkly SDK for this stack if it is missing. Wrap the call in a boolean flag named kill-switch-<dependency>. The fallback value must keep today's behavior, and the off path should degrade sensibly instead of throwing.
+3. ${KEYS(k)}
+4. ${LINK('kill-switch')}
+5. Once the flag exists, run the wrapped code path once so LaunchDarkly records an evaluation, and tell me what it returned.
+6. Finish with a short note I can paste to my team: what you scanned, the 3 candidates and why, what is now behind the kill switch, the branch name, and the flag link https://app.launchdarkly.com/projects/default/flags/<flag key>/targeting.
+
+${STOP}` },
+ { id:'dark', cls:'k-dark', icon:I.dark,
+   title:"Merge what you're building without releasing it",
+   desc:'Your agent reads your current branch, wraps the new code path in a flag that stays off, and shows you how to turn it on for yourself only.',
+   chips:['git diff','open branch','recent commits'],
+   get:'unfinished work that is safe to merge today.',
+   flag:'release-driver-eta-v2',
+   payoffT:'Your branch is safe to merge',
+   payoff:'<code>release-driver-eta-v2</code> is off for everyone. Turn it on for just yourself and see the new path.',
+   report:rep("You're on feature/driver-eta-v2. 9 files changed vs main. The new behavior enters here:",[
+     ['ETA calculation','src/eta/estimate.ts:40','New v2 path replaces the old estimate for every request.'],
+     ['ETA card UI','web/components/EtaCard.tsx:12','Display only. Lower risk.'],
+     ['Cache key format','src/eta/cache.ts:19','Changes with v2. Lower risk.']],
+     "I'd wrap 1 so this branch can merge with v2 off. OK?"),
+   prompt:(k)=>`${OPEN}
+
+Job: put the work I have in progress behind a release flag so it can merge without being released.
+
+1. Look first and change nothing. Read git status, the diff between this branch and the default branch, and the last few commits. If nothing is in progress, use the most recently merged feature. Show me where the new behavior enters the code (up to 3 places, file and line, one sentence each) and say which one you would wrap. Ask me to confirm.
+2. After I confirm, stay on a branch and do not commit. Install the LaunchDarkly SDK for this stack if it is missing. Wrap the new code path in a boolean flag named release-<feature>. The fallback value is false, so the old behavior runs until I turn the flag on.
+3. ${KEYS(k)}
+4. ${LINK('release')}
+5. Once the flag exists, run the wrapped code path once so LaunchDarkly records an evaluation, and tell me what it returned.
+6. Finish with a short note I can paste to my team: what is behind the flag, how to turn it on for one person first and then roll it out by percentage, the branch name, and the flag link https://app.launchdarkly.com/projects/default/flags/<flag key>/targeting.
+
+${STOP}` },
+ { id:'flags', cls:'k-flags', icon:I.flags,
+   title:'Bring the flags you already have under control',
+   desc:'Your agent finds the env-var toggles, config booleans, and homegrown flags scattered through your repo, then moves the first one over.',
+   chips:['ENABLE_*','FEATURE_*','features.yml','other flag SDKs'],
+   get:'a list of every toggle in your code, and one you can change without a redeploy.',
+   flag:'enable-new-pricing',
+   payoffT:'One down, and a plan for the rest',
+   payoff:'<code>enable-new-pricing</code> now lives in LaunchDarkly. Flip it here and skip the redeploy.',
+   report:rep('Found 11 toggles in 3 styles. Changing any of them takes a deploy today.',[
+     ['7 env vars','ENABLE_NEW_PRICING, USE_V2_ROUTER, ...','Read at startup, so a flip needs a restart.'],
+     ['3 config flags','config/features.yml','Shipped with the build.'],
+     ['1 hardcoded allowlist','if (BETA_ORGS.includes(org.id))','Edited by hand for each new customer.']],
+     'Best first move: ENABLE_NEW_PRICING. Read in 4 files, flipped 3 times in the last 60 days. Move it?', true),
+   prompt:(k)=>`${OPEN}
+
+Job: find the feature toggles this codebase already has and move the first one to LaunchDarkly.
+
+1. Scan first and change nothing. Find env-var toggles (ENABLE_, FEATURE_, USE_, DISABLE_ and similar), boolean config entries, homegrown flag helpers, hardcoded allowlists, and calls to any other feature flag SDK. Show me a count by type and the full list with file and line. Recommend one to move first (the one that is read in the most places or flipped most often in git history) and ask me to confirm.
+2. After I confirm, work on a new branch and do not commit. Install the LaunchDarkly SDK for this stack if it is missing. Replace the reads of that one toggle with a boolean flag of the same name in kebab case. The fallback value is the toggle's current value, so nothing changes until I flip the flag.
+3. ${KEYS(k)}
+4. ${LINK('release')}
+5. Once the flag exists, run a code path that reads it so LaunchDarkly records an evaluation, and tell me what it returned.
+6. Finish with a short note I can paste to my team: the full inventory, what moved, the branch name, the flag link https://app.launchdarkly.com/projects/default/flags/<flag key>/targeting, and a suggested order for the rest. If I want the rest moved in bulk, tell me my options, but do not require any extra setup now.
+
+${STOP}` },
+ { id:'tune', cls:'k-tune', icon:I.tune,
+   title:'Change a limit, timeout, or model without a deploy',
+   desc:'Your agent finds the hardcoded values that usually end up tuned in production and makes one adjustable from LaunchDarkly.',
+   chips:['timeouts','rate limits','model names','batch sizes'],
+   get:'a production setting you can change in seconds and roll back just as fast.',
+   flag:'config-assignment-timeout-ms',
+   payoffT:'Change it live',
+   payoff:'Set <code>config-assignment-timeout-ms</code> from 3000 to 5000 here. Your app picks it up in seconds.',
+   report:rep('Found 14 hardcoded values that often get tuned. Top 3:',[
+     ['Assignment timeout · 3000 ms','src/dispatch/assign.ts:21','Changed 4 times in git history.'],
+     ['API rate limit · 100 / min','src/api/limits.ts:8','One customer already has a hardcoded exception.'],
+     ['Summary model · "small-v2"','src/support/summarize.ts:12','Swapping models means a release today.']],
+     'Which should be adjustable without a deploy? (default: 1)'),
+   prompt:(k)=>`${OPEN}
+
+Job: make one hardcoded production setting adjustable from LaunchDarkly.
+
+1. Scan first and change nothing. Find hardcoded values that teams usually end up tuning in production: timeouts, retry counts, rate limits, batch and page sizes, thresholds, and model names or parameters. Use git history to see which ones have changed before. Show me the top 3 with file, line, current value, and why it is worth making adjustable. Ask me which one.
+2. After I choose, work on a new branch and do not commit. Install the LaunchDarkly SDK for this stack if it is missing. Read the value from a number or string flag named config-<setting>. The fallback value is today's hardcoded value, so nothing changes until I edit the flag.
+3. ${KEYS(k)}
+4. ${LINK('custom')}
+   Also tell me the flag type and the two values to enter: today's value and one alternative.
+5. Once the flag exists, run a code path that reads it so LaunchDarkly records an evaluation, and tell me what it returned.
+6. Finish with a short note I can paste to my team: what you scanned, the 3 candidates, what is now adjustable and its safe range, the branch name, and the flag link https://app.launchdarkly.com/projects/default/flags/<flag key>/targeting.
+
+${STOP}` }
+];
+const BASIC = { id:'basic', cls:'', title:'Install the SDK and test a flag', flag:'test-flag',
+  payoffT:'SDK connected', payoff:'<code>test-flag</code> was evaluated in Production. Turn it on and watch the line change.',
+  report:rep('Detected: Node 20, Express, server-side.',[
+     ['Install','@launchdarkly/node-server-sdk','Initialized once at startup.'],
+     ['Gate one line','src/server.ts:14','A startup log behind a boolean flag named test-flag.']],
+     'Nothing else changes. OK to go?'),
+  prompt:(k)=>`${OPEN}
+
+Job: install the LaunchDarkly SDK and prove one flag evaluates.
+
+1. Detect the stack and tell me what you will install and where you will initialize it. Ask me to confirm.
+2. Work on a new branch and do not commit. Install and initialize the SDK. Gate one harmless line (a startup log is fine) behind a boolean flag named test-flag with fallback false.
+3. ${KEYS(k)}
+4. ${LINK('custom')}
+5. Once the flag exists, run the app once so LaunchDarkly records an evaluation, and tell me what it returned.` };
+
+function rep(intro, items, ask, bullets){
+  return `<div class="r-i">${intro}</div>` + items.map((it,i)=>`
+    <div class="r-row"><span class="r-n">${bullets?"·":i+1}</span><div><div class="r-t">${it[0]}</div><div class="r-p">${it[1]}</div><div class="r-w">${it[2]}</div></div></div>`).join('') +
+    `<div class="r-q">${ask}</div>`;
+}
+const S = { variant:'a', job:null, open:false, copied:false, stage:0 };
+const $ = (s)=>document.querySelector(s);
+const jobById = (id)=> id==='basic' ? BASIC : JOBS.find(j=>j.id===id);
+
+function panelHTML(j){
+  const stepsOk = [S.stage>=1, S.stage>=2];
+  const watch = !S.copied ? '' : (S.stage<2 ? `
+    <div class="watch" role="status">
+      <span class="pulse"></span>
+      <div class="msg">${S.stage===0
+        ? `<b>Your agent is working in your repo.</b> LaunchDarkly can't see that part. This updates the moment your flag is created.`
+        : `<b>Flag created:</b> <code>${j.flag}</code>. Tell your agent it exists so it can run your code once.`}</div>
+      <div class="steps">
+        <span class="${stepsOk[0]?'ok':''}"><span class="dot">${I.check}</span>Flag created</span>
+        <span class="${stepsOk[1]?'ok':''}"><span class="dot">${I.check}</span>First evaluation</span>
+      </div>
+    </div>` : `
+    <div class="payoff" role="status">
+      <div class="msg"><b>${j.payoffT}</b><span>${j.payoff}</span></div>
+      <button class="primary">Open ${j.flag} →</button>
+    </div>`);
+  return `
+  <section class="panel" aria-label="Prompt for ${j.title}">
+    <div class="ph">
+      <div class="t"><b>Paste this into your coding agent</b><span>Claude Code, Cursor, Copilot, Codex, or whatever you use. It starts by reporting, not editing.</span></div>
+      <button class="primary ${S.copied?'done':''}" data-act="copy">${S.copied?I.check+'Copied':I.copy+'Copy prompt'}</button>
+    </div>
+    <div class="cols">
+      <div class="col">
+        <p class="lab">The prompt</p>
+        <div class="prompt ${S.open?'open':''}">
+          <pre>${esc(j.prompt(true)).replace(/sdk-EXAMPLE[-0-9]+/,'sdk-••••••••••••••••').replace(/mob-EXAMPLE[-0-9]+/,'mob-••••••••••••••••')}</pre>
+          <div class="fade"><button class="link" data-act="toggle">${S.open?'Show less':'Show the full prompt'}</button></div>
+        </div>
+        <div class="keys">${I.lock}<span>Your project's keys are filled in when you copy, so your agent never has to ask.</span><button class="link" data-act="copy-nokeys">Copy without keys</button></div>
+      </div>
+      <div class="col">
+        <p class="lab">What comes back first · example</p>
+        <div class="report">${j.report}</div>
+        <ol class="then">
+          <li>You choose. It makes the change on a branch.</li>
+          <li>You click one link to create the flag. That is the only step in LaunchDarkly.</li>
+          <li>It ends with a note you can paste to your team.</li>
+        </ol>
+      </div>
+    </div>
+    ${watch}
+  </section>`;
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function render(){
+  const st = $('#stage');
+  if(S.variant==='a'){
+    st.innerHTML = `
+      <div class="grid">${JOBS.map(j=>`
+        <button class="job ${j.cls}" data-job="${j.id}" aria-pressed="${S.job===j.id}">
+          <span class="ico">${j.icon}</span>
+          <span class="b">
+            <h3>${j.title}</h3>
+            <p>${j.desc}</p>
+            <span class="finds"><span class="l">Looks for</span>${j.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</span>
+            <span class="get" style="display:block"><b>You end with</b> ${j.get}</span>
+          </span>
+          <span class="tick">${I.check}</span>
+        </button>`).join('')}
+      </div>
+      <p class="basic">Only want the SDK installed? <button data-job="basic">Use the basic install prompt</button></p>
+      <div id="pp">${S.job?panelHTML(jobById(S.job)):''}</div>`;
+  } else {
+    st.innerHTML = `
+      <div class="list">${JOBS.map(j=>`
+        <div class="row ${j.cls} ${S.job===j.id?'open':''}">
+          <button data-job="${j.id}" aria-expanded="${S.job===j.id}">
+            <span class="ico">${j.icon}</span>
+            <span class="b"><h3>${j.title}</h3><p>${j.desc}</p></span>
+            ${I.chev}
+          </button>
+          ${S.job===j.id?panelHTML(j):''}
+        </div>`).join('')}
+      </div>
+      <p class="basic">Only want the SDK installed? <button data-job="basic">Use the basic install prompt</button></p>
+      <div id="pp">${S.job==='basic'?panelHTML(BASIC):''}</div>`;
+  }
+  $('#v-a').setAttribute('aria-pressed',S.variant==='a');
+  $('#v-b').setAttribute('aria-pressed',S.variant==='b');
+}
+
+async function copy(text){
+  try{ await navigator.clipboard.writeText(text); }catch(e){
+    const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select();
+    try{document.execCommand('copy')}catch(_){} t.remove();
+  }
+}
+
+document.addEventListener('click',(e)=>{
+  const jb = e.target.closest('[data-job]');
+  if(jb){
+    const id = jb.dataset.job;
+    const same = S.job===id;
+    S.job = (same && S.variant==='b') ? null : id;
+    if(!same){ S.copied=false; S.stage=0; S.open=false; }
+    render();
+    if(S.job){ const p=document.querySelector('.panel'); if(p) p.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+    return;
+  }
+  const a = e.target.closest('[data-act]');
+  if(a){
+    const j = jobById(S.job);
+    if(a.dataset.act==='toggle'){ S.open=!S.open; render(); }
+    if(a.dataset.act==='copy'){ copy(j.prompt(true)); S.copied=true; render(); }
+    if(a.dataset.act==='copy-nokeys'){ copy(j.prompt(false)); S.copied=true; render(); }
+  }
+});
+$('#v-a').onclick=()=>{S.variant='a';render()};
+$('#v-b').onclick=()=>{S.variant='b';render()};
+$('#demo').onclick=()=>{
+  if(!S.job){ S.job='kill'; }
+  else if(!S.copied){ S.copied=true; S.stage=0; }
+  else if(S.stage<2){ S.stage++; }
+  else { S.copied=false; S.stage=0; S.job=null; S.open=false; }
+  render();
+  const p=document.querySelector('.payoff,.watch,.panel'); if(p) p.scrollIntoView({block:'nearest',behavior:'smooth'});
+};
+$('#m-ai').onclick=()=>{ $('#ai').hidden=false; $('#manual').hidden=true; $('#m-ai').setAttribute('aria-pressed',true); $('#m-manual').setAttribute('aria-pressed',false); };
+$('#m-manual').onclick=()=>{ $('#ai').hidden=true; $('#manual').hidden=false; $('#m-ai').setAttribute('aria-pressed',false); $('#m-manual').setAttribute('aria-pressed',true); };
+
+$('#notes').innerHTML = `
+  <h2>Why this design</h2>
+  <h4>The idea</h4>
+  <ul>
+    <li><b>Offer an outcome, not a setup task.</b> Each card is something an engineer would want even if they never heard of feature flags. Install is how it happens, not the pitch.</li>
+    <li><b>The agent finds the target.</b> Every job starts with a read-only scan and a short report about their code. The user never has to name a feature up front.</li>
+    <li><b>Pick, then prompt.</b> No stepper. Choosing a card reveals its prompt in place. Progress appears only after they copy.</li>
+  </ul>
+  <h4>Trust</h4>
+  <ul>
+    <li><b>It is a prompt.</b> Nothing to download, no MCP server, no API token. Keys are filled in at copy time.</li>
+    <li><b>The agent owns the work.</b> The page says plainly that the scan runs in their agent and LaunchDarkly cannot see the repo.</li>
+    <li><b>One step in LaunchDarkly.</b> The agent hands back a prefilled create link. The user clicks Create once.</li>
+  </ul>
+  <h4>Why these four</h4>
+  <ul>
+    <li><b>High hit rate.</b> Almost every app calls an outside service, has work in progress, has env-var toggles, and has hardcoded tunables.</li>
+    <li><b>Four different motives.</b> Safety, speed, consolidation, control. The pick tells us which one brought them here.</li>
+    <li><b>Payoff in minutes.</b> Each ends with one thing to do in LaunchDarkly that changes their running app without a deploy.</li>
+  </ul>
+  <h4>A vs B</h4>
+  <ul>
+    <li><b>A · Cards</b> keeps all four offers visible while the prompt is open. Better for a preference read.</li>
+    <li><b>B · List</b> puts the prompt directly under the choice. Better on narrow screens.</li>
+    <li>Card order should be randomized per account and logged with the pick.</li>
+  </ul>
+  <h4>About this page</h4>
+  <ul><li>Static prototype with made-up data and example keys. Copy prompt really copies. Use "Demo: next state" to step through what happens after the copy.</li></ul>`;
+$('#why').onclick=()=>{ const n=$('#notes'); n.classList.toggle('on'); $('#why').setAttribute('aria-pressed',n.classList.contains('on')); };
+
+const q = new URLSearchParams(location.search);
+if(q.get('v')==='b') S.variant='b';
+if(q.get('job') && jobById(q.get('job'))) S.job=q.get('job');
+if(q.get('stage')){ S.copied=true; S.stage=Math.min(2,+q.get('stage')||0); if(!S.job) S.job='kill'; }
+render();
+</script>
+</body>
+</html>
