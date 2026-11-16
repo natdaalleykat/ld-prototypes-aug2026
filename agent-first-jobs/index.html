@@ -54,7 +54,7 @@ h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;font-weight:700;margin:
 .k-kill .ico{background:var(--red-50);color:var(--red)}
 .k-dark .ico{background:var(--blue-50);color:var(--blue-d)}
 .k-flags .ico{background:var(--violet-50);color:var(--violet)}
-.k-tune .ico{background:var(--amber-50);color:var(--amber)}
+.k-basic .ico{background:var(--amber-50);color:var(--amber)}
 .job[aria-pressed=true] .ico{background:#fff}
 .b{min-width:0;flex:1;display:block}
 .jt{display:block;font-size:16px;line-height:1.3;font-weight:650;letter-spacing:-.005em}
@@ -214,13 +214,13 @@ h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;font-weight:700;margin:
   <button id="why" aria-pressed="false">Why</button>
 </nav>
 
-<script src="prompts.js?v=4"></script>
+<script src="prompts.js?v=5"></script>
 <script>
 const I = {
   kill:'<svg viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.300 7.300a8 8 0 1 0 11.400 0"/></svg>',
   dark:'<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.500"/><circle cx="6" cy="18" r="2.500"/><circle cx="18" cy="8" r="2.500"/><path d="M6 8.500v7M18 10.500c0 4-6 3-6 7"/></svg>',
   flags:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="6" rx="3"/><circle cx="17.500" cy="8" r="1.300"/><rect x="3" y="14" width="18" height="6" rx="3"/><circle cx="6.500" cy="17" r="1.300"/></svg>',
-  tune:'<svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></svg>',
   copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
   check:'<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>',
   lock:'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
@@ -271,30 +271,23 @@ const JOBS = [
      ['Referral credits','src/app/api/checkout/route.ts:14','On whenever a coupon variable is set.'],
      ['Multi-seat discount','src/app/api/checkout/route.ts:13','Same pattern.']],
      'Move the sale banner first? You could turn it off today without a deploy.', true) },
- { id:'tune', cls:'k-tune', icon:I.tune, short:'Live settings',
-   title:'Change a production setting without a deploy',
-   desc:'A hardcoded limit, timeout, or model becomes adjustable live.',
-   chips:['timeouts','rate limits','model names','batch sizes'],
-   flag:'config-resend-cooldown-hours',
-   payoffT:'Change it live',
-   payoff:'Set <code>config-resend-cooldown-hours</code> from 24 to 4 here. Your app picks it up in seconds.',
-   report:rep('Top 3 hardcoded values worth making adjustable:',[
-     ['Resend cooldown · 24 h','src/app/api/resend/route.ts:47','The limit support asks to loosen. Easy to clamp, no side effects.'],
-     ['Promo code and banner text','src/components/sale-banner.tsx:28','Changes with every promotion.'],
-     ['Displayed price','src/lib/constants.ts:3','Changed before, but the real charge lives in Stripe. Not recommended on its own.']],
-     'Which one? My default is 1.') }
+ { id:'basic', cls:'k-basic', icon:I.bolt, short:'Test a flag',
+   title:'Install the SDK and test a flag',
+   desc:'The quick start. See one flag evaluate in your app.',
+   chips:['SDK install','one test flag'],
+   flag:'test-flag',
+   payoffT:'SDK connected',
+   payoff:'<code>test-flag</code> was evaluated in Production. Turn it on here and watch the line change.',
+   report:rep('Detected: Next.js on Vercel, server-side. No LaunchDarkly here yet.',[
+     ['Install','@launchdarkly/node-server-sdk','One shared client in src/lib/launchdarkly.ts, initialized once.'],
+     ['Gate one line','src/app/api/health/route.ts:8','A log line behind a boolean flag named test-flag.']],
+     'Nothing else changes. OK to go? My default is yes.') }
 ];
-const BASIC = { id:'basic', cls:'', title:'Install the SDK and test a flag', flag:'test-flag',
-  payoffT:'SDK connected', payoff:'<code>test-flag</code> was evaluated in Production. Turn it on and watch the line change.',
-  report:rep('Detected: Node 20, Express, server-side.',[
-     ['Install','@launchdarkly/node-server-sdk','Initialized once at startup.'],
-     ['Gate one line','src/server.ts:14','A startup log behind a boolean flag named test-flag.']],
-     'Nothing else changes. OK to go?') };
-[...JOBS,BASIC].forEach(j=>{ j.prompt = PROMPTS[j.id]; });
+JOBS.forEach(j=>{ j.prompt = PROMPTS[j.id]; });
 
 const S = { variant:'a', job:null, open:false, copied:false, stage:0 };
 const $ = (s)=>document.querySelector(s);
-const jobById = (id)=> id==='basic' ? BASIC : JOBS.find(j=>j.id===id);
+const jobById = (id)=> JOBS.find(j=>j.id===id);
 const esc = (s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 function panelHTML(j){
@@ -345,8 +338,6 @@ const FOOT = `
   <p class="foot">
     <span class="trust">${I.shield}Runs in your own agent. LaunchDarkly never sees your repo.</span>
     <span class="trust">${I.check}Nothing to install first</span>
-    <span class="sp"></span>
-    <button data-job="basic">Just install the SDK instead</button>
   </p>`;
 
 function render(){
@@ -378,7 +369,6 @@ function render(){
           ${S.job===j.id?panelHTML(j):''}
         </div>`).join('')}
       </div>
-      ${S.job==='basic'?panelHTML(BASIC):''}
       ${FOOT}`;
   }
   $('#v-a').setAttribute('aria-pressed',S.variant==='a');
@@ -439,8 +429,9 @@ $('#notes').innerHTML = `
   </ul>
   <h4>Why these four</h4>
   <ul>
-    <li><b>High hit rate.</b> Almost every app has outside calls, work in progress, env-var toggles, and hardcoded tunables.</li>
-    <li><b>Four motives.</b> Safety, speed, consolidation, control. The pick tells us which one brought them here.</li>
+    <li><b>Three real jobs and the quick start.</b> Safety, speed, and consolidation, plus "just show me it works". The pick tells us which one brought them here.</li>
+    <li><b>High hit rate.</b> Almost every app has outside calls, work in progress, and scattered toggles.</li>
+    <li><b>Held back for later.</b> "Change a production setting without a deploy" tested well, but it needs a number or string flag that the create link cannot prefill yet. It is the natural next suggestion after a first job.</li>
   </ul>
   <h4>A vs B</h4>
   <ul>
