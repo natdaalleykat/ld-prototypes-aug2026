@@ -37,7 +37,7 @@ Job: put a kill switch on the riskiest code path in this app.
 
 ${RULES}
 
-1. Find the code paths most likely to cause an incident. Start with calls to third-party services (payments, email or SMS, auth, LLM and other APIs, queues), then anything risky that changed recently. Show me the top 3, ranked by how much breaks for users if it fails. For each: file and line, what breaks, and whether a timeout, fallback or flag already protects it. Ask me which one to guard.
+1. Find the code paths most likely to cause an incident. Start with calls to third-party services (payments, email or SMS, auth, LLM and other APIs, queues), then anything risky in the last 20 commits. Show me the top 3 where switching the code off would actually help, ranked by how much breaks for users if it fails. For each: file and line, what breaks, and whether a timeout, fallback or flag already protects it. Leave out paths where off is worse than failing, and say which you left out. Ask me which one to guard.
 2. After I choose, work on a new branch. ${SDK} Wrap it in a boolean flag named kill-switch-<what it guards>, for example kill-switch-stripe-checkout. true means the code runs and false skips it. The code fallback is true, so nothing changes until I turn it off. When it is off, degrade sensibly instead of throwing.
 3. ${KEYS(k)}
 4. ${LINK('kill-switch')}
