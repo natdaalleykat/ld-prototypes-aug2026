@@ -214,7 +214,7 @@ h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;font-weight:700;margin:
   <button id="why" aria-pressed="false">Why</button>
 </nav>
 
-<script src="prompts.js?v=2"></script>
+<script src="prompts.js?v=3"></script>
 <script>
 const I = {
   kill:'<svg viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.300 7.300a8 8 0 1 0 11.400 0"/></svg>',
@@ -239,14 +239,14 @@ const JOBS = [
    title:'Put a kill switch on your riskiest dependency',
    desc:'Shut off a failing third-party call in seconds.',
    chips:['payments','email / SMS','LLM APIs','auth'],
-   flag:'kill-switch-routing-provider',
+   flag:'kill-switch-stripe-checkout',
    payoffT:'Now try the part that matters',
-   payoff:'Flip <code>kill-switch-routing-provider</code> here and watch the call stop. No deploy, no restart.',
-   report:rep('Scanned 214 files. 3 outside calls worth a kill switch:',[
-     ['Routing provider','src/dispatch/assign.ts:88','Every assignment waits on it. If it hangs, dispatch stops. No fallback today.'],
-     ['SMS notifications','src/notify/sms.ts:31','No timeout set. An outage ties up request threads.'],
-     ['LLM summary','src/support/summarize.ts:54','Runs on every ticket view. Already has a retry, no off switch.']],
-     'Which one should I guard? (default: 1)') },
+   payoff:'Flip <code>kill-switch-stripe-checkout</code> here and checkout pauses with a friendly message. No deploy.',
+   report:rep('No LaunchDarkly here yet. 3 outside calls, ranked by what breaks:',[
+     ['Stripe Checkout','src/app/api/checkout/route.ts:136','Your only revenue path. No timeout, so a slow Stripe leaves buyers on a spinner for 80 seconds.'],
+     ['Resend email','src/lib/email.ts:25','Every email goes through this one function. It retries, but has no timeout and no off switch.'],
+     ['Magic-link sign-in','src/lib/auth.ts:61','Poor candidate. With it off, nobody can log in.']],
+     'Which one should I guard? My default is 1.') },
  { id:'dark', cls:'k-dark', icon:I.dark, short:'Merge dark',
    title:'Merge work in progress without releasing it',
    desc:'Your current branch goes behind a flag that stays off until you say so.',
@@ -263,26 +263,26 @@ const JOBS = [
    title:'Bring your existing flags under control',
    desc:'Every env-var and config toggle, listed. The first one moved.',
    chips:['ENABLE_*','features.yml','other flag SDKs'],
-   flag:'enable-new-pricing',
+   flag:'sale-banner',
    payoffT:'One down, and a plan for the rest',
-   payoff:'<code>enable-new-pricing</code> now lives in LaunchDarkly. Flip it here and skip the redeploy.',
-   report:rep('Found 11 toggles in 3 styles. Changing any of them takes a deploy today.',[
-     ['7 env vars','ENABLE_NEW_PRICING, USE_V2_ROUTER, ...','Read at startup, so a flip needs a restart.'],
-     ['3 config flags','config/features.yml','Shipped with the build.'],
-     ['1 hardcoded allowlist','if (BETA_ORGS.includes(org.id))','Edited by hand for each new customer.']],
-     'Best first move: ENABLE_NEW_PRICING. Read in 4 files, flipped 3 times in the last 60 days. Move it?', true) },
+   payoff:'<code>sale-banner</code> now lives in LaunchDarkly. Turn it off here and the stale banner is gone.',
+   report:rep('No env-var flags, but 3 things that turn product behavior on or off:',[
+     ['Sale banner, always on','src/app/layout.tsx:39','Still advertising a sale that ended in May. Hiding it takes a deploy.'],
+     ['Referral credits','src/app/api/checkout/route.ts:14','On whenever a coupon variable is set.'],
+     ['Multi-seat discount','src/app/api/checkout/route.ts:13','Same pattern.']],
+     'Move the sale banner first? You could turn it off today without a deploy.', true) },
  { id:'tune', cls:'k-tune', icon:I.tune, short:'Live settings',
    title:'Change a production setting without a deploy',
    desc:'A hardcoded limit, timeout, or model becomes adjustable live.',
    chips:['timeouts','rate limits','model names','batch sizes'],
-   flag:'config-assignment-timeout-ms',
+   flag:'config-resend-cooldown-hours',
    payoffT:'Change it live',
-   payoff:'Set <code>config-assignment-timeout-ms</code> from 3000 to 5000 here. Your app picks it up in seconds.',
-   report:rep('Found 14 hardcoded values that often get tuned. Top 3:',[
-     ['Assignment timeout · 3000 ms','src/dispatch/assign.ts:21','Changed 4 times in git history.'],
-     ['API rate limit · 100 / min','src/api/limits.ts:8','One customer already has a hardcoded exception.'],
-     ['Summary model · "small-v2"','src/support/summarize.ts:12','Swapping models means a release today.']],
-     'Which should be adjustable without a deploy? (default: 1)') }
+   payoff:'Set <code>config-resend-cooldown-hours</code> from 24 to 4 here. Your app picks it up in seconds.',
+   report:rep('Top 3 hardcoded values worth making adjustable:',[
+     ['Resend cooldown · 24 h','src/app/api/resend/route.ts:47','The limit support asks to loosen. Easy to clamp, no side effects.'],
+     ['Promo code and banner text','src/components/sale-banner.tsx:28','Changes with every promotion.'],
+     ['Displayed price','src/lib/constants.ts:3','Changed before, but the real charge lives in Stripe. Not recommended on its own.']],
+     'Which one? My default is 1.') }
 ];
 const BASIC = { id:'basic', cls:'', title:'Install the SDK and test a flag', flag:'test-flag',
   payoffT:'SDK connected', payoff:'<code>test-flag</code> was evaluated in Production. Turn it on and watch the line change.',
@@ -321,7 +321,7 @@ function panelHTML(j){
     </div>
     <div class="cols">
       <div class="col">
-        <p class="lab">What comes back first (example)</p>
+        <p class="lab">What comes back first (from a real test run)</p>
         <div class="report">${j.report}</div>
       </div>
       <div class="col">
