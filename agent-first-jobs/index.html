@@ -59,7 +59,11 @@ h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;font-weight:700;margin:
 .b{min-width:0;flex:1;display:block}
 .jt{display:block;font-size:16px;line-height:1.3;font-weight:650;letter-spacing:-.005em}
 .jd{display:block;color:var(--ink2);font-size:14px;margin-top:3px}
-.finds{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.finds{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;align-items:center}
+.finds .l{font-size:12.5px;font-weight:600;color:var(--muted);margin-right:3px}
+.row .finds{margin-top:9px}
+.row.open .chip{background:#fff}
+.row .jd{max-width:74ch}
 .chip{font:500 12px/1 var(--mono);background:var(--bg);border:1px solid var(--line2);color:var(--ink2);border-radius:5px;padding:4px 6px;white-space:nowrap}
 .job[aria-pressed=true] .chip{background:#fff}
 .jshort{display:none}
@@ -214,7 +218,7 @@ h1{font-size:30px;line-height:1.15;letter-spacing:-.02em;font-weight:700;margin:
   <button id="why" aria-pressed="false">Why</button>
 </nav>
 
-<script src="prompts.js?v=5"></script>
+<script src="prompts.js?v=6"></script>
 <script>
 const I = {
   kill:'<svg viewBox="0 0 24 24"><path d="M12 3v9"/><path d="M6.300 7.300a8 8 0 1 0 11.400 0"/></svg>',
@@ -236,21 +240,21 @@ function rep(intro, items, ask, bullets){
 
 const JOBS = [
  { id:'kill', cls:'k-kill', icon:I.kill, short:'Kill switch',
-   title:'Put a kill switch on your riskiest dependency',
-   desc:'Shut off a failing third-party call in seconds.',
-   chips:['payments','email / SMS','LLM APIs','auth'],
+   title:'Put a kill switch on your riskiest code path',
+   desc:'Your agent finds the code most likely to cause an incident, like a payment or third-party call, and wraps it in a switch you can flip off in seconds.',
+   look:'Looks for', chips:['payments','third-party APIs','recent changes'],
    flag:'kill-switch-stripe-checkout',
    payoffT:'Now try the part that matters',
    payoff:'Flip <code>kill-switch-stripe-checkout</code> here and checkout pauses with a friendly message. No deploy.',
-   report:rep('No LaunchDarkly here yet. 3 outside calls, ranked by what breaks:',[
+   report:rep('No LaunchDarkly here yet. 3 risky code paths, ranked by what breaks:',[
      ['Stripe Checkout','src/app/api/checkout/route.ts:136','Your only revenue path. No timeout, so a slow Stripe leaves buyers on a spinner for 80 seconds.'],
      ['Resend email','src/lib/email.ts:25','Every email goes through this one function. It retries, but has no timeout and no off switch.'],
      ['Magic-link sign-in','src/lib/auth.ts:61','Poor candidate. With it off, nobody can log in.']],
      'Which one should I guard? My default is 1.') },
  { id:'dark', cls:'k-dark', icon:I.dark, short:'Merge dark',
    title:'Merge work in progress without releasing it',
-   desc:'Your current branch goes behind a flag that stays off until you say so.',
-   chips:['open branch','uncommitted changes','recent commits'],
+   desc:'Your agent reads your current branch and puts the feature you are building behind a flag that stays off until you are ready.',
+   look:'Looks for', chips:['current branch','uncommitted changes'],
    flag:'release-driver-eta-v2',
    payoffT:'Your branch is safe to merge',
    payoff:'<code>release-driver-eta-v2</code> is off for everyone. Turn it on for just yourself and see the new path.',
@@ -261,8 +265,8 @@ const JOBS = [
      "I'd wrap 1 so this branch can merge with v2 off. OK?") },
  { id:'flags', cls:'k-flags', icon:I.flags, short:'Existing flags',
    title:'Bring your existing flags under control',
-   desc:'Every env-var and config toggle, listed. The first one moved.',
-   chips:['ENABLE_*','features.yml','other flag SDKs'],
+   desc:'Your agent lists the env-var and config toggles already in your code, then moves the one you choose behind a LaunchDarkly flag.',
+   look:'Looks for', chips:['ENABLE_*','features.yml','other flag SDKs'],
    flag:'sale-banner',
    payoffT:'One down, and a plan for the rest',
    payoff:'<code>sale-banner</code> now lives in LaunchDarkly. Turn it off here and the stale banner is gone.',
@@ -273,8 +277,8 @@ const JOBS = [
      'Move the sale banner first? You could turn it off today without a deploy.', true) },
  { id:'basic', cls:'k-basic', icon:I.bolt, short:'Test a flag',
    title:'Install the SDK and test a flag',
-   desc:'The quick start. See one flag evaluate in your app.',
-   chips:['SDK install','one test flag'],
+   desc:'The quick start. Your agent installs the SDK and gates one harmless line, so you can watch a flag change your app.',
+   look:'Sets up', chips:['SDK install','one test flag'],
    flag:'test-flag',
    payoffT:'SDK connected',
    payoff:'<code>test-flag</code> was evaluated in Production. Turn it on here and watch the line change.',
@@ -350,7 +354,7 @@ function render(){
           <span class="b">
             <span class="jt">${j.title}</span>
             <span class="jd">${j.desc}</span>
-            <span class="finds">${j.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</span>
+            <span class="finds"><span class="l">${j.look}</span>${j.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</span>
             <span class="jshort">${j.short}</span>
           </span>
         </button>`).join('')}
@@ -363,7 +367,8 @@ function render(){
         <div class="row ${j.cls} ${S.job===j.id?'open':''}">
           <button data-job="${j.id}" aria-expanded="${S.job===j.id}">
             <span class="ico">${j.icon}</span>
-            <span class="b"><span class="jt">${j.title}</span><span class="jd">${j.desc}</span></span>
+            <span class="b"><span class="jt">${j.title}</span><span class="jd">${j.desc}</span>
+              <span class="finds"><span class="l">${j.look}</span>${j.chips.map(c=>`<span class="chip">${c}</span>`).join('')}</span></span>
             <span class="go"><span>${S.job===j.id?'Hide':'Get the prompt'}</span>${I.arrow}</span>
           </button>
           ${S.job===j.id?panelHTML(j):''}

@@ -33,12 +33,12 @@ const PROMPTS = (() => {
   return {
 kill: (k) => `${OPEN}
 
-Job: put a kill switch on the riskiest outside dependency in this app.
+Job: put a kill switch on the riskiest code path in this app.
 
 ${RULES}
 
-1. Find calls to third-party services: payments, email or SMS, auth, LLM and other APIs, queues. Show me the top 3, ranked by how much breaks for users if the service fails. For each: file and line, what breaks, and whether a timeout, fallback or flag already protects it. Prefer ones with no protection today. Ask me which one to guard.
-2. After I choose, work on a new branch. ${SDK} Wrap the call in a boolean flag named kill-switch-<service>-<operation>, for example kill-switch-stripe-checkout. true means the call runs and false skips it. The code fallback is true, so nothing changes until I turn it off. When it is off, degrade sensibly instead of throwing.
+1. Find the code paths most likely to cause an incident. Start with calls to third-party services (payments, email or SMS, auth, LLM and other APIs, queues), then anything risky that changed recently. Show me the top 3, ranked by how much breaks for users if it fails. For each: file and line, what breaks, and whether a timeout, fallback or flag already protects it. Ask me which one to guard.
+2. After I choose, work on a new branch. ${SDK} Wrap it in a boolean flag named kill-switch-<what it guards>, for example kill-switch-stripe-checkout. true means the code runs and false skips it. The code fallback is true, so nothing changes until I turn it off. When it is off, degrade sensibly instead of throwing.
 3. ${KEYS(k)}
 4. ${LINK('kill-switch')}
 5. ${RUN}
